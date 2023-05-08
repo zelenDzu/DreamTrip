@@ -25,6 +25,7 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Auto", "Меню", "../Resources/list.png" };
         #endregion
 
         #region Constructor
@@ -32,6 +33,9 @@ namespace DreamTrip.Windows
         {
             InitializeComponent();
             parentTabItemLink = tempTabItem;
+            //pageParametres = new string[] { "Auto", "Меню", "../Resources/list.png" };
+            //MainFunctions.ChangeTabParametres(parentTabItemLink, pageParametres);
+
             double[] sizes = MainFunctions.MenuLink.GetWidthHeight();
             WindowSizeChanged(sizes[0], sizes[1]);
         }
@@ -86,10 +90,7 @@ namespace DreamTrip.Windows
 
         private void btnAccounts_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = new Accounts(parentTabItemLink);
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Аккаунты";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/accounts.png";
+            parentTabItemLink.ItemUserControl = new Accounts(parentTabItemLink, this, thisPageParametres);
         }
 
         private void btnServices_Click(object sender, RoutedEventArgs e)

@@ -305,6 +305,18 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <Border x:Name="borderEdit" Grid.Row="0" Height="40" Width="150" IsEnabled="False"
+                        BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,160,0" 
+                        Style="{StaticResource borderStyle}">
+            <Button x:Name="btnEdit" Height="40" Width="150" Style="{StaticResource buttonStyle}"
+                            FontFamily="Yu Gothic UI" FontSize="30" Cursor="Hand" TabIndex="10"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" 
+                            Content="Изменить" Background="Transparent" Click="btnEdit_Click">
+
+            </Button>
+        </Border>
+        
         <Border x:Name="borderTripsButton" Grid.Row="0" Height="40" Width="130" IsEnabled="False"
                         BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5"
                         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,15,0" 
@@ -597,14 +609,27 @@
                           Margin="10" SelectionMode="Single" 
                           SelectionChanged="dtgClients_SelectionChanged">
                         <DataGrid.Columns>
+                            <DataGridTextColumn IsReadOnly="True" Header="Пол" Binding="{Binding Gender}" Width="92"/>
                             <DataGridTextColumn IsReadOnly="True" Header="Фамилия" Binding="{Binding Surname}" Width="*"/>
                             <DataGridTextColumn IsReadOnly="True" Header="Имя" Binding="{Binding Name}" Width="*"/>
                             <DataGridTextColumn IsReadOnly="True" Header="Отчество" Binding="{Binding Patronymic}" Width="*"/>
-                            <DataGridTextColumn IsReadOnly="True" Header="Серия" Binding="{Binding PassportSeria}" Width="120"/>
-                            <DataGridTextColumn IsReadOnly="True" Header="Номер" Binding="{Binding PassportNumber}" Width="130"/>
-                            <DataGridTextColumn IsReadOnly="True" Header="Дата рождения" Binding="{Binding Birthday}" Width="230"/>
-                            <DataGridTextColumn IsReadOnly="True" Header="Возраст" Binding="{Binding Age}" Width="140"/>
-                            <DataGridTextColumn IsReadOnly="True" Header="Пол" Binding="{Binding Gender}" Width="95"/>
+                            <DataGridTextColumn IsReadOnly="True" Header="Дата рождения" Binding="{Binding Birthday}" Width="*"/>
+                            <DataGridTemplateColumn IsReadOnly="True" Header="Контакты" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical">
+                                            <StackPanel Orientation="Horizontal">
+                                                <!--<TextBlock FontSize="20" Margin="5,0,0,0">Телефон:</TextBlock>-->
+                                                <TextBlock FontSize="20" Margin="5,0,0,0" Text="{Binding Phone}"></TextBlock>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <!--<TextBlock FontSize="20" Margin="5,0,0,0">Email:</TextBlock>-->
+                                                <TextBlock MaxWidth="1300" TextWrapping="Wrap" FontSize="20" Margin="5,0,0,0" Text="{Binding Email}"></TextBlock>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridTemplateColumn Width="50">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -627,20 +652,17 @@
                             <DataTemplate>
                                 <StackPanel Background="#FFEFFFFF" Orientation="Vertical">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontSize="20" Margin="10,0,0,0">Телефон:</TextBlock>
-                                        <TextBlock FontSize="20" Margin="10,0,0,0" Text="{Binding Phone}"></TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontSize="20" Margin="10,0,0,0">Email:</TextBlock>
-                                        <TextBlock MaxWidth="1300" TextWrapping="Wrap" FontSize="20" Margin="10,0,0,0" Text="{Binding Email}"></TextBlock>
+                                        <TextBlock FontSize="20" Margin="10,0,0,0">Паспорт (серия и номер):</TextBlock>
+                                        <TextBlock FontWeight="Bold" MaxWidth="1300" TextWrapping="Wrap" FontSize="20" Margin="10,0,0,0" Text="{Binding PassportSeria}"/>
+                                        <TextBlock FontWeight="Bold" MaxWidth="1300" TextWrapping="Wrap" FontSize="20" Margin="10,0,0,0" Text="{Binding PassportNumber}"/>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock FontSize="20" Margin="10,0,0,0">Сфера работы:</TextBlock>
-                                        <TextBlock MaxWidth="1300" TextWrapping="Wrap" FontSize="20" Margin="10,0,0,0" Text="{Binding WorkFieldName}"></TextBlock>
+                                        <TextBlock FontWeight="Bold" MaxWidth="1300" TextWrapping="Wrap" FontSize="20" Margin="10,0,0,0" Text="{Binding WorkFieldName}"/>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock FontSize="20" Margin="10,0,0,0">Специальность:</TextBlock>
-                                        <TextBlock MaxWidth="1300" TextWrapping="Wrap" FontSize="20" Margin="10,0,0,0" Text="{Binding WorkPostName}"></TextBlock>
+                                        <TextBlock FontWeight="Bold" MaxWidth="1300" TextWrapping="Wrap" FontSize="20" Margin="10,0,0,0" Text="{Binding WorkPostName}"/>
                                     </StackPanel>
 
                                 </StackPanel>

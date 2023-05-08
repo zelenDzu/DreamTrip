@@ -2,7 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:DreamTrip.Windows"
-    Title="Сообщение" Height="250" Width="400" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" Closing="Window_Closing" >
+    Title="Сообщение" Height="250" Width="400" WindowStartupLocation="CenterScreen" 
+        WindowStyle="ToolWindow" Closing="Window_Closing" KeyDown="Window_KeyDown">
 
     <Grid Background="LightGray">
         <Grid.RowDefinitions>

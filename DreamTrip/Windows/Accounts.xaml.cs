@@ -26,15 +26,25 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
-        List<Account> accountsList = new List<Account>();
+
+        string[] thisPageParametres = new string[] { "Auto", "Аккаунты", "../Resources/accounts.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
         List<AccountType> accountTypes = new List<AccountType>();
+        List<Account> accountsList = new List<Account>();
         #endregion
 
         #region Constructor
-        public Accounts(TabClass tempTabItem)
+        public Accounts(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres)
         {
             InitializeComponent();
+
             parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
             LoadAccountTypes();
             LoadAccounts();
         }
@@ -147,6 +157,7 @@ namespace DreamTrip.Windows
         #region ButtonsClick
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
+            //parentTabItemLink.ItemUserControl = previousPage;
             switch (MainFunctions.GetUserRole())
             {
                 case "manager":

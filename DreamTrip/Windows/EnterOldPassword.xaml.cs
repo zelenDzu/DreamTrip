@@ -129,5 +129,13 @@ namespace DreamTrip.Windows
             borderOk.IsEnabled = pwbPassword.Password.Length > 0 && (pwbPassword2.Password.Length > 0 || !isOldPasswordEntered);
             MakePasswordStandart();
         }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && borderOk.IsEnabled)
+            {
+                btnOk_Click(sender, e);
+            }
+        }
     }
 }

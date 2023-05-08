@@ -711,9 +711,11 @@ namespace DreamTrip.Windows
             if (dtgClients.SelectedIndex!=-1)
             {
                 borderTripsButton.IsEnabled = true;
+                borderEdit.IsEnabled = true;
             }
             else
             {
+                borderEdit.IsEnabled = false;
                 borderTripsButton.IsEnabled = false;
             }
         }
@@ -736,5 +738,9 @@ namespace DreamTrip.Windows
 
         #endregion
 
+        private void btnEdit_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

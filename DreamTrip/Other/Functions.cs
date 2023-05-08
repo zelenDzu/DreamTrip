@@ -115,6 +115,13 @@ namespace DreamTrip.Functions
             }
         }
 
+        public static void ChangeTabParametres(TabClass tabItem, string[] parametres)
+        {
+            tabItem.VerticalScrollBarVisibility = parametres[0];
+            tabItem.ItemHeaderText = parametres[1];
+            tabItem.ItemHeaderImageSource = parametres[2];
+        }
+
         /// <summary>
         /// Получить путь приложения
         /// </summary>

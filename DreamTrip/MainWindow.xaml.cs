@@ -189,12 +189,16 @@ namespace DreamTrip
                                 }
                             }
                         }
+                        else
+                        {
+                            new Message($"Ошибка", $"Ваш тип учетной записи не поддерживается. " +
+                                $"Если вы увидели это окно, свяжитесь с администратором.").ShowDialog();
+                        }
                     }
                     else
                     {
                         Message message = new Message("Ошибка", "Что-то пошло не так.", false, false);
                         message.ShowDialog();
-                        this.Close();
                     }
                 }
                 else

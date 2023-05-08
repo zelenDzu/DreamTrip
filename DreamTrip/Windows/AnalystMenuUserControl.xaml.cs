@@ -24,6 +24,8 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
+
+        string[] thisPageParametres = new string[] { "Auto", "Меню", "../Resources/list.png" };
         #endregion
 
         #region Constructor
