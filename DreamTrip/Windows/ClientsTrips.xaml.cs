@@ -28,6 +28,10 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Auto", "Поездки клиентов", "../Resources/trips.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
         ObservableCollection<Trip> TripsList { get; set; } = new ObservableCollection<Trip>();
         ObservableCollection<Country> CountriesList { get; set; } = new ObservableCollection<Country>();
         ObservableCollection<City> CurrentCitiesList { get; set; } = new ObservableCollection<City>();
@@ -36,16 +40,21 @@ namespace DreamTrip.Windows
         ComboBoxItem tempFirstItemCity;
         ComboBoxItem tempSecondItemCity;
         ComboBoxItem tempThirdItemCity;
-        bool isFromClients;
+        public bool IsFromClients;
         int lastChosenCountry = -1;
         #endregion
 
         #region Constructor
-        public ClientsTrips(TabClass tempTabItem, string clientId = "", bool tempIsFromClients = false)
+        public ClientsTrips(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres, string clientId = "", bool tempIsFromClients = false)
         {
             InitializeComponent();
+
             parentTabItemLink = tempTabItem;
-            isFromClients = tempIsFromClients;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
+            IsFromClients = tempIsFromClients;
             LoadTrips("all", clientId);
             LoadCountries();
             LoadTourTypes();
@@ -60,7 +69,7 @@ namespace DreamTrip.Windows
         /// </summary>
         /// <param name="tripsIds">id загружаемых поездок</param>
         /// <param name="clientId">id клиента (если загружаем поездки только 1 клиента)</param>
-        private void LoadTrips(string tripsIds, string clientId = "")
+        public void LoadTrips(string tripsIds, string clientId = "")
         {
             dtgTrips.ItemsSource = null;
             TripsList.Clear();
@@ -377,31 +386,8 @@ namespace DreamTrip.Windows
         #region ButtonsClick
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            if (isFromClients)
-            {
-                parentTabItemLink.ItemUserControl = new Clients(parentTabItemLink);
-                parentTabItemLink.ItemHeaderText = "Клиенты";
-                parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/clients.png";
-            }
-            else
-            {
-                switch (MainFunctions.GetUserRole())
-                {
-                    case "manager":
-                        parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
-                        break;
-                    case "admin":
-                        parentTabItemLink.ItemUserControl = new AdminMenuUserControl(parentTabItemLink);
-                        break;
-                    case "analyst":
-                        parentTabItemLink.ItemUserControl = new AnalystMenuUserControl(parentTabItemLink);
-                        break;
-                }
-                parentTabItemLink.ItemHeaderText = "Меню";
-                parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
-            }
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
@@ -424,10 +410,7 @@ namespace DreamTrip.Windows
                 TicketPrice = (dtgTrips.SelectedItem as Trip).TicketPrice
             };
 
-            parentTabItemLink.ItemUserControl = new EditTrip(parentTabItemLink, currentTour, currentClient, (dtgTrips.SelectedItem as Trip));
-            parentTabItemLink.VerticalScrollBarVisibility = "Disabled";
-            parentTabItemLink.ItemHeaderText = "Изменить поездку";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/edit_trip.png";
+            parentTabItemLink.ItemUserControl = new EditTrip(parentTabItemLink, this, thisPageParametres, currentTour, currentClient, (dtgTrips.SelectedItem as Trip));
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -455,6 +438,11 @@ namespace DreamTrip.Windows
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            ClearSearch();
+        }
+
+        public void ClearSearch()
         {
             tbxClientNameSearch.Text = "";
             tbxStartDate.Text = "";

@@ -26,9 +26,13 @@ namespace DreamTrip.Windows
     public partial class TourInfo : UserControl
     {
         #region Variables
+        TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Disabled", "Статистика", "../Resources/tours.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
         int currentTourId;
         Tour currentTour;
-        TabClass parentTabItemLink;
         Image[] starsList;
         Image[] servicesImageList;
         TextBlock[] servicesTextList;
@@ -39,14 +43,13 @@ namespace DreamTrip.Windows
         #endregion
 
         #region Constructor
-        public TourInfo(TabClass tempTabItem, int tempTourId)
+        public TourInfo(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres, int tempTourId)
         {
             InitializeComponent();
             starsList = new Image[] { imgStar1, imgStar2, imgStar3, imgStar4, imgStar5 };
             servicesImageList = new Image[] {imgService1, imgService2, imgService3, imgService4, imgService5, imgService6 };
             servicesTextList = new TextBlock[] {tbService1, tbService2, tbService3, tbService4, tbService5, tbService6 };
             currentTourId = tempTourId;
-            parentTabItemLink = tempTabItem;
 
             switch (MainFunctions.GetUserRole())
             {
@@ -69,6 +72,23 @@ namespace DreamTrip.Windows
                     break;
             }
 
+            LoadAllData();
+            double[] sizes = MainFunctions.MenuLink.GetWidthHeight();
+            WindowSizeChanged(sizes[0], sizes[1]);
+
+            thisPageParametres[1] = currentTour.Name;
+
+            parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+        }
+        #endregion
+
+        #region LoadData
+
+        public void LoadAllData()
+        {
             LoadTourInfo();
             LoadTourOnPage();
             LoadTourServices();
@@ -76,17 +96,21 @@ namespace DreamTrip.Windows
             LoadFeedTypes();
             LoadServices();
             LoadComments();
-            double[] sizes = MainFunctions.MenuLink.GetWidthHeight();
-            WindowSizeChanged(sizes[0], sizes[1]);
         }
-        #endregion
 
-        #region LoadData
         /// <summary>
         /// Загрузка комнат отеля
         /// </summary>
         private void LoadRoomTypes()
         {
+            ComboBoxItem tempItem = cmbRoom.Items[0] as ComboBoxItem;
+
+            tourRoomsList.Clear();
+            cmbRoom.Items.Clear();
+
+            cmbRoom.Items.Add(tempItem);
+            cmbRoom.SelectedIndex = 0;
+
             DataTable RoomsData = MainFunctions.NewQuery($"SELECT * FROM Hotel_rooms " +
                 $" JOIN Room_type ON Room_type.id_room_type = Hotel_rooms.id_room_type" +
                 $" WHERE id_hotel = {currentTour.HotelId}");
@@ -110,6 +134,14 @@ namespace DreamTrip.Windows
         /// </summary>
         private void LoadFeedTypes()
         {
+            ComboBoxItem tempItem = cmbFeed.Items[0] as ComboBoxItem;
+
+            tourFeedsList.Clear();
+            cmbFeed.Items.Clear();
+
+            cmbFeed.Items.Add(tempItem);
+            cmbFeed.SelectedIndex = 0;
+
             DataTable feedData = MainFunctions.NewQuery($"SELECT * FROM Hotel_feed_types " +
                 $" JOIN Feed_type ON Feed_type.id_feed_type = Hotel_feed_types.id_feed_type" +
                 $" WHERE id_hotel = {currentTour.HotelId}");
@@ -133,6 +165,14 @@ namespace DreamTrip.Windows
         /// </summary>
         private void LoadServices()
         {
+            ComboBoxItem tempItem = lstService.Items[0] as ComboBoxItem;
+
+            tourServiceList.Clear();
+            lstService.Items.Clear();
+
+            lstService.Items.Add(tempItem);
+            lstService.SelectedIndex = 0;
+
             DataTable serviceData = MainFunctions.NewQuery($"SELECT * FROM Tour_services" +
                 $" JOIN [Service] ON [Service].id_service = Tour_services.id_service " +
                 $" WHERE id_tour = {currentTour.TourId}");
@@ -151,6 +191,8 @@ namespace DreamTrip.Windows
                 tourServiceList.Add(tourService);
                 lstService.Items.Add(tourService);
             }
+
+
         }
 
         /// <summary>
@@ -158,6 +200,8 @@ namespace DreamTrip.Windows
         /// </summary>
         private void LoadTourInfo()
         {
+            currentTour = null;
+
             DataTable baseTourData = MainFunctions.NewQuery($"SELECT * FROM Tour where id_tour={currentTourId}");
 
             int tempPrice = int.Parse(baseTourData.Rows[0][2].ToString()) + int.Parse(MainFunctions.NewQuery($"SELECT price_per_day FROM Hotel_rooms " +
@@ -220,6 +264,12 @@ namespace DreamTrip.Windows
         /// </summary>
         private void LoadTourOnPage()
         {
+            for (int i = 0; i < starsList.Length; i++)
+            {
+                starsList[i].Visibility = Visibility.Hidden;
+            }
+
+
             tbxTourName.Text = currentTour.Name;
             tbxLocation.Text = currentTour.Location;
             tbPriceFrom.Text = currentTour.StartPrice;
@@ -234,6 +284,8 @@ namespace DreamTrip.Windows
             tbxType.Text = $"Тип: {currentTour.TourTypes}";
             tbxTourDescription.Text = $"Описание: " + currentTour.Description;
 
+            tbCalculatedPrice.Visibility = Visibility.Hidden;
+            tbxDays.Text = "";
         }
 
         /// <summary>
@@ -241,6 +293,16 @@ namespace DreamTrip.Windows
         /// </summary>
         private void LoadTourServices()
         {
+            for (int i = 0; i < servicesImageList.Length; i++)
+            {
+                servicesImageList[i].Source = null;
+            }
+
+            for (int i = 0; i < servicesTextList.Length; i++)
+            {
+                servicesTextList[i].Text = null;
+            }
+
             DataTable dataServices = MainFunctions.NewQuery($"SELECT * FROM Tour_services WHERE id_tour={currentTourId}");
             int rowsCount = dataServices.Rows.Count;
             if (rowsCount > 6) rowsCount = 6;
@@ -321,10 +383,12 @@ namespace DreamTrip.Windows
             dispatcherTimer.Start();
             dispatcherTimer.Tick += new EventHandler((object c, EventArgs eventArgs) =>
             {
-                parentTabItemLink.ItemUserControl = new Tours(parentTabItemLink, false);
-                parentTabItemLink.VerticalScrollBarVisibility = "Disabled";
-                parentTabItemLink.ItemHeaderText = "Туры";
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/tours.png";
+
+                parentTabItemLink.ItemUserControl = previousPage;
+                MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
+                (previousPage as Tours).LoadTours("all");
+
+
                 gridTourLoad.Visibility = Visibility.Hidden;
                 ((DispatcherTimer)c).Stop();
             });
@@ -370,10 +434,7 @@ namespace DreamTrip.Windows
 
         private void btnCreateTrip_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = new ChooseClient(parentTabItemLink, currentTour, false);
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Выбор клиента";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/clients.png";
+            parentTabItemLink.ItemUserControl = new ChooseClient(parentTabItemLink, this, thisPageParametres, currentTour, false);
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
@@ -388,10 +449,7 @@ namespace DreamTrip.Windows
                 ServicesIds = currentTour.ServicesIds,
                 ImageSource = currentTour.ImageSource
             };
-            parentTabItemLink.ItemUserControl = new NewTour(parentTabItemLink, editedTour);
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = editedTour.Name;
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/edit_tour.png";
+            parentTabItemLink.ItemUserControl = new NewTour(parentTabItemLink, this, thisPageParametres, editedTour);
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)

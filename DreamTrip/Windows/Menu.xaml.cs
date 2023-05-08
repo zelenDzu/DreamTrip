@@ -159,10 +159,11 @@ namespace DreamTrip.Windows
         private void TabItemProfile_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             TabClass selectedTab = menuTabControl.SelectedItem as TabClass;
-            selectedTab.ItemUserControl = new Profile(selectedTab);
-            selectedTab.VerticalScrollBarVisibility = "Auto";
-            selectedTab.ItemHeaderText = "Профиль";
-            selectedTab.ItemHeaderImageSource = "../Resources/user_profile.png";
+            Profile profile = new Profile(selectedTab, selectedTab.ItemUserControl, new string[] {
+                selectedTab.VerticalScrollBarVisibility, 
+                selectedTab.ItemHeaderText,
+                selectedTab.ItemHeaderImageSource});
+            selectedTab.ItemUserControl = profile;
         }
 
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)

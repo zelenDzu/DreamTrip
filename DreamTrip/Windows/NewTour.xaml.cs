@@ -28,6 +28,10 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Auto", "Новый тур", "../Resources/new_tour.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
         ObservableCollection<Country> countriesList { get; set; } = new ObservableCollection<Country>();
         ObservableCollection<City> currentCitiesList { get; set; } = new ObservableCollection<City>();
         ObservableCollection<Hotel> currentHotelsList { get; set; } = new ObservableCollection<Hotel>();
@@ -43,12 +47,11 @@ namespace DreamTrip.Windows
         #endregion
 
         #region Constructor
-        public NewTour(TabClass tempTabItem, Tour tempEditedTour = null)
+        public NewTour(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres, Tour tempEditedTour = null)
         {
             InitializeComponent();
             tourPhotoPath = MainFunctions.GetAppPath() + "/Resources/ToursPhotos/default.png";
             tourphoto = GetBitmapImageFromPath(tourPhotoPath);
-            parentTabItemLink = tempTabItem;
             editedTour = tempEditedTour;
             if (tempEditedTour == null)
                 editedTour = new Tour()
@@ -68,11 +71,17 @@ namespace DreamTrip.Windows
             {
                 btnCreate.Content = "Применить";
                 tbNewTour.Text = "Изменить тур";
+                thisPageParametres[1] = tempEditedTour.Name;
                 LoadTourInfo();
             }
 
             double[] sizes = MainFunctions.MenuLink.GetWidthHeight();
             WindowSizeChanged(sizes[0], sizes[1]);
+
+            parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
         }
         #endregion
 
@@ -494,11 +503,11 @@ namespace DreamTrip.Windows
                     $"\n\tNew Name: {tbxTourName.Text}" +
                     $"\n\tPhoto error: {(putImageResult ? "No" : "ERROR")}");
 
-                parentTabItemLink.ItemUserControl = new TourInfo(parentTabItemLink, editedTour.TourId);
-                parentTabItemLink.VerticalScrollBarVisibility = "Disabled";
-                parentTabItemLink.ItemHeaderText = editedTour.Name;
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/tours.png";
 
+                parentTabItemLink.ItemUserControl = previousPage;
+                MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
+                (previousPage as TourInfo).LoadAllData();
+                
             }
             catch
             {
@@ -538,7 +547,7 @@ namespace DreamTrip.Windows
                 bool putImageResult = MainFunctions.PutTourImageInDb(tourPhotoPath, currentTourId);
 
                 string imageError = "";
-                if (!putImageResult) imageError = "Однако, в связи с неправильным форматом изображения, фотография тура добавлена не была.";
+                if (!putImageResult) imageError = "Однако в связи с неправильным форматом изображения фотография тура не была добавлена.";
                 Message successMessage = new Message("Успех", $"Новый тур был успешно добавлен. {imageError}", false, false);
                 successMessage.ShowDialog();
 
@@ -548,21 +557,8 @@ namespace DreamTrip.Windows
                     $"\n\tPhoto error: {(putImageResult ? "No" : "ERROR")}");
 
 
-                switch (MainFunctions.GetUserRole())
-                {
-                    case "manager":
-                        parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
-                        break;
-                    case "admin":
-                        parentTabItemLink.ItemUserControl = new AdminMenuUserControl(parentTabItemLink);
-                        break;
-                    case "analyst":
-                        parentTabItemLink.ItemUserControl = new AnalystMenuUserControl(parentTabItemLink);
-                        break;
-                }
-                parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-                parentTabItemLink.ItemHeaderText = "Меню";
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
+                parentTabItemLink.ItemUserControl = previousPage;
+                MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
             }
             catch
             {
@@ -599,31 +595,8 @@ namespace DreamTrip.Windows
         #region ButtonsClick
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            if (editedTour.TourId == 0)
-            {
-                switch (MainFunctions.GetUserRole())
-                {
-                    case "manager":
-                        parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
-                        break;
-                    case "admin":
-                        parentTabItemLink.ItemUserControl = new AdminMenuUserControl(parentTabItemLink);
-                        break;
-                    case "analyst":
-                        parentTabItemLink.ItemUserControl = new AnalystMenuUserControl(parentTabItemLink);
-                        break;
-                }
-                parentTabItemLink.ItemHeaderText = "Меню";
-                parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
-            }
-            else
-            {
-                parentTabItemLink.ItemUserControl = new TourInfo(parentTabItemLink, editedTour.TourId);
-                parentTabItemLink.VerticalScrollBarVisibility = "Disabled";
-                parentTabItemLink.ItemHeaderText = editedTour.Name;
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/tours.png";
-            }
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
         }
 
         private void btnCreate_Click(object sender, RoutedEventArgs e)

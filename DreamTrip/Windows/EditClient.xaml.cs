@@ -24,16 +24,23 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Auto", "Данные клиента", "../Resources/user_profile.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
         Client currentClient;
-        UserControl previousControl;
         #endregion
 
         #region Constructor
-        public EditClient(TabClass tempTabItem , UserControl tempPreviousControl,Client tempClient = null)
+        public EditClient(TabClass tempTabItem , UserControl tempPreviousPage, string[] tempPreviousPageParametres, Client tempClient = null)
         {
             InitializeComponent();
+
             parentTabItemLink = tempTabItem;
-            previousControl = tempPreviousControl;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
             currentClient = tempClient;
             if (currentClient == null)
             {
@@ -62,10 +69,8 @@ namespace DreamTrip.Windows
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = previousControl;
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Меню";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)

@@ -25,6 +25,11 @@ namespace DreamTrip.Windows
     public partial class Tours : UserControl
     {
         #region Variables
+        TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Disabled", "Туры", "../Resources/tours.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
         ObservableCollection<Tour> ToursList { get; set; } = new ObservableCollection<Tour>();
         ObservableCollection<Country> CountriesList { get; set; } = new ObservableCollection<Country>();
         ObservableCollection<City> CurrentCitiesList { get; set; } = new ObservableCollection<City>();
@@ -38,15 +43,13 @@ namespace DreamTrip.Windows
         int lastChosenCountry = -1;
         bool isToCreateTrip;
 
-        TabClass parentTabItemLink;
         #endregion
 
         #region Constructor
-        public Tours(TabClass tempTabItem, bool tempIsToCreateTrip)
+        public Tours(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres, bool tempIsToCreateTrip)
         {
             InitializeComponent();
             isToCreateTrip = tempIsToCreateTrip;
-            parentTabItemLink = tempTabItem;
             LoadTours("all");
             LoadFeedTypes();
             LoadTourTypes();
@@ -58,6 +61,13 @@ namespace DreamTrip.Windows
             SecondItemCheckBoxType.IsChecked = true;
             double[] sizes = MainFunctions.MenuLink.GetWidthHeight();
             WindowSizeChanged(sizes[0], sizes[1]);
+
+            if (isToCreateTrip) thisPageParametres[1] = "Выбор тура";
+            
+            parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
         }
         #endregion
 
@@ -232,7 +242,7 @@ namespace DreamTrip.Windows
         /// Загрузка туров
         /// </summary>
         /// <param name="toursIds"></param>
-        void LoadTours(string toursIds)
+        public void LoadTours(string toursIds)
         {
 
             lvTours.ItemsSource = null;
@@ -479,19 +489,13 @@ namespace DreamTrip.Windows
                 };
 
 
-                parentTabItemLink.ItemUserControl = new ChooseClient(parentTabItemLink, currentTour, true);
-                parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-                parentTabItemLink.ItemHeaderText = "Выбор клиента";
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/clients.png";
+                parentTabItemLink.ItemUserControl = new ChooseClient(parentTabItemLink, this, thisPageParametres, currentTour, true);
             }
             else
             {
                 string tourName = MainFunctions.NewQuery($"SELECT name FROM Tour WHERE id_tour = {tourId}").Rows[0][0].ToString();
 
-                parentTabItemLink.ItemUserControl = new TourInfo(parentTabItemLink, tourId);
-                parentTabItemLink.VerticalScrollBarVisibility = "Disabled";
-                parentTabItemLink.ItemHeaderText = tourName;
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/tours.png";
+                parentTabItemLink.ItemUserControl = new TourInfo(parentTabItemLink, this, thisPageParametres, tourId);
             }
         }
 
@@ -641,21 +645,10 @@ namespace DreamTrip.Windows
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            switch (MainFunctions.GetUserRole())
-            {
-                case "manager":
-                    parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
-                    break;
-                case "admin":
-                    parentTabItemLink.ItemUserControl = new AdminMenuUserControl(parentTabItemLink);
-                    break;
-                case "analyst":
-                    parentTabItemLink.ItemUserControl = new AnalystMenuUserControl(parentTabItemLink);
-                    break;
-            }
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Меню";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
+
+            
         }
         #endregion
 

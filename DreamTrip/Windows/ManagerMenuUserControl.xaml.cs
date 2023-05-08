@@ -25,13 +25,17 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Auto", "Меню", "../Resources/list.png" };
         #endregion
 
         #region Constructor
         public ManagerMenuUserControl(TabClass tempTabItem)
         {
             InitializeComponent();
+
             parentTabItemLink = tempTabItem;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
             double[] sizes = MainFunctions.MenuLink.GetWidthHeight();
             WindowSizeChanged(sizes[0], sizes[1]);
         }
@@ -40,10 +44,7 @@ namespace DreamTrip.Windows
         #region MenuButtonsClick
         private void btnClients_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = new Clients(parentTabItemLink);
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Клиенты";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/clients.png";
+            parentTabItemLink.ItemUserControl = new Clients(parentTabItemLink, this, thisPageParametres);
         }
 
         private void btnTours_Click(object sender, RoutedEventArgs e)
@@ -54,10 +55,7 @@ namespace DreamTrip.Windows
             dispatcherTimer.Start();
             dispatcherTimer.Tick += new EventHandler((object c, EventArgs eventArgs) =>
             {
-                parentTabItemLink.ItemUserControl = new Tours(parentTabItemLink, false);
-                parentTabItemLink.VerticalScrollBarVisibility = "Disabled";
-                parentTabItemLink.ItemHeaderText = "Туры";
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/tours.png";
+                parentTabItemLink.ItemUserControl = new Tours(parentTabItemLink, this, thisPageParametres, false);
                 gridTourLoad.Visibility = Visibility.Hidden;
                 ((DispatcherTimer)c).Stop();
             });
@@ -71,10 +69,7 @@ namespace DreamTrip.Windows
             dispatcherTimer.Start();
             dispatcherTimer.Tick += new EventHandler((object c, EventArgs eventArgs) =>
             {
-                parentTabItemLink.ItemUserControl = new Tours(parentTabItemLink, true);
-                parentTabItemLink.VerticalScrollBarVisibility = "Disabled";
-                parentTabItemLink.ItemHeaderText = "Выбор тура";
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/tours.png";
+                parentTabItemLink.ItemUserControl = new Tours(parentTabItemLink, this, thisPageParametres, true);
                 gridTourLoad.Visibility = Visibility.Hidden;
                 ((DispatcherTimer)c).Stop();
             });
@@ -82,19 +77,13 @@ namespace DreamTrip.Windows
 
         private void btnTrips_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = new ClientsTrips(parentTabItemLink);
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Поездки клиентов";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/trips.png";
+            parentTabItemLink.ItemUserControl = new ClientsTrips(parentTabItemLink, this, thisPageParametres);
         }
         
         //удалено, переброшено к администратору
         private void btnStatistics_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = new Statistics(parentTabItemLink);
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Статистика";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/statistics.png";
+            parentTabItemLink.ItemUserControl = new Statistics(parentTabItemLink, this, thisPageParametres);
         }
 
         //сделать

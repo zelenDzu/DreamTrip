@@ -25,15 +25,24 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Auto", "Отели", "../Resources/hotel.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
         List<Hotel> hotelsList = new List<Hotel>();
         List<City> allCitiesList = new List<City>();
         #endregion
 
         #region Constructor
-        public Hotels(TabClass tempTabItem)
+        public Hotels(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres)
         {
             InitializeComponent();
+
             parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
             LoadCities();
             LoadHotels();
         }
@@ -123,21 +132,8 @@ namespace DreamTrip.Windows
         #region ButtonsClick
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            switch (MainFunctions.GetUserRole())
-            {
-                case "manager":
-                    parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
-                    break;
-                case "admin":
-                    parentTabItemLink.ItemUserControl = new AdminMenuUserControl(parentTabItemLink);
-                    break;
-                case "analyst":
-                    parentTabItemLink.ItemUserControl = new AnalystMenuUserControl(parentTabItemLink);
-                    break;
-            }
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Меню";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)

@@ -18,14 +18,23 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Auto", "Сервисы", "../Resources/service.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
         List<TourService> servicesList = new List<TourService>();
         #endregion
 
         #region Constructor
-        public Services(TabClass tempTabItem)
+        public Services(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres)
         {
             InitializeComponent();
+
             parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
             LoadServices();
         }
         #endregion
@@ -127,21 +136,8 @@ namespace DreamTrip.Windows
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            switch (MainFunctions.GetUserRole())
-            {
-                case "manager":
-                    parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
-                    break;
-                case "admin":
-                    parentTabItemLink.ItemUserControl = new AdminMenuUserControl(parentTabItemLink);
-                    break;
-                case "analyst":
-                    parentTabItemLink.ItemUserControl = new AnalystMenuUserControl(parentTabItemLink);
-                    break;
-            }
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Меню";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)

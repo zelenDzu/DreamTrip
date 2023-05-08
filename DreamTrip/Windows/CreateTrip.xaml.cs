@@ -27,8 +27,12 @@ namespace DreamTrip.Windows
     public partial class CreateTrip : UserControl
     {
         #region Variables
-        Tour currentTour;
         TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Disabled", "Создание поездки", "../Resources/new_trip.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
+        Tour currentTour;
         Client chosenClient;
         bool isToCreateTrip;
 
@@ -38,11 +42,16 @@ namespace DreamTrip.Windows
         #endregion
 
         #region Constructor
-        public CreateTrip(TabClass tempTabItem, Tour tempTour, Client tempClient, bool tempIsToCreateTrip)
+        public CreateTrip(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres, Tour tempTour, Client tempClient, bool tempIsToCreateTrip)
         {
             InitializeComponent();
-            isToCreateTrip = tempIsToCreateTrip;
             parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
+
+            isToCreateTrip = tempIsToCreateTrip;
             currentTour = tempTour;
             chosenClient = tempClient;
             LoadDates();
@@ -306,10 +315,8 @@ namespace DreamTrip.Windows
         #region ButtonsClick
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = new ChooseClient(parentTabItemLink, currentTour, isToCreateTrip);
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Выбор клиента";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/clients.png";
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
         }
 
         private void btnCreate_Click(object sender, RoutedEventArgs e)
@@ -353,21 +360,11 @@ namespace DreamTrip.Windows
                 Message endMessage = new Message("Успех", "Новая поездка была успешно создана!", false, false);
                 endMessage.ShowDialog();
 
-                switch (MainFunctions.GetUserRole())
-                {
-                    case "manager":
-                        parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
-                        break;
-                    case "admin":
-                        parentTabItemLink.ItemUserControl = new AdminMenuUserControl(parentTabItemLink);
-                        break;
-                    case "analyst":
-                        parentTabItemLink.ItemUserControl = new AnalystMenuUserControl(parentTabItemLink);
-                        break;
-                }
-                parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-                parentTabItemLink.ItemHeaderText = "Меню";
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
+
+                parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
+                //parentTabItemLink.ItemUserControl = previousPage;
+                //MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
+
             }
         }
         #endregion

@@ -25,15 +25,24 @@ namespace DreamTrip.Windows
     public partial class LoginHistory : UserControl
     {
         #region Variables
-        ObservableCollection<HistoryRecord> HistoryRecordsList { get; set; } = new ObservableCollection<HistoryRecord>();
         TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Auto", "История входа", "../Resources/login_history.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
+        ObservableCollection<HistoryRecord> HistoryRecordsList { get; set; } = new ObservableCollection<HistoryRecord>();
         #endregion
 
         #region Constructor
-        public LoginHistory(TabClass tempTabItem)
+        public LoginHistory(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres)
         {
             InitializeComponent();
+
             parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
             LoadDate();
             btnSearch_Click(btnSearch, new RoutedEventArgs());
         }
@@ -171,9 +180,8 @@ namespace DreamTrip.Windows
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = new AdminMenuUserControl(parentTabItemLink);
-            parentTabItemLink.ItemHeaderText = "Меню";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)

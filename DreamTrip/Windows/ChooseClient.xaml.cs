@@ -27,19 +27,28 @@ namespace DreamTrip.Windows
     public partial class ChooseClient : UserControl
     {
         #region Variables
+        TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Auto", "Выбор клиента", "../Resources/clients.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
         ObservableCollection<Client> ClientsList { get; set; } = new ObservableCollection<Client>();
         Tour chosenTour;
-        TabClass parentTabItemLink;
         bool isToCreateTrip;
         #endregion
 
         #region Constructor
-        public ChooseClient(TabClass tempTabItem, Tour tempTour, bool tempIsToCreateTrip)
+        public ChooseClient(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres, Tour tempTour, bool tempIsToCreateTrip)
         {
             InitializeComponent();
             isToCreateTrip = tempIsToCreateTrip;
             chosenTour = tempTour;
+
             parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
             LoadClients("all");
         }
         #endregion
@@ -129,34 +138,18 @@ namespace DreamTrip.Windows
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             gridTourLoad.Visibility = Visibility.Visible;
-            if (isToCreateTrip)
+
+            DispatcherTimer dispatcherTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(0.1) };
+            dispatcherTimer.Start();
+            dispatcherTimer.Tick += new EventHandler((object c, EventArgs eventArgs) =>
             {
-                DispatcherTimer dispatcherTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(0.1) };
-                dispatcherTimer.Start();
-                dispatcherTimer.Tick += new EventHandler((object c, EventArgs eventArgs) =>
-                {
-                    parentTabItemLink.ItemUserControl = new Tours(parentTabItemLink, true);
-                    parentTabItemLink.VerticalScrollBarVisibility = "Disabled";
-                    parentTabItemLink.ItemHeaderText = "Выбор тура";
-                    parentTabItemLink.ItemHeaderImageSource = "../Resources/tours.png";
-                    gridTourLoad.Visibility = Visibility.Hidden;
-                    ((DispatcherTimer)c).Stop();
-                });
-            }
-            else
-            {
-                DispatcherTimer dispatcherTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(0.1) };
-                dispatcherTimer.Start();
-                dispatcherTimer.Tick += new EventHandler((object c, EventArgs eventArgs) =>
-                {
-                    parentTabItemLink.ItemUserControl = new TourInfo(parentTabItemLink, chosenTour.TourId);
-                    parentTabItemLink.VerticalScrollBarVisibility = "Disabled";
-                    parentTabItemLink.ItemHeaderText = chosenTour.Name;
-                    parentTabItemLink.ItemHeaderImageSource = "../Resources/tours.png";
-                    gridTourLoad.Visibility = Visibility.Hidden;
-                    ((DispatcherTimer)c).Stop();
-                });
-            }
+                parentTabItemLink.ItemUserControl = previousPage;
+                MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
+
+                gridTourLoad.Visibility = Visibility.Hidden;
+                ((DispatcherTimer)c).Stop();
+            });
+            
         }
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
@@ -222,10 +215,7 @@ namespace DreamTrip.Windows
 
         private void btnChoose_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = new CreateTrip(parentTabItemLink, chosenTour, dtgClients.SelectedItem as Client, isToCreateTrip);
-            parentTabItemLink.VerticalScrollBarVisibility = "Disabled";
-            parentTabItemLink.ItemHeaderText = "Создание поездки";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/new_trip.png";
+            parentTabItemLink.ItemUserControl = new CreateTrip(parentTabItemLink, this, thisPageParametres, chosenTour, dtgClients.SelectedItem as Client, isToCreateTrip);
         }
         #endregion
 

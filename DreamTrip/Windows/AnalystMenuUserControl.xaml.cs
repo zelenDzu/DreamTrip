@@ -33,6 +33,8 @@ namespace DreamTrip.Windows
         {
             InitializeComponent();
             parentTabItemLink = tempTabItem;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
             double[] sizes = MainFunctions.MenuLink.GetWidthHeight();
             WindowSizeChanged(sizes[0], sizes[1]);
         }

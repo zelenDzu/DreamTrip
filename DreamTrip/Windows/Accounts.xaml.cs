@@ -157,22 +157,10 @@ namespace DreamTrip.Windows
         #region ButtonsClick
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            //parentTabItemLink.ItemUserControl = previousPage;
-            switch (MainFunctions.GetUserRole())
-            {
-                case "manager":
-                    parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
-                    break;
-                case "admin":
-                    parentTabItemLink.ItemUserControl = new AdminMenuUserControl(parentTabItemLink);
-                    break;
-                case "analyst":
-                    parentTabItemLink.ItemUserControl = new AnalystMenuUserControl(parentTabItemLink);
-                    break;
-            }
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Меню";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
+
+            
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)

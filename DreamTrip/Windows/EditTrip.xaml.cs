@@ -29,8 +29,12 @@ namespace DreamTrip.Windows
     public partial class EditTrip : UserControl
     {
         #region Variables
-        Tour currentTour;
         TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Disabled", "Изменить поездку", "../Resources/edit_trip.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
+        Tour currentTour;
         Client chosenClient;
         Trip currentTrip;
 
@@ -40,10 +44,15 @@ namespace DreamTrip.Windows
         #endregion
 
         #region Constructor
-        public EditTrip(TabClass tempTabItem, Tour tempTour, Client tempClient, Trip tempTrip)
+        public EditTrip(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres, Tour tempTour, Client tempClient, Trip tempTrip)
         {
             InitializeComponent();
+
             parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
             currentTour = tempTour;
             chosenClient = tempClient;
             currentTrip = tempTrip;
@@ -398,10 +407,8 @@ namespace DreamTrip.Windows
         #region ButtonsClick
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = new ClientsTrips(parentTabItemLink);
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Поездки клиентов";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/trips.png";
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
@@ -437,10 +444,13 @@ namespace DreamTrip.Windows
                 Message endMessage = new Message("Успех", "Поездка была успешно изменена!", false, false);
                 endMessage.ShowDialog();
 
-                parentTabItemLink.ItemUserControl = new ClientsTrips(parentTabItemLink);
-                parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-                parentTabItemLink.ItemHeaderText = "Поездки клиентов";
-                parentTabItemLink.ItemHeaderImageSource = "../Resources/trips.png";
+
+                parentTabItemLink.ItemUserControl = previousPage;
+                string clientId = chosenClient.ClientId.ToString();
+                if (!(previousPage as ClientsTrips).IsFromClients) clientId = "";
+                (previousPage as ClientsTrips).LoadTrips("all", clientId);
+                (previousPage as ClientsTrips).ClearSearch();
+                MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
             }
         }
         #endregion

@@ -26,15 +26,24 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Auto", "Профиль", "../Resources/user_profile.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
+
         Account currentAccount;
         string origPhone, origImagePath;
         #endregion
 
         #region Constructor
-        public Profile(TabClass tempTabItem)
+        public Profile(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres)
         {
             InitializeComponent();
+
             parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
             currentAccount = GetAccount(MainFunctions.СurrentSessionLogin);
             this.DataContext = currentAccount;
         }
@@ -126,21 +135,8 @@ namespace DreamTrip.Windows
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            switch (MainFunctions.GetUserRole())
-            {
-                case "manager":
-                    parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
-                    break;
-                case "admin":
-                    parentTabItemLink.ItemUserControl = new AdminMenuUserControl(parentTabItemLink);
-                    break;
-                case "analyst":
-                    parentTabItemLink.ItemUserControl = new AnalystMenuUserControl(parentTabItemLink);
-                    break;
-            }
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Меню";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
         }
 
         private void btnChangePassword_Click(object sender, RoutedEventArgs e)

@@ -26,6 +26,10 @@ namespace DreamTrip.Windows
     public partial class Clients : UserControl
     {
         #region Variables
+        TabClass parentTabItemLink;
+        string[] thisPageParametres = new string[] { "Auto", "Клиенты", "../Resources/clients.png" };
+        UserControl previousPage;
+        string[] previousPageParametres;
 
         ComboBoxItem tempFirstItemPost;
         ComboBoxItem tempSecondItemPost;
@@ -36,16 +40,20 @@ namespace DreamTrip.Windows
 
         int lastChosenField = -1;
 
-        TabClass parentTabItemLink;
 
 
         #endregion
 
         #region Constructor
-        public Clients(TabClass tempTabItem)
+        public Clients(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres)
         {
             InitializeComponent();
+
             parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
             LoadClients("all");
             LoadFields();
             SecondItemCheckBoxField.IsChecked = true;
@@ -442,33 +450,18 @@ namespace DreamTrip.Windows
         #region ButtonsClick
         private void btnTrips_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = new ClientsTrips(parentTabItemLink, (dtgClients.SelectedItem as Client).ClientId.ToString(), true);
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Поездки клиентов";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/trips.png";
+            parentTabItemLink.ItemUserControl = new ClientsTrips(parentTabItemLink, this, thisPageParametres, (dtgClients.SelectedItem as Client).ClientId.ToString(), true);
 
            
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            switch (MainFunctions.GetUserRole())
-            {
-                case "manager":
-                    parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
-                    break;
-                case "admin":
-                    parentTabItemLink.ItemUserControl = new AdminMenuUserControl(parentTabItemLink);
-                    break;
-                case "analyst":
-                    parentTabItemLink.ItemUserControl = new AnalystMenuUserControl(parentTabItemLink);
-                    break;
-            }
-            
+            parentTabItemLink.ItemUserControl = previousPage;
+            MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
 
-            parentTabItemLink.VerticalScrollBarVisibility = "Auto";
-            parentTabItemLink.ItemHeaderText = "Меню";
-            parentTabItemLink.ItemHeaderImageSource = "../Resources/list.png";
+
+
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
