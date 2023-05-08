@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31320.298
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamTrip", "DreamTrip\DreamTrip.csproj", "{43A32378-FD0A-4A95-AC4F-2147ECDE2E22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamTripTests", "DreamTripTests\DreamTripTests.csproj", "{0C64DC49-EAD3-4518-BC4B-532325AAC028}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{43A32378-FD0A-4A95-AC4F-2147ECDE2E22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43A32378-FD0A-4A95-AC4F-2147ECDE2E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43A32378-FD0A-4A95-AC4F-2147ECDE2E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43A32378-FD0A-4A95-AC4F-2147ECDE2E22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C64DC49-EAD3-4518-BC4B-532325AAC028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C64DC49-EAD3-4518-BC4B-532325AAC028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C64DC49-EAD3-4518-BC4B-532325AAC028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C64DC49-EAD3-4518-BC4B-532325AAC028}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FB4430B0-D230-46E5-B583-B3DF7193279D}
+	EndGlobalSection
+EndGlobal
