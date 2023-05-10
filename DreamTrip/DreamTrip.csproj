@@ -481,5 +481,14 @@
   <ItemGroup>
     <Resource Include="Resources\AccountsPhotos\default.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\TaskPhotos\task_call.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\TaskPhotos\task_email.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\TaskPhotos\task_other.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

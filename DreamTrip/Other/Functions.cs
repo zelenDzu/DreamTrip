@@ -211,7 +211,9 @@ namespace DreamTrip.Functions
         {
             if (name.Length == 0) return false;
             name = name.ToLower();
-            char[] letters = { 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 
+            char[] letters = { 'a','b','c','d','e','f','g','h','i','j','k',
+                           'l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', 
+                           'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 
                            'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 
                            'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 
                            'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', '-', '—',' ' };
@@ -710,7 +712,7 @@ namespace DreamTrip.Functions
             int tempOut;
             for (int i = 0; i < charList.Length; i++)
             {
-                if (Int32.TryParse(charList[i].ToString(), out tempOut) == false && charList[i].ToString() != "-")
+                if (Int32.TryParse(charList[i].ToString(), out tempOut) == false && charList[i].ToString() != "-" && charList[i].ToString() != ".")
                 {
                     date.Text = date.Text.Remove(i, 1);
                 }

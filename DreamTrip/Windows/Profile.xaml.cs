@@ -236,7 +236,7 @@ namespace DreamTrip.Windows
                 }
             }
 
-            if (tbPhone.Text.Length > 12) tbPhone.Text = tbPhone.Text.Substring(0, 12);
+            if (tbPhone.Text.Length > 10) tbPhone.Text = tbPhone.Text.Substring(0, 10);
             if (tbPhone.Text.Length == 0) tbPhone.Text = " ";
 
             CheckButtonSaveIsEnabled();

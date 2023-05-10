@@ -637,8 +637,13 @@
                         </Border.Background>
 
                         <Grid>
+                            <TextBlock Name="tbPriceText" Visibility="Hidden" Foreground="Black" Text="Стоимость:"  Margin="10,0,0,10"
+                                        TextWrapping="Wrap" 
+                                        FontFamily="Yu Gothic UI" FontWeight="Bold" FontSize="34"
+                                        HorizontalAlignment="Left" VerticalAlignment="Bottom" TextAlignment="Center"/>
+
                             <Border x:Name="borderBuyButton" Grid.Row="0" Height="60" Width="250" IsEnabled="True"
-                        BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5" 
+                        BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5" Visibility="Visible"
                         HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,10,0" 
                         Style="{StaticResource borderStyle}">
                                 <Button x:Name="btnCreateTrip" Height="60" Width="250" TabIndex="1"  Style="{StaticResource buttonStyle}"

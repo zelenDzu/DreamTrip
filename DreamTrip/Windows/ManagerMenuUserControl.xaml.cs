@@ -89,7 +89,7 @@ namespace DreamTrip.Windows
         //сделать
         private void btnNewClient_Click(object sender, RoutedEventArgs e)
         {
-
+            parentTabItemLink.ItemUserControl = new EditClient(parentTabItemLink, this, thisPageParametres);
         }
         
         //сделать

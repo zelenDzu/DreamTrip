@@ -57,18 +57,21 @@ namespace DreamTrip.Windows
                     borderDeleteButton.Visibility = Visibility.Hidden;
                     borderEditButton.Visibility = Visibility.Hidden;
                     borderBuyButton.Visibility = Visibility.Visible;
+                    tbPriceText.Visibility = Visibility.Hidden;
                     break;
 
                 case "admin":
                     borderDeleteButton.Visibility = Visibility.Visible;
                     borderEditButton.Visibility = Visibility.Visible;
                     borderBuyButton.Visibility = Visibility.Hidden;
+                    tbPriceText.Visibility = Visibility.Visible;
                     break;
 
                 case "analyst":
                     borderDeleteButton.Visibility = Visibility.Hidden;
                     borderEditButton.Visibility = Visibility.Hidden;
                     borderBuyButton.Visibility = Visibility.Hidden;
+                    tbPriceText.Visibility = Visibility.Visible;
                     break;
             }
 

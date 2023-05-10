@@ -284,25 +284,170 @@ namespace DreamTrip.Classes
     /// <summary>
     /// Клиент
     /// </summary>
-    public class Client
-    {      
+    public class Client : INotifyPropertyChanged
+    {
         public int ClientId { get; set; }
         public int ClientLogin { get; set; }
-        public string Surname { get; set; }
-        public string Name { get; set; }
-        public string Patronymic { get; set; }
-        public string PassportSeria { get; set; }
-        public string PassportNumber { get; set; }
-        public string Birthday { get; set; }
+        private string surname;
+        public string Surname
+        {
+            get { return this.surname; }
+            set
+            {
+                this.surname = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("Surname"));
+                }
+            }
+        }
+
+        private string name;
+        public string Name
+        {
+            get { return this.name; }
+            set
+            {
+                this.name = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("Name"));
+                }
+            }
+        }
+
+        private string patronymic;
+        public string Patronymic
+        {
+            get { return this.patronymic; }
+            set
+            {
+                this.patronymic = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("Patronymic"));
+                }
+            }
+        }
+
+        private string passportSeria;
+        public string PassportSeria
+        {
+            get { return this.passportSeria; }
+            set
+            {
+                this.passportSeria = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("PassportSeria"));
+                }
+            }
+        }
+
+        private string passportNumber;
+        public string PassportNumber
+        {
+            get { return this.passportNumber; }
+            set
+            {
+                this.passportNumber = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("PassportNumber"));
+                }
+            }
+        }
+
+        private string birthday;
+        public string Birthday
+        {
+            get { return this.birthday; }
+            set
+            {
+                this.birthday = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("Birthday"));
+                }
+            }
+        }
         public int Age { get; set; }
         public string Gender { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
+        private int genderNum; //0 - М, 1 - Ж
+        public int GenderNum //0 - М, 1 - Ж
+        {
+            get { return this.genderNum; }
+            set
+            {
+                this.genderNum = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("GenderNum"));
+                }
+            }
+        }
+
+        public string phone;
+        public string Phone
+        {
+            get { return this.phone; }
+            set
+            {
+                this.phone = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("Phone"));
+                }
+            }
+        }
+
+        public string email;
+        public string Email
+        {
+            get { return this.email; }
+            set
+            {
+                this.email = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("Email"));
+                }
+            }
+        }
+
+        private WorkField clientWorkField;
+        public WorkField ClientWorkField
+        {
+            get { return this.clientWorkField; }
+            set
+            {
+                this.clientWorkField = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("ClientWorkField"));
+                }
+            }
+        }
+        private WorkPost clientWorkPost;
+        public WorkPost ClientWorkPost
+        {
+            get { return this.clientWorkPost; }
+            set
+            {
+                this.clientWorkPost = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("ClientWorkPost"));
+                }
+            }
+        }
         public int WorkFieldId { get; set; }
         public string WorkFieldName { get; set; }
         public string WorkPostName { get; set; }
         public int WorkPostId { get; set; }
         public int[] FavoriteTours { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 
     /// <summary>
