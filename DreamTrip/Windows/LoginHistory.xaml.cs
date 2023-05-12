@@ -115,10 +115,12 @@ namespace DreamTrip.Windows
         /// </summary>
         private void FilterChanged()
         {
-            if (tbxLoginSearch != null && tbxStartDate != null && tbxEndDate != null)
+            if (tbxLoginSearch != null && tbxStartDate != null && tbxEndDate != null && tbxTop != null && tbxEndDate != null && borderClear!=null)
             {
                 if (tbxLoginSearch.Text.Length == 0
                     && tbxStartDate.Text.Length == 0
+                    && tbxLogsSearch.Text.Length == 0
+                    && tbxTop.Text.Length == 0
                     && tbxEndDate.Text.Length == 0)
                 {
                     borderClear.Visibility = Visibility.Hidden;
@@ -190,6 +192,8 @@ namespace DreamTrip.Windows
             tbxLoginSearch.Text = "";
             tbxStartDate.Text = "";
             tbxEndDate.Text = "";
+            tbxLogsSearch.Text = "";
+            tbxTop.Text = "";
             LoadHistory("all");
             borderClear.Visibility = Visibility.Hidden;
         }
@@ -212,7 +216,15 @@ namespace DreamTrip.Windows
                     string condition = "";
                     if (tbxLoginSearch.Text != "")
                     {
-                        condition += $" WHERE login LIKE '%{tbxLoginSearch.Text}%'";
+                        condition += $" WHERE LOWER(login) LIKE '%{tbxLoginSearch.Text.ToLower()}%'";
+                    }
+
+                    if (tbxLogsSearch.Text != "")
+                    {
+                        if (condition == "") condition += " WHERE ";
+                        else condition += " AND ";
+
+                        condition += $" LOWER(logs) LIKE '%{tbxLogsSearch.Text.ToLower()}%'";
                     }
 
                     if (tbxStartDate.Text != "")
@@ -235,8 +247,10 @@ namespace DreamTrip.Windows
                         condition += String.Format("log_in_datetime <= DATEADD(day,1, '{0}')", endDate);
                     }
 
+                    int top = 100;
+                    if (tbxTop.Text.Length > 0) top = Convert.ToInt32(tbxTop.Text);
 
-                    string mainCondition = $"SELECT id_rec FROM Login_history {condition}";
+                    string mainCondition = $"SELECT TOP {top} id_rec FROM Login_history {condition}";
                     DataTable loginData = MainFunctions.NewQuery(mainCondition);
 
                     string recordsIds = "";
@@ -302,6 +316,12 @@ namespace DreamTrip.Windows
 
             FilterChanged();
         }
+        
+        private void tbxLogsSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FilterChanged();
+
+        }
         #endregion
 
         #region DataGridEvents
@@ -330,5 +350,22 @@ namespace DreamTrip.Windows
         }
         #endregion
 
+        private void tbxTop_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox tbTop = sender as TextBox;
+
+            char[] charList = tbTop.Text.Trim().ToCharArray();
+            for (int i = 0; i < charList.Length; i++)
+            {
+                if (Int32.TryParse(charList[i].ToString(), out int tempOut) == false)
+                {
+                    tbTop.Text = tbTop.Text.Remove(i, 1);
+                }
+            }
+
+            if (tbTop.Text.Length > 4) tbTop.Text = tbTop.Text.Substring(0, 4);
+
+            FilterChanged();
+        }
     }
 }

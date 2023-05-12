@@ -118,6 +118,11 @@ namespace DreamTrip.Classes
                 (ItemUserControl as Statistics).ScrollEvent(delta);
                 return;
             }
+            if (ItemUserControl as Tasks != null)
+            {
+                (ItemUserControl as Tasks).ScrollEvent(delta);
+                return;
+            }
         }
         private string verticalScrollBarVisibility { get; set; } = "Auto";
         public string VerticalScrollBarVisibility
@@ -498,6 +503,57 @@ namespace DreamTrip.Classes
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+    }
+
+    /// <summary>
+    /// Задача менеджера
+    /// </summary>
+    public class MTask : INotifyPropertyChanged
+    {
+        public int Id { get; set; }
+        public int TaskTypeId { get; set; }
+        public string Text { get; set; }
+        public string Date { get; set; }
+        private bool isDone { get; set; }
+
+        public bool IsDone
+        {
+            get { return this.isDone; }
+            set
+            {
+                this.isDone = value;
+                if (this.isDone) this.Color = "#FF9EE8E1";
+                else this.Color = "#FFB1B1B1";
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("IsDone"));
+                }
+            }
+        }
+
+        public string ImageSource { get; set; }
+        public Visibility ClientVisible { get; set; }
+        public int ClientId { get; set; }
+        public string ClientName { get; set; }
+        public string ClientContact { get; set; }
+        private string color { get; set; }
+        public string Color
+        {
+            get { return this.color; }
+            set
+            {
+                this.color = value;
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("Color"));
+                }
+            }
+        }
+
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
     }
 
     /// <summary>

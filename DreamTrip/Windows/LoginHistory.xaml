@@ -184,8 +184,10 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" Foreground="#FF979797" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="80,0,0,0">Логин</TextBlock>
-                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" Foreground="#FF979797" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="280,0,0,0">Рассматриваемый период</TextBlock>
-                    
+                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" Foreground="#FF979797" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="260,0,0,0">Логи (действия)</TextBlock>
+                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" Foreground="#FF979797" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="480,0,0,0">Рассматриваемый период</TextBlock>
+                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" Foreground="#FF979797" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,110,0">Записей</TextBlock>
+
 
                     <Border x:Name="borderLoginSearch" Height="45" Width="200" Background="White" 
                         Grid.Row="1" Margin="9,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" 
@@ -199,8 +201,21 @@
                              TextChanged="tbxLoginSearch_TextChanged"/>
                     </Border>
 
+                    <Border x:Name="borderLogsSearch" Height="45" Width="200" Background="White" 
+                        Grid.Row="1" Margin="230,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                        BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5">
+                        <TextBox x:Name="tbxLogsSearch" Background="Transparent" TabIndex="1"
+                         VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,4,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"
+                         Height="36" Width="190"
+                         FontFamily="Yu Gothic UI" FontSize="24" TextWrapping="NoWrap" 
+                         BorderBrush="Transparent" BorderThickness="0"
+                         SelectionBrush="#FFB1F3EE" Style="{StaticResource placeHolder}" Tag="Логи" 
+                             TextChanged="tbxLogsSearch_TextChanged"/>
+                    </Border>
+
+
                     <Border x:Name="borderStartDate" Height="45" Width="150" Background="White" Grid.Row="1"
-                                HorizontalAlignment="Left" VerticalAlignment="Center" Margin="250,0,0,0"
+                                HorizontalAlignment="Left" VerticalAlignment="Center" Margin="450,0,0,0"
                                 BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5">
                         <TextBox x:Name="tbxStartDate" Background="Transparent" TabIndex="2"
                                     VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,4,0,0" 
@@ -213,7 +228,7 @@
                     </Border>
 
                     <Border x:Name="borderEndDate" Height="45" Width="150" Background="White" Grid.Row="1"
-                                HorizontalAlignment="Left" VerticalAlignment="Center" Margin="410,0,0,0"
+                                HorizontalAlignment="Left" VerticalAlignment="Center" Margin="610,0,0,0"
                                 BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5">
                         <TextBox x:Name="tbxEndDate" Background="Transparent" TabIndex="3"
                                     VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,4,0,0" 
@@ -228,13 +243,25 @@
                     <TextBlock x:Name="tbWrongStartDate" Grid.Row="1" Visibility="Hidden" Foreground="PaleVioletRed" Text="Неверный формат" 
                                         TextWrapping="Wrap" 
                                         FontFamily="Yu Gothic UI" FontSize="15" TextAlignment="Center"
-                               HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="260,0,0,0"/>
+                               HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="460,0,0,0"/>
 
                     <TextBlock x:Name="tbWrongEndDate" Grid.Row="1" Visibility="Hidden" Foreground="PaleVioletRed" Text="Неверный формат" 
                                         TextWrapping="Wrap" 
                                         FontFamily="Yu Gothic UI" FontSize="15" TextAlignment="Center"
-                               HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="420,0,0,0"/>
+                               HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="620,0,0,0"/>
 
+                    <Border x:Name="borderTop" Height="45" Width="80" Background="White" 
+                        Grid.Row="1" Margin="0,0,110,0" HorizontalAlignment="Right" VerticalAlignment="Center" 
+                        BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5">
+                        <TextBox x:Name="tbxTop" Background="Transparent" TabIndex="1"
+                         VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,4,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"
+                         Height="36" Width="190" Text="50"
+                         FontFamily="Yu Gothic UI" FontSize="24" TextWrapping="NoWrap" 
+                         BorderBrush="Transparent" BorderThickness="0"
+                         SelectionBrush="#FFB1F3EE" Style="{StaticResource placeHolder}" Tag="Топ" 
+                             TextChanged="tbxTop_TextChanged"/>
+                    </Border>
+                    
                     <Border x:Name="borderClear" Grid.Row="1" Height="45" Width="45" 
                         HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,60,0"
                         BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5" >

@@ -221,92 +221,106 @@ namespace DreamTrip.Windows
 
         private void btnDeleteCity_Click(object sender, RoutedEventArgs e)
         {
-            int cityId = (dtgCities.SelectedItem as City).CityId;
-            string cityName = (dtgCities.SelectedItem as City).CityName;
-
-            if (cityId == 0)
-            {
-                citiesList.Remove(dtgCities.SelectedItem as City);
-                dtgCities.ItemsSource = null;
-                dtgCities.ItemsSource = citiesList;
-            }
-            else
-            {
-                bool answer = false;
-                Message deleteWindow = new Message("Вопрос", $"Вы уверены, что хотите удалить город \"{cityName}\"", true, true);
-                deleteWindow.messageAnswer += value => answer = value;
-                deleteWindow.ShowDialog();
-
-                if (!answer)
+            
+                int cityId = (dtgCities.SelectedItem as City).CityId;
+                string cityName = (dtgCities.SelectedItem as City).CityName;
+            try { 
+                if (cityId == 0)
                 {
-                    return;
+                    citiesList.Remove(dtgCities.SelectedItem as City);
+                    dtgCities.ItemsSource = null;
+                    dtgCities.ItemsSource = citiesList;
                 }
-
-
-
-                // если город привязан к туру - удалять нельзя
-                DataTable linkedTours = MainFunctions.NewQuery($"SELECT name FROM tour WHERE id_city = {cityId}");
-                if (linkedTours.Rows.Count > 0)
+                else
                 {
-                    string tours = "";
-                    for (int i = 0; i < linkedTours.Rows.Count; i++)
-                    {
-                        if (tours != "") tours += ", ";
-                        tours += linkedTours.Rows[i][0].ToString();
-                    }
+                    bool answer = false;
+                    Message deleteWindow = new Message("Вопрос", $"Вы уверены, что хотите удалить город \"{cityName}\"", true, true);
+                    deleteWindow.messageAnswer += value => answer = value;
+                    deleteWindow.ShowDialog();
 
-                    new Message("Ошибка", $"Невозможно удалить город \"{cityName}\", " +
-                        $"поскольку он связан с турами {tours}").ShowDialog();
-
-                    MainFunctions.AddLogRecord($"Deleting city attempt" +
-                        $"\n\tID: {cityId}" +
-                        $"\n\tName: {cityName}" +
-                        $"\n\tError: connected with tours {tours}");
-
-                    return;
-                }
-
-                // если город привязан к отелям - предупреждение о том что удаление с отелями
-                string linkedHotels = "";
-                DataTable hotels = MainFunctions.NewQuery($"SELECT name FROM Hotel WHERE id_city = {cityId}");
-                for (int i = 0; i < hotels.Rows.Count; i++)
-                {
-                    if (linkedHotels != "") linkedHotels += ", ";
-                    linkedHotels += hotels.Rows[i][0].ToString();
-                }
-
-
-                if (linkedHotels != "")
-                {
-                    bool popupAnswer = false;
-                    Message messageDeleteWindow = new Message("Предупреждение", $"Город \"{cityName}\" " +
-                        $"связан с отелями {linkedHotels}. Вы уверены, что хотите удалить его? " +
-                        $"Все относящиеся к городу отели будут также удалены.", true, true);
-                    messageDeleteWindow.messageAnswer += value => popupAnswer = value;
-                    messageDeleteWindow.ShowDialog();
-
-                    if (!popupAnswer)
+                    if (!answer)
                     {
                         return;
                     }
-                    else
+
+
+
+                    // если город привязан к туру - удалять нельзя
+                    DataTable linkedTours = MainFunctions.NewQuery($"SELECT name FROM tour WHERE id_city = {cityId}");
+                    if (linkedTours.Rows.Count > 0)
                     {
-                        //удаление с городами
-                        MainFunctions.NewQuery($"DELETE FROM Hotel WHERE id_city = {cityId}");
-                        MainFunctions.AddLogRecord($"Delete city {cityName} (ID: {cityId}) cause deleting hotels {linkedHotels}");
+                        string tours = "";
+                        for (int i = 0; i < linkedTours.Rows.Count; i++)
+                        {
+                            if (tours != "") tours += ", ";
+                            tours += linkedTours.Rows[i][0].ToString();
+                        }
+
+                        new Message("Ошибка", $"Невозможно удалить город \"{cityName}\", " +
+                            $"поскольку он связан с турами {tours}").ShowDialog();
+
+                        MainFunctions.AddLogRecord($"Deleting city attempt" +
+                            $"\n\tID: {cityId}" +
+                            $"\n\tName: {cityName}" +
+                            $"\n\tError: connected with tours {tours}");
+
+                        return;
                     }
+
+                    // если город привязан к отелям - предупреждение о том что удаление с отелями
+                    string linkedHotels = "";
+                    DataTable hotels = MainFunctions.NewQuery($"SELECT name FROM Hotel WHERE id_city = {cityId}");
+                    for (int i = 0; i < hotels.Rows.Count; i++)
+                    {
+                        if (linkedHotels != "") linkedHotels += ", ";
+                        linkedHotels += hotels.Rows[i][0].ToString();
+                    }
+
+
+                    if (linkedHotels != "")
+                    {
+                        bool popupAnswer = false;
+                        Message messageDeleteWindow = new Message("Предупреждение", $"Город \"{cityName}\" " +
+                            $"связан с отелями {linkedHotels}. Вы уверены, что хотите удалить его? " +
+                            $"Все относящиеся к городу отели будут также удалены.", true, true);
+                        messageDeleteWindow.messageAnswer += value => popupAnswer = value;
+                        messageDeleteWindow.ShowDialog();
+
+                        if (!popupAnswer)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            //удаление с отелями
+                            MainFunctions.NewQuery($"DELETE FROM Hotel_feed_types WHERE id_hotel IN " +
+                                $"(SELECT id_hotel FROM Hotel WHERE id_city = {cityId})");
+                            MainFunctions.NewQuery($"DELETE FROM Hotel_rooms WHERE id_hotel IN " +
+                                $"(SELECT id_hotel FROM Hotel WHERE id_city = {cityId})");
+                            MainFunctions.NewQuery($"DELETE FROM Hotel WHERE id_city = {cityId}");
+                            MainFunctions.AddLogRecord($"Delete city {cityName} (ID: {cityId}) cause deleting hotels {linkedHotels}");
+                        }
+                    }
+
+                    // удаление
+                    MainFunctions.NewQuery($"DELETE FROM City WHERE id_city = {cityId}");
+                    new Message("Успех", "Город успешно удален!").ShowDialog();
+                    MainFunctions.AddLogRecord($"Delete city success" +
+                        $"\n\tID: {cityId}" +
+                        $"\n\tName: {cityName}");
+
+                    LoadCountries();
+                    LoadCities();
+
                 }
-
-                // удаление
-                MainFunctions.NewQuery($"DELETE FROM City WHERE id_city = {cityId}");
-                new Message("Успех", "Город успешно удален!").ShowDialog();
-                MainFunctions.AddLogRecord($"Delete city success" +
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Ошибка удаления города").ShowDialog();
+                MainFunctions.AddLogRecord($"Delete city error " +
                     $"\n\tID: {cityId}" +
-                    $"\n\tName: {cityName}");
-
-                LoadCountries();
-                LoadCities();
-
+                    $"\n\tName: {cityName}" +
+                    $"\n\tError: {ex.Message}");
             }
         }
 
@@ -314,90 +328,104 @@ namespace DreamTrip.Windows
         {
             int countryId = (dtgCountries.SelectedItem as Country).CountryId;
             string countryName = (dtgCountries.SelectedItem as Country).CountryName;
-            if (countryId == 0)
+            try
             {
-                countriesList.Remove(dtgCountries.SelectedItem as Country);
-                dtgCountries.ItemsSource = null;
-                dtgCountries.ItemsSource = countriesList;
-            }
-            else
-            {
-                bool answer = false;
-                Message deleteWindow = new Message("Вопрос", $"Вы уверены, что хотите удалить страну \"{countryName}\"", true, true);
-                deleteWindow.messageAnswer += value => answer = value;
-                deleteWindow.ShowDialog();
-
-                if (!answer) 
+                if (countryId == 0)
                 {
-                    return;
+                    countriesList.Remove(dtgCountries.SelectedItem as Country);
+                    dtgCountries.ItemsSource = null;
+                    dtgCountries.ItemsSource = countriesList;
                 }
-
-
-                // если страна привязана к туру - удалять нельзя
-                DataTable linkedTours = MainFunctions.NewQuery($"SELECT name FROM tour WHERE id_city IN (SELECT id_city FROM City WHERE id_country = {countryId})");
-                if (linkedTours.Rows.Count > 0)
+                else
                 {
-                    string tours = "";
-                    for (int i = 0; i < linkedTours.Rows.Count; i++)
+                    bool answer = false;
+                    Message deleteWindow = new Message("Вопрос", $"Вы уверены, что хотите удалить страну \"{countryName}\"", true, true);
+                    deleteWindow.messageAnswer += value => answer = value;
+                    deleteWindow.ShowDialog();
+
+                    if (!answer)
                     {
-                        if (tours != "") tours += ", ";
-                        tours += linkedTours.Rows[i][0].ToString();
+                        return;
                     }
 
-                    new Message("Ошибка",$"Невозможно удалить страну \"{countryName}\", " +
-                        $"поскольку она связана с турами {tours}").ShowDialog();
-                    MainFunctions.AddLogRecord($"Deleting country attempt" +
+
+                    // если страна привязана к туру - удалять нельзя
+                    DataTable linkedTours = MainFunctions.NewQuery($"SELECT name FROM tour WHERE id_city IN (SELECT id_city FROM City WHERE id_country = {countryId})");
+                    if (linkedTours.Rows.Count > 0)
+                    {
+                        string tours = "";
+                        for (int i = 0; i < linkedTours.Rows.Count; i++)
+                        {
+                            if (tours != "") tours += ", ";
+                            tours += linkedTours.Rows[i][0].ToString();
+                        }
+
+                        new Message("Ошибка", $"Невозможно удалить страну \"{countryName}\", " +
+                            $"поскольку она связана с турами {tours}").ShowDialog();
+                        MainFunctions.AddLogRecord($"Deleting country attempt" +
+                            $"\n\tID: {countryId}" +
+                            $"\n\tName: {countryName}" +
+                            $"\n\tError: connected with tours {tours}");
+                        return;
+                    }
+
+                    // если страна привязана к городу - предупреждение о том что удаление с городами
+                    string linkedCities = "";
+                    for (int i = 0; i < citiesList.Count; i++)
+                    {
+                        if (citiesList[i].CityCountry.CountryId == countryId)
+                        {
+                            if (linkedCities != "") linkedCities += ", ";
+                            linkedCities += citiesList[i].CityName;
+                        }
+                    }
+                    if (linkedCities != "")
+                    {
+                        bool popupAnswer = false;
+                        Message messageDeleteWindow = new Message("Предупреждение", $"Страна \"{countryName}\" " +
+                            $"связана с городами {linkedCities}. Вы уверены, что хотите удалить ее? " +
+                            $"Все относящиеся к стране города будут также удалены.", true, true);
+                        messageDeleteWindow.messageAnswer += value => popupAnswer = value;
+                        messageDeleteWindow.ShowDialog();
+
+                        if (!popupAnswer)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            MainFunctions.NewQuery($"DELETE FROM Hotel_feed_types WHERE id_hotel IN " +
+                                    $"(SELECT id_hotel FROM Hotel WHERE id_city IN (SELECT id_city FROM City WHERE id_country = {countryId}))");
+                            MainFunctions.NewQuery($"DELETE FROM Hotel_rooms WHERE id_hotel IN " +
+                                $"(SELECT id_hotel FROM Hotel WHERE id_city IN (SELECT id_city FROM City WHERE id_country = {countryId}))");
+
+                            MainFunctions.NewQuery($"DELETE FROM Hotel WHERE id_city IN (SELECT id_city FROM City WHERE id_country = {countryId})");
+                            MainFunctions.NewQuery($"DELETE FROM City WHERE id_country = {countryId}");
+
+                            MainFunctions.AddLogRecord($"Delete country {countryName} (ID: {countryId}) cause deleting cities {linkedCities}");
+
+
+                        }
+                    }
+
+                    // удаление
+                    MainFunctions.NewQuery($"DELETE FROM Country WHERE id_country = {countryId}");
+                    new Message("Успех", "Страна успешно удалена!").ShowDialog();
+                    MainFunctions.AddLogRecord($"Delete country success" +
                         $"\n\tID: {countryId}" +
-                        $"\n\tName: {countryName}" +
-                        $"\n\tError: connected with tours {tours}");
-                    return;
+                        $"\n\tName: {countryName}");
+
+                    LoadCountries();
+                    LoadCities();
                 }
-
-                // если страна привязана к городу - предупреждение о том что удаление с городами
-                string linkedCities = "";
-                for (int i = 0; i < citiesList.Count;i++)
-                {
-                    if (citiesList[i].CityCountry.CountryId == countryId)
-                    {
-                        if (linkedCities != "") linkedCities += ", ";
-                        linkedCities += citiesList[i].CityName;
-                    }
-                }
-                if (linkedCities != "")
-                {
-                    bool popupAnswer = false;
-                    Message messageDeleteWindow = new Message("Предупреждение", $"Страна \"{countryName}\" " +
-                        $"связана с городами {linkedCities}. Вы уверены, что хотите удалить ее? " +
-                        $"Все относящиеся к стране города будут также удалены.", true, true);
-                    messageDeleteWindow.messageAnswer += value => popupAnswer = value;
-                    messageDeleteWindow.ShowDialog();
-
-                    if (!popupAnswer)
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        //удаление с городами
-                        new Message($"Апчипка",$"РЕАЛИЗОВАТЬ удаление страны с привязанными городами (к городам могут быть привязаны отели, у которых также есть комнаты и типы питания").ShowDialog();
-                        return;
-                        //MainFunctions.NewQuery($"DELETE FROM Hotel WHERE id_city IN (SELECT id_city FROM City WHERE id_country = {countryId})" +
-                        //    $"\nDELETE FROM City WHERE id_country = {countryId}");
-                        //MainFunctions.AddLogRecord($"Delete country {countryName} (ID: {countryId}) cause deleting cities {linkedCities}");
-
-
-                    }
-                }
-
-                // удаление
-                MainFunctions.NewQuery($"DELETE FROM Country WHERE id_country = {countryId}");
-                new Message("Успех","Страна успешно удалена!").ShowDialog();
-                MainFunctions.AddLogRecord($"Delete country success" +
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Ошибка удаления страны").ShowDialog();
+                MainFunctions.AddLogRecord($"Delete country error " +
                     $"\n\tID: {countryId}" +
-                    $"\n\tName: {countryName}");
-
-                LoadCountries();
-                LoadCities();
+                    $"\n\tName: {countryName}" +
+                    $"\n\tError: {ex.Message}");
             }
         }
         #endregion

@@ -51,6 +51,7 @@ namespace DreamTrip.Windows
             MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
 
             currentClientId = clientId;
+            if (currentClientId == 0) borderTripsButton.Visibility = Visibility.Hidden;
 
             LoadFields();
             LoadPosts();
@@ -151,19 +152,19 @@ namespace DreamTrip.Windows
         /// </summary>
         private void LoadAddInfo()
         {
-            tbCallCount.Text = MainFunctions.NewQuery($"SELECT id_task FROM Task_call WHERE  id_client={currentClient.ClientId}").Rows.Count.ToString();
+            tbCallCount.Text = MainFunctions.NewQuery($"SELECT id_task FROM Task_call WHERE id_client={currentClient.ClientId} AND id_task IN (SELECT id_task FROM Task WHERE is_done=1)").Rows.Count.ToString();
             tbTripsCount.Text = MainFunctions.NewQuery($"SELECT id_trip FROM Trip WHERE  id_client={currentClient.ClientId}").Rows.Count.ToString();
             tbTripsPrice.Text = MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip WHERE id_client={currentClient.ClientId}").Rows[0][0].ToString() + " руб.";
             
             
-            DataTable LastCallData = MainFunctions.NewQuery($"SELECT TOP 1 CONVERT(date,date_done) FROM Task WHERE (date_done is not NULL)  AND (id_task_type=1) AND id_task IN" +
+            DataTable LastCallData = MainFunctions.NewQuery($"SELECT TOP 1 CONVERT(date,date_done) FROM Task WHERE (is_done = 1) AND (date_done is not NULL)  AND (id_task_type=1) AND id_task IN" +
                 $" (SELECT id_task FROM Task_call WHERE id_client = {currentClient.ClientId}) ORDER BY date_done DESC");
             if (LastCallData.Rows.Count == 0) tbLastCall.Text = "нет";
             else tbLastCall.Text = Convert.ToDateTime(LastCallData.Rows[0][0].ToString()).ToShortDateString();
 
 
             DataTable LastTripData = MainFunctions.NewQuery($"SELECT TOP 1 CONVERT(date,start_date), CONVERT(date, end_date) " +
-                $"FROM Trip WHERE id_client = 4 AND start_date < getdate() ORDER BY start_date DESC");
+                $"FROM Trip WHERE id_client = {currentClient.ClientId} AND start_date < getdate() ORDER BY start_date DESC");
             if (LastTripData.Rows.Count == 0) tbLastTrip.Text = "нет";
             else
             {
@@ -386,7 +387,8 @@ namespace DreamTrip.Windows
                     $"\n\tID: {currentClient.ClientId}" +
                     $"\n\tName: {currentClient.Surname} {currentClient.Name} {currentClient.Patronymic}" +
                     $"\n\tPassport: {currentClient.PassportSeria} {currentClient.PassportNumber}");
-                    (previousPage as Clients).btnSearch_Click(sender, e);
+                    if ((previousPage as Clients) != null) (previousPage as Clients).btnSearch_Click(sender, e);
+                    if ((previousPage as Tasks) != null) (previousPage as Tasks).LoadTasks();
                 }
                 else
                 {
@@ -411,7 +413,7 @@ namespace DreamTrip.Windows
 
         private void btnTrips_Click(object sender, RoutedEventArgs e)
         {
-
+            parentTabItemLink.ItemUserControl = new ClientsTrips(parentTabItemLink, this, thisPageParametres, currentClientId.ToString(), false);
         }
         #endregion
 

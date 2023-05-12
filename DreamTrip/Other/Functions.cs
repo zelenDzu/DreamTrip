@@ -298,10 +298,11 @@ namespace DreamTrip.Functions
                 }
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
                 Message messageError = new Message("Ошибка", "Что-то пошло не так. Возможно, неверно был выбран тип файла. Файл должен иметь формат изображения.", false, false);
                 messageError.ShowDialog();
+                AddLogRecord("PutTourImageInDb Error text: " + ex.Message);
                 return false;
             } 
         }
@@ -340,10 +341,12 @@ namespace DreamTrip.Functions
                 Message messageSucces = new Message("Успех", "Документ был успешно загружен!", false, false);
                 messageSucces.ShowDialog();
             }
-            catch
+            catch (Exception ex)
             {
                 Message messageError = new Message("Ошибка", "Что-то пошло не так. Возможно, неверно был выбран тип файла. Файл должен иметь формат изображения.",false,false);
                 messageError.ShowDialog();
+                AddLogRecord("PutTourImageInDb Error text: " + ex.Message);
+
             }
         }
 
@@ -402,10 +405,12 @@ namespace DreamTrip.Functions
 
 
             }
-            catch
+            catch (Exception ex)
             {
                 Message messageError = new Message("Ошибка", "Что-то пошло не так. Попробуйте выбрать другое расположение и название файла.", false, false);
                 messageError.ShowDialog();
+                AddLogRecord("GetTripDocumentFromDb Error text: " + ex.Message);
+
             }
         }
 
@@ -492,8 +497,9 @@ namespace DreamTrip.Functions
                 }
                 newImage.Save(iImageName);
             }
-            catch
+            catch (Exception ex)
             {
+                AddLogRecord("Save image Error text: " + ex.Message);
 
             }
         }
@@ -526,9 +532,10 @@ namespace DreamTrip.Functions
                     
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                
+                AddLogRecord("DeleteTempFolders Error text: " + ex.Message);
+
             }
         }
 

@@ -647,6 +647,84 @@ namespace DreamTrip.Windows
             parentTabItemLink.ItemUserControl = new EditClient(parentTabItemLink, this, thisPageParametres, (dtgClients.SelectedItem as Client).ClientId);
 
         }
+        
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            Client currentClient = dtgClients.SelectedItem as Client;
+            int clientId = currentClient.ClientId;
+
+            bool popupAnswer = false;    
+            int currentTripsCount = Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Trip WHERE id_client={clientId} AND end_date>=GETDATE()").Rows[0][0].ToString());
+            string addMessage = "";
+            if (currentTripsCount > 0) addMessage = $" Он имеет {currentTripsCount} неоконченных поездок.";
+            
+            Message messageDeleteWindow = new Message("Удаление", $"Вы точно хотите удалить даннного клиента?{addMessage}", true, true);
+            messageDeleteWindow.messageAnswer += value => popupAnswer = value;
+            messageDeleteWindow.ShowDialog();
+
+            if (popupAnswer)
+            {
+                string clientDeletionProcess = "Start deletion. ";
+                try
+                {
+
+                    DataTable clientTaskData = MainFunctions.NewQuery($"SELECT id_task FROM Task_call WHERE id_client = {clientId} ");
+                    for (int i = 0; i < clientTaskData.Rows.Count; i++)
+                    {
+                        MainFunctions.NewQuery($"DELETE FROM Task_call WHERE id_task = {Convert.ToInt32(clientTaskData.Rows[i][0].ToString())}");
+                        MainFunctions.NewQuery($"DELETE FROM Task WHERE id_task = {Convert.ToInt32(clientTaskData.Rows[i][0].ToString())}");
+                    }
+                    clientDeletionProcess += "Tasks deleted. ";
+
+
+                    DataTable clientTripData = MainFunctions.NewQuery($"SELECT id_trip FROM Trip WHERE id_client = {clientId}");
+                    for (int i = 0; i < clientTripData.Rows.Count; i++)
+                    {
+                        MainFunctions.NewQuery($"DELETE FROM Trip_docs WHERE id_trip = {Convert.ToInt32(clientTripData.Rows[i][0].ToString())}");
+                        MainFunctions.NewQuery($"DELETE FROM Trip_feedback WHERE id_trip = {Convert.ToInt32(clientTripData.Rows[i][0].ToString())}");
+                        MainFunctions.NewQuery($"DELETE FROM Trip_services WHERE id_trip = {Convert.ToInt32(clientTripData.Rows[i][0].ToString())}");
+                        MainFunctions.NewQuery($"DELETE FROM Trip_status WHERE id_trip = {Convert.ToInt32(clientTripData.Rows[i][0].ToString())}");
+                        MainFunctions.NewQuery($"DELETE FROM Trip WHERE id_trip = {Convert.ToInt32(clientTripData.Rows[i][0].ToString())}");
+                    }
+                    clientDeletionProcess += "Trips deleted. ";
+
+
+                    MainFunctions.NewQuery($"DELETE FROM Client_work_info WHERE id_client = {clientId}");
+                    MainFunctions.NewQuery($"DELETE FROM Client_login WHERE id_client = {clientId}");
+                    MainFunctions.NewQuery($"DELETE FROM Client_favourites WHERE id_client = {clientId}");
+                    MainFunctions.NewQuery($"DELETE FROM Client_contacts WHERE id_client = {clientId}");
+                    clientDeletionProcess += "Add info deleted. ";
+
+
+                    MainFunctions.NewQuery($"DELETE FROM Client WHERE id_client = {clientId}");
+                    clientDeletionProcess += "Client deleted.";
+                    clientDeletionProcess += "End deletion. ";
+
+
+
+                    new Message("Успех", "Клиент успешно удален!").ShowDialog();
+                    MainFunctions.AddLogRecord("Client delete success" +
+                        $"\n\tID: {currentClient.ClientId}" +
+                        $"\n\tName: {currentClient.Surname} {currentClient.Name} {currentClient.Patronymic}" +
+                        $"\n\tPassport: {currentClient.PassportSeria} {currentClient.PassportNumber}");
+
+
+                    btnSearch_Click(sender, e);
+                }
+                catch (Exception ex)
+                {
+                    new Message("Ошибка", "Что-то пошло не так...");
+                    MainFunctions.AddLogRecord("Client delete error." +
+                        $"\n\tID: {currentClient.ClientId}" +
+                        $"\n\tName: {currentClient.Surname} {currentClient.Name} {currentClient.Patronymic}" +
+                        $"\n\tPassport: {currentClient.PassportSeria} {currentClient.PassportNumber}" +
+                        $"\n\tProcess: {clientDeletionProcess} " +
+                        $"\n\tError: " + ex.Message);
+                }
+
+            }
+
+        }
         #endregion
 
         #region FilterItemsChangedEvents
@@ -738,82 +816,5 @@ namespace DreamTrip.Windows
 
         #endregion
 
-        private void btnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            Client currentClient = dtgClients.SelectedItem as Client;
-            int clientId = currentClient.ClientId;
-
-            bool popupAnswer = false;    
-            int currentTripsCount = Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Trip WHERE id_client={clientId} AND end_date>=GETDATE()").Rows[0][0].ToString());
-            string addMessage = "";
-            if (currentTripsCount > 0) addMessage = $" Он имеет {currentTripsCount} неоконченных поездок.";
-            
-            Message messageDeleteWindow = new Message("Удаление", $"Вы точно хотите удалить даннного клиента?{addMessage}", true, true);
-            messageDeleteWindow.messageAnswer += value => popupAnswer = value;
-            messageDeleteWindow.ShowDialog();
-
-            if (popupAnswer)
-            {
-                string clientDeletionProcess = "Start deletion. ";
-                try
-                {
-
-                    DataTable clientTaskData = MainFunctions.NewQuery($"SELECT id_task FROM Task_call WHERE id_client = {clientId} ");
-                    for (int i = 0; i < clientTaskData.Rows.Count; i++)
-                    {
-                        MainFunctions.NewQuery($"DELETE FROM Task_call WHERE id_task = {Convert.ToInt32(clientTaskData.Rows[i][0].ToString())}");
-                        MainFunctions.NewQuery($"DELETE FROM Task WHERE id_task = {Convert.ToInt32(clientTaskData.Rows[i][0].ToString())}");
-                    }
-                    clientDeletionProcess += "Tasks deleted. ";
-
-
-                    DataTable clientTripData = MainFunctions.NewQuery($"SELECT id_trip FROM Trip WHERE id_client = {clientId}");
-                    for (int i = 0; i < clientTripData.Rows.Count; i++)
-                    {
-                        MainFunctions.NewQuery($"DELETE FROM Trip_docs WHERE id_trip = {Convert.ToInt32(clientTripData.Rows[i][0].ToString())}");
-                        MainFunctions.NewQuery($"DELETE FROM Trip_feedback WHERE id_trip = {Convert.ToInt32(clientTripData.Rows[i][0].ToString())}");
-                        MainFunctions.NewQuery($"DELETE FROM Trip_services WHERE id_trip = {Convert.ToInt32(clientTripData.Rows[i][0].ToString())}");
-                        MainFunctions.NewQuery($"DELETE FROM Trip_status WHERE id_trip = {Convert.ToInt32(clientTripData.Rows[i][0].ToString())}");
-                        MainFunctions.NewQuery($"DELETE FROM Trip WHERE id_trip = {Convert.ToInt32(clientTripData.Rows[i][0].ToString())}");
-                    }
-                    clientDeletionProcess += "Trips deleted. ";
-
-
-                    MainFunctions.NewQuery($"DELETE FROM Client_work_info WHERE id_client = {clientId}");
-                    MainFunctions.NewQuery($"DELETE FROM Client_login WHERE id_client = {clientId}");
-                    MainFunctions.NewQuery($"DELETE FROM Client_favourites WHERE id_client = {clientId}");
-                    MainFunctions.NewQuery($"DELETE FROM Client_contacts WHERE id_client = {clientId}");
-                    clientDeletionProcess += "Add info deleted. ";
-
-
-                    MainFunctions.NewQuery($"DELETE FROM Client WHERE id_client = {clientId}");
-                    clientDeletionProcess += "Client deleted.";
-                    clientDeletionProcess += "End deletion. ";
-
-
-
-                    new Message("Успех", "Клиент успешно удален!").ShowDialog();
-                    MainFunctions.AddLogRecord("Client delete success" +
-                        $"\n\tID: {currentClient.ClientId}" +
-                        $"\n\tName: {currentClient.Surname} {currentClient.Name} {currentClient.Patronymic}" +
-                        $"\n\tPassport: {currentClient.PassportSeria} {currentClient.PassportNumber}");
-
-
-                    btnSearch_Click(sender, e);
-                }
-                catch (Exception ex)
-                {
-                    new Message("Ошибка", "Что-то пошло не так...");
-                    MainFunctions.AddLogRecord("Client delete error." +
-                        $"\n\tID: {currentClient.ClientId}" +
-                        $"\n\tName: {currentClient.Surname} {currentClient.Name} {currentClient.Patronymic}" +
-                        $"\n\tPassport: {currentClient.PassportSeria} {currentClient.PassportNumber}" +
-                        $"\n\tProcess: {clientDeletionProcess} " +
-                        $"\n\tError: " + ex.Message);
-                }
-
-            }
-
-        }
     }
 }

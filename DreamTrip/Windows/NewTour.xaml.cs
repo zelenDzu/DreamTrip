@@ -509,9 +509,9 @@ namespace DreamTrip.Windows
                 (previousPage as TourInfo).LoadAllData();
                 
             }
-            catch
+            catch (Exception ex)
             {
-                MainFunctions.AddLogRecord($"Tour editing ERROR");
+                MainFunctions.AddLogRecord($"Tour editing ERROR text: " + ex.Message);
 
                 Message errorMessage = new Message("Ошибка", $"Что-то пошло не так.", false, false);
                 errorMessage.ShowDialog();
@@ -560,9 +560,9 @@ namespace DreamTrip.Windows
                 parentTabItemLink.ItemUserControl = previousPage;
                 MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
             }
-            catch
+            catch (Exception ex)
             {
-                MainFunctions.AddLogRecord($"Tour creating ERROR");
+                MainFunctions.AddLogRecord($"Tour creating ERROR text: "  + ex.Message);
                 MainFunctions.NewQuery($"DELETE FROM Tour_photos WHERE id_tour = {currentTourId} " +
                     $"DELETE FROM Tour_services WHERE id_tour = {currentTourId} " +
                     $"DELETE FROM Tour_types WHERE id_tour = {currentTourId} " +
@@ -633,10 +633,11 @@ namespace DreamTrip.Windows
                     editedTour.ImageSource = tourphoto;
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 Message messageError = new Message("Ошибка", "Что-то пошло не так. Возможно, неверно был выбран тип файла. Файл должен иметь формат изображения.", false, false);
                 messageError.ShowDialog();
+                MainFunctions.AddLogRecord("Choose New Tour Image Error: " + ex.Message);
             }
             gridFileLoad.Visibility = Visibility.Hidden;
             FilterChanged();

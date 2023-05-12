@@ -95,6 +95,7 @@ namespace DreamTrip.Windows
         //сделать
         private void btnTasks_Click(object sender, RoutedEventArgs e)
         {
+            parentTabItemLink.ItemUserControl = new Tasks(parentTabItemLink, this, thisPageParametres);
 
         }
         #endregion

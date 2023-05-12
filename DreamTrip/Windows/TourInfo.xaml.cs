@@ -27,7 +27,7 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
-        string[] thisPageParametres = new string[] { "Disabled", "Статистика", "../Resources/tours.png" };
+        string[] thisPageParametres = new string[] { "Disabled", "Тур", "../Resources/tours.png" };
         UserControl previousPage;
         string[] previousPageParametres;
 

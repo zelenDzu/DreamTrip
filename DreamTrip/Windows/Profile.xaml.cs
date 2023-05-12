@@ -118,16 +118,17 @@ namespace DreamTrip.Windows
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 Message messageError = new Message("Ошибка", "Что-то пошло не так. Возможно, неверно был выбран тип файла. Файл должен иметь формат изображения.", false, false);
                 messageError.ShowDialog();
+                MainFunctions.AddLogRecord("Change Profile Image Error Text: " + ex.Message);
             }
         }
         
         private void CheckButtonSaveIsEnabled()
         {
-            borderSaveButton.IsEnabled = ((tbxPhone.Text != origPhone) || (currentAccount.OrigImagePath != origImagePath)) && (tbxPhone.Text.Length >= 11);
+            borderSaveButton.IsEnabled = ((tbxPhone.Text != origPhone) || (currentAccount.OrigImagePath != origImagePath)) && (tbxPhone.Text.Length >= 10);
         }
         #endregion
 
@@ -237,7 +238,6 @@ namespace DreamTrip.Windows
             }
 
             if (tbPhone.Text.Length > 10) tbPhone.Text = tbPhone.Text.Substring(0, 10);
-            if (tbPhone.Text.Length == 0) tbPhone.Text = " ";
 
             CheckButtonSaveIsEnabled();
         }

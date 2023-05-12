@@ -304,6 +304,18 @@
             <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        
+        <Border x:Name="borderCancelButton" Grid.Row="0" Height="40" Width="130" IsEnabled="True"
+                        BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5"
+                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,10,0,0" 
+                        Style="{StaticResource borderStyle}">
+            <Button x:Name="btnCancel" Height="40" Width="130"  Style="{StaticResource buttonStyle}"
+                            FontFamily="Yu Gothic UI" FontSize="30" Cursor="Hand" TabIndex="11"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" 
+                            Content="Назад" Background="Transparent" Click="btnCancel_Click">
+
+            </Button>
+        </Border>
 
         <WrapPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
             
@@ -344,17 +356,6 @@
         </WrapPanel>
         
 
-        <Border x:Name="borderCancelButton" Grid.Row="0" Height="40" Width="130" IsEnabled="True"
-                        BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5"
-                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,10,0,0" 
-                        Style="{StaticResource borderStyle}">
-            <Button x:Name="btnCancel" Height="40" Width="130"  Style="{StaticResource buttonStyle}"
-                            FontFamily="Yu Gothic UI" FontSize="30" Cursor="Hand" TabIndex="11"
-                            HorizontalAlignment="Center" VerticalAlignment="Center" 
-                            Content="Назад" Background="Transparent" Click="btnCancel_Click">
-
-            </Button>
-        </Border>
 
         <TextBlock Grid.Row="0" Foreground="Black" Text="Сервисы" FontWeight="Medium"
                        Grid.ColumnSpan="3"

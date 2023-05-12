@@ -268,10 +268,11 @@ namespace DreamTrip.Windows
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 Message messageError = new Message("Ошибка", "Что-то пошло не так. Возможно, неверно был выбран тип файла. Файл должен иметь формат изображения.", false, false);
                 messageError.ShowDialog();
+                MainFunctions.AddLogRecord("Service Image Choose Error Text: " + ex.Message);
             }
         }
 

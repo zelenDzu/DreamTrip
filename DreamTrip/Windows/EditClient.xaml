@@ -472,7 +472,7 @@
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
                         <TextBlock Name="tbAge" Grid.Row="1" Grid.Column="2" Foreground="#FF4C4C4C" 
-                       Text="17 лет" FontWeight="Medium" FontFamily="Yu Gothic UI Semilight" FontSize="30"
+                       Text="0 лет" FontWeight="Medium" FontFamily="Yu Gothic UI Semilight" FontSize="30"
                        HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="200,0,0,0"/>
 
                         <TextBlock x:Name="tbWrongStartDate" Grid.Row="2" Grid.Column="2" Visibility="Hidden" Foreground="PaleVioletRed" Text="Неверный формат даты" 
@@ -642,7 +642,7 @@
                        Text="Всего звонков: " FontWeight="Medium" FontFamily="Yu Gothic UI Semilight" FontSize="32"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                        <TextBlock Name="tbCallCount" Text="17" Grid.Row="1"  Foreground="#FF00B1B1" Margin="230,0,0,0"
+                        <TextBlock Name="tbCallCount" Text="0" Grid.Row="1"  Foreground="#FF00B1B1" Margin="230,0,0,0"
                         FontWeight="Bold" FontFamily="Yu Gothic UI" FontSize="36"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
@@ -650,7 +650,7 @@
                        Text="Последний звонок: " FontWeight="Medium" FontFamily="Yu Gothic UI Semilight" FontSize="32"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                        <TextBlock Name="tbLastCall" Text="08.05.23" Grid.Row="2"  Foreground="#FF00B1B1" Margin="300,0,0,0"
+                        <TextBlock Name="tbLastCall" Text="нет" Grid.Row="2"  Foreground="#FF00B1B1" Margin="300,0,0,0"
                         FontWeight="Bold" FontFamily="Yu Gothic UI" FontSize="36"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
@@ -672,7 +672,7 @@
                        Text="Всего поездок: " FontWeight="Medium" FontFamily="Yu Gothic UI Semilight" FontSize="32"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                        <TextBlock Name="tbTripsCount" Text="2" Grid.Row="1"  Foreground="#FF00B1B1" Margin="230,0,0,0"
+                        <TextBlock Name="tbTripsCount" Text="0" Grid.Row="1"  Foreground="#FF00B1B1" Margin="230,0,0,0"
                         FontWeight="Bold" FontFamily="Yu Gothic UI" FontSize="36"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
@@ -680,7 +680,7 @@
                        Text="Последняя поездка: " FontWeight="Medium" FontFamily="Yu Gothic UI Semilight" FontSize="32"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                        <TextBlock Name="tbLastTrip" Text="08.05.23 - 15.05.23" Grid.Row="2"  Foreground="#FF00B1B1" Margin="300,0,0,0"
+                        <TextBlock Name="tbLastTrip" Text="нет" Grid.Row="2"  Foreground="#FF00B1B1" Margin="300,0,0,0"
                         FontWeight="Bold" FontFamily="Yu Gothic UI" FontSize="36"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
@@ -688,7 +688,7 @@
                        Text="Общая стоимость поездок: " FontWeight="Medium" FontFamily="Yu Gothic UI Semilight" FontSize="32"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                        <TextBlock Name="tbTripsPrice" Text="1 156 000 руб." Grid.Row="3"  Foreground="#FF00B1B1" Margin="410,0,0,0"
+                        <TextBlock Name="tbTripsPrice" Text="0 руб." Grid.Row="3"  Foreground="#FF00B1B1" Margin="410,0,0,0"
                         FontWeight="Bold" FontFamily="Yu Gothic UI" FontSize="36"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
