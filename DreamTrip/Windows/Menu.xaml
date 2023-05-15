@@ -7,7 +7,7 @@
         xmlns:DreamTrip="clr-namespace:DreamTrip"
         xmlns:DreamTripWindows="clr-namespace:DreamTrip.Windows"
         mc:Ignorable="d" SizeChanged="Window_SizeChanged"
-        Title="Меню Менеджера" Icon="..\Resources\logo.ico" WindowState="Maximized"  MinWidth="850" MinHeight="150"
+        Title="Окно менеджера" Icon="..\Resources\logo.ico" WindowState="Maximized"  MinWidth="850" MinHeight="150"
         Closing="Window_Closing">
     <Window.Background>
         <ImageBrush ImageSource="..\Resources\mainback.jpg" Stretch="UniformToFill">

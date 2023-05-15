@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DreamTrip.Windows"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="850" d:DesignWidth="1300">
     <UserControl.Resources>
@@ -463,8 +464,27 @@
                     </Border>
 
                     <Border Grid.Row="2" Background="White" BorderBrush="#FFD9D9D9" BorderThickness="2" 
-                            Width="1265" Height="520" Margin="15" CornerRadius="15"
+                            Width="1265" Height="480" Margin="15" CornerRadius="15"
                             HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <lvc:CartesianChart LegendLocation="None" Name="ccTourChart" Series="{Binding ToursSeries}">
+                            <lvc:CartesianChart.AxisX>
+                                <lvc:Axis Name="chartAxisX" Title="Месяцы" Labels="{Binding LabelsMonths}" >
+                                    <lvc:Axis.Separator>
+                                        <lvc:Separator Step="1"/>
+                                    </lvc:Axis.Separator>
+                                </lvc:Axis>
+                            </lvc:CartesianChart.AxisX>
+
+                            <lvc:CartesianChart.AxisY>
+                                <lvc:Axis Name="chartAxisYIncome" Title="Выручка" Labels="{Binding ValuesIncome}" />
+                                <lvc:Axis Name="chartAxisYCount" Position="RightTop"  Title="Кол-во поездок" Labels="{Binding ValuesCount}">
+                                    <lvc:Axis.Separator>
+                                        <lvc:Separator Step="1"/>
+                                    </lvc:Axis.Separator>
+                                </lvc:Axis>
+                            </lvc:CartesianChart.AxisY>
+
+                        </lvc:CartesianChart>
                     </Border>
 
                 </Grid>

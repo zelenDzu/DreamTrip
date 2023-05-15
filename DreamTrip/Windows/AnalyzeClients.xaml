@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DreamTrip.Windows"
+             xmlns:LiveCharts ="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="850" d:DesignWidth="1300">
     <UserControl.Resources>
@@ -331,13 +332,10 @@
                 BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5">
                         <ComboBox x:Name="cmbClientGroupType" TabIndex="7"
                         BorderThickness="2" Foreground="Black" 
-                        SelectedIndex="0" Height="45" Width="300" 
+                        SelectedIndex="1" Height="45" Width="300" 
                         VerticalAlignment="Center" HorizontalAlignment="Center" 
                         FontFamily="Yu Gothic UI" FontSize="26"
                                   SelectionChanged="cmbClientGroupType_SelectionChanged">
-                            <ComboBoxItem IsEnabled="False" Visibility="Collapsed" >
-                                <TextBlock Background="Transparent" Foreground="LightGray">Группировка</TextBlock>
-                            </ComboBoxItem>
 
                             <ComboBoxItem Background="Transparent">По полу</ComboBoxItem>
                             <ComboBoxItem Background="Transparent">По возрасту</ComboBoxItem>
@@ -348,7 +346,13 @@
                     <Border Grid.Row="2" Background="White" BorderBrush="#FFD9D9D9" BorderThickness="2" 
                             Width="430" Height="360" Margin="0,60,0,0" CornerRadius="15"
                             HorizontalAlignment="Left" VerticalAlignment="Top">
+
                         
+                        <LiveCharts:PieChart LegendLocation="Bottom" Name="pcClientGroup"
+                                             StartingRotationAngle="270"
+                                             InnerRadius="100">
+
+                        </LiveCharts:PieChart>
                     </Border>
                 </Grid>
             </Grid>

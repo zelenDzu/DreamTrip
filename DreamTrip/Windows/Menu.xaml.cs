@@ -53,15 +53,17 @@ namespace DreamTrip.Windows
             {
                 case "manager":
                     tbRoleName.Text = "Менеджер";
+                    this.Title = "Окно менеджера";
                     break;
 
                 case "admin":
                     tbRoleName.Text = "Администратор";
+                    this.Title = "Окно администратора";
                     break;
 
                 case "analyst":
                     tbRoleName.Text = "Аналитик";
-
+                    this.Title = "Окно аналитика";
                     break;
             }
 

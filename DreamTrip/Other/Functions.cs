@@ -987,6 +987,52 @@ namespace DreamTrip.Functions
 
             return countPercent;
         }
+
+        /// <summary>
+        /// Получить количество поездок, совершенных по данному туру monthAgo месяцев назад (0 - текущий месяц)
+        /// </summary>
+        /// <param name="tourId"></param>
+        /// <param name="mongthAgo"></param>
+        /// <returns></returns>
+        public static int GetTourTripsCount(int tourId, int monthAgo)
+        {
+            int tripsCount = 0;
+
+            tripsCount = Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Trip " +
+                $"WHERE id_tour = {tourId} AND " +
+                $"start_date BETWEEN DATEADD(month, {-1-monthAgo}, eomonth(getdate())) AND  DATEADD(month, {-monthAgo}, eomonth(getdate()))").Rows[0][0].ToString());
+
+            return tripsCount;
+        }
+
+        /// <summary>
+        /// Получить выручку, полученную по данному туру monthAgo месяцев назад (0 - текущий месяц)
+        /// </summary>
+        /// <param name="tourId"></param>
+        /// <param name="mongthAgo"></param>
+        /// <returns></returns>
+        public static int GetTourIncome(int tourId, int monthAgo)
+        {
+            int tourIncome = 0;
+
+            tourIncome = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip " +
+                $"WHERE id_tour = {tourId} AND " +
+                $"start_date BETWEEN DATEADD(month, {-1 - monthAgo}, eomonth(getdate())) AND  DATEADD(month, {-monthAgo}, eomonth(getdate()))").Rows[0][0].ToString());
+
+            return tourIncome;
+        }
+
+        /// <summary>
+        /// Получить название месяца, который был monthAgo месяцев назад (0 - текущий месяц)
+        /// </summary>
+        /// <param name="monthAgo"></param>
+        /// <returns></returns>
+        public static string GetMonthName(int monthAgo)
+        {
+            string month = DateTime.Today.AddMonths(-monthAgo).ToString("MMMM", new CultureInfo("ru-RU")) + " " +
+                DateTime.Today.AddMonths(-monthAgo).ToString("yy");
+            return month;
+        }
     
     }
 }

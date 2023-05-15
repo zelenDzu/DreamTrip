@@ -15,6 +15,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LiveCharts;
+using LiveCharts.Wpf;
+using LiveCharts.Defaults;
+using System.Globalization;
 
 namespace DreamTrip.Windows
 {
@@ -30,6 +34,13 @@ namespace DreamTrip.Windows
         string[] previousPageParametres;
 
         List<Tour> currentTours;
+
+        public SeriesCollection ToursSeries { get; set; }
+        public string[] LabelsMonths { get; set; }
+        public Func<int, string> ValuesIncome { get; set; }
+        public Func<int, string> ValuesCount { get; set; }
+        public Func<double, string> LabelFormat { get; set; }
+        
         #endregion
 
         #region Constructor
@@ -46,6 +57,8 @@ namespace DreamTrip.Windows
             LoadIncome();
             LoadTripsCount();
             LoadTourTypes();
+
+            LoadFirstChart();
         }
         #endregion
 
@@ -184,9 +197,112 @@ namespace DreamTrip.Windows
             }
         }
 
-        void LoadTourChart()
+        void LoadFirstChart()
         {
+            int bestTourId = Convert.ToInt32(MainFunctions.NewQuery($"SELECT TOP 1 id_tour " +
+                $"FROM Trip " +
+                $"GROUP BY id_tour " +
+                $"ORDER BY SUM(total_price) DESC").Rows[0][0].ToString());
 
+            int bestTourTypeId = Convert.ToInt32(MainFunctions.NewQuery($"SELECT TOP 1 id_Type " +
+                $"FROM Tour_types " +
+                $"WHERE id_tour = {bestTourId}").Rows[0][0].ToString());
+
+            for (int i = 1; i < cmbTourType.Items.Count; i++)
+            {
+                if ((cmbTourType.Items[i] as TourType).TourTypeId == bestTourTypeId)
+                {
+                    cmbTourType.SelectedItem = cmbTourType.Items[i];
+
+                    for (int j = 0; j < cmbTour.Items.Count; j++)
+                    {
+                        if ((cmbTour.Items[j] as Tour).TourId == bestTourId)
+                        {
+                            cmbTour.SelectedItem = cmbTour.Items[j];
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        void LoadTourChart(int tourId = 0)
+        {
+            DataContext = null;
+
+            ValuesIncome = value => value.ToString("C");
+            ValuesCount = value => value.ToString("N");
+            LabelFormat = value => value.ToString() + "₽";
+
+            List<string> months = new List<string>();
+            List<int> tripsCounts = new List<int>();
+            List<int> tourIncome = new List<int>();
+
+            for (int i = 0; i < 12; i++)
+            {
+                months.Add(Analytics.GetMonthName(i));
+                tripsCounts.Add(Analytics.GetTourTripsCount(tourId, i));
+                tourIncome.Add(Analytics.GetTourIncome(tourId, i));
+            }
+            
+
+            months.Reverse();
+            tripsCounts.Reverse();
+            tourIncome.Reverse();
+
+            LabelsMonths = months.ToArray<string>();
+
+            ToursSeries = new SeriesCollection();
+
+            if (tripsCounts.Max() == 0)
+            {
+                chartAxisYCount = new Axis()
+                {
+                    //Labels = new List<string>(){ "0","1"},
+                    Separator = new LiveCharts.Wpf.Separator
+                    {
+                        Step = 1
+                    }
+                };
+
+                chartAxisYIncome = new Axis()
+                {
+                    //Labels = new List<string>() { "0", "10000" },
+                    Separator = new LiveCharts.Wpf.Separator
+                    {
+                        Step = 10000
+                    }
+                };
+            }
+            else
+            {
+                ToursSeries.Add(new ColumnSeries
+                {
+                    Title = "Выручка",
+                    Values = new ChartValues<int>(tourIncome),
+                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#61D8D8")),
+                    MaxColumnWidth = 60,
+                    ScalesYAt = 0,
+                });
+
+                ToursSeries.Add(new LineSeries
+                {
+                    Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3DAFDB")),
+                    Fill = Brushes.Transparent,
+                    Title = "Кол-во поездок",
+                    Values = new ChartValues<int>(tripsCounts),
+                    StrokeThickness = 5,
+                    ScalesYAt = 1,
+                    DataLabels = true,
+                });
+            }
+            
+
+
+            DataContext = this;
+            if (chartAxisYIncome!=null) chartAxisYIncome.LabelFormatter = LabelFormat;
         }
         #endregion
 
@@ -211,11 +327,12 @@ namespace DreamTrip.Windows
 
         private void cmbTour_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if ((cmbTour.SelectedItem as Tour) != null) LoadTourChart();
+            if ((cmbTour.SelectedItem as Tour) != null) LoadTourChart((cmbTour.SelectedItem as Tour).TourId);
+            else LoadTourChart();
         }
+
+
         #endregion
-
-
 
     }
 }

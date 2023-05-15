@@ -14,6 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LiveCharts;
+using LiveCharts.Wpf;
+using LiveCharts.Defaults;
+using System.Data;
 
 namespace DreamTrip.Windows
 {
@@ -28,6 +32,10 @@ namespace DreamTrip.Windows
         UserControl previousPage;
         string[] previousPageParametres;
 
+        List<SolidColorBrush> chartColors;
+
+        public Func<ChartPoint, string> PointLabel { get; set; }
+        public SeriesCollection clientSeries { get; set; }
         #endregion
 
         #region Constructor
@@ -40,8 +48,24 @@ namespace DreamTrip.Windows
             previousPageParametres = tempPreviousPageParametres;
             MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
 
+            PointLabel = chartPoint => string.Format("{0} чел.", chartPoint.Y);
+            chartColors = new List<SolidColorBrush>()
+            {
+                new SolidColorBrush((Color)ColorConverter.ConvertFromString("#007373")),
+                new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00B1B1")),
+                new SolidColorBrush((Color)ColorConverter.ConvertFromString("#61D8D8")),
+                new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3DAFDB")),
+                new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7192DF")),
+                new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4D64E0")),
+            };
+
+            
+
+
             LoadNewClientsCount();
             LoadClientsABC();
+            LoadPieChart(2);
+
         }
         #endregion
 
@@ -70,20 +94,147 @@ namespace DreamTrip.Windows
 
         void LoadPieChart(int groupType = 1)
         {
+            clientSeries = new SeriesCollection();
+            pcClientGroup.Series = null;
+
             switch (groupType)
             {
                 case 1: //пол
+                    clientSeries.Add(new PieSeries
+                    {
+                        FontSize = 16,
+                        DataLabels = true,
+                        LabelPoint = PointLabel,
+
+                        Fill = chartColors[0],
+
+                        Title = $"Мужчина",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue
+                        (Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Client WHERE gender='М'").Rows[0][0].ToString())) },
+                    });
+
+                    clientSeries.Add(new PieSeries
+                    {
+                        FontSize = 16,
+                        DataLabels = true,
+                        LabelPoint = PointLabel,
+
+                        Fill = chartColors[1],
+
+                        Title = $"Женщина",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue
+                        (Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Client WHERE gender='Ж'").Rows[0][0].ToString())) },
+                    });
 
                     break;
 
                 case 2: //возраст
+                    int minAge = Convert.ToInt32(MainFunctions.NewQuery($"SELECT MIN(age) FROM Client").Rows[0][0].ToString());
+                    int maxAge = Convert.ToInt32(MainFunctions.NewQuery($"SELECT MAX(age) FROM Client").Rows[0][0].ToString());
+
+                    clientSeries.Add(new PieSeries
+                    {
+                        FontSize = 16,
+                        DataLabels = true,
+                        LabelPoint = PointLabel,
+
+                        Fill = chartColors[0],
+
+                        Title = $"{minAge}-24 лет",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue
+                        (Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Client WHERE Age BETWEEN {minAge} AND 24").Rows[0][0].ToString())) },
+                    });
+
+                    clientSeries.Add(new PieSeries
+                    {
+                        FontSize = 16,
+                        DataLabels = true,
+                        LabelPoint = PointLabel,
+
+                        Fill = chartColors[1],
+
+                        Title = $"25-39 лет",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue
+                        (Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Client WHERE Age BETWEEN 25 AND 39").Rows[0][0].ToString())) },
+                    });
+
+                    clientSeries.Add(new PieSeries
+                    {
+                        FontSize = 16,
+                        DataLabels = true,
+                        LabelPoint = PointLabel,
+
+                        Fill = chartColors[2],
+
+                        Title = $"40-59 лет",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue
+                        (Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Client WHERE Age BETWEEN 40 AND 59").Rows[0][0].ToString())) },
+                    });
+
+                    clientSeries.Add(new PieSeries
+                    {
+                        FontSize = 16,
+                        DataLabels = true,
+                        LabelPoint = PointLabel,
+
+                        Fill = chartColors[3],
+
+                        Title = $"60-{maxAge} лет",
+                        Values = new ChartValues<ObservableValue> { new ObservableValue
+                        (Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Client WHERE Age BETWEEN 60 AND {maxAge}").Rows[0][0].ToString())) },
+                    });
 
                     break;
 
                 case 3: //работа
+                    DataTable workData = MainFunctions.NewQuery($"SELECT COUNT(id_client), wf.short_name " +
+                        $"FROM Client_work_info cwi " +
+                        $"JOIN Work_field wf ON wf.id_work_field = cwi.id_work_field " +
+                        $"WHERE wf.name != 'Отсутствует' AND wf.name != 'Другое' " +
+                        $"GROUP BY cwi.id_work_field, wf.short_name ORDER BY COUNT(id_client) DESC");
+
+                    int maxFieldsCount = 5;
+
+                    List<int> counts = new List<int>();
+                    List<string> names = new List<string>();
+
+                    for (int i = 0; i < maxFieldsCount; i++)
+                    {
+                        counts.Add(Convert.ToInt32(workData.Rows[i][0].ToString()));
+                        names.Add(workData.Rows[i][1].ToString());
+                    }
+
+                    if (workData.Rows.Count > maxFieldsCount)
+                    {
+                        int otherCount = 0;
+                        names.Add("Другое");
+                        for (int i = maxFieldsCount; i < workData.Rows.Count; i++)
+                        {
+                            otherCount += Convert.ToInt32(workData.Rows[i][0].ToString());
+                        }
+                        counts.Add(otherCount);
+                    }
+
+                    for (int i = 0; i < names.Count; i++)
+                    {
+                        clientSeries.Add(new PieSeries
+                        {
+                            FontSize = 16,
+                            DataLabels = true,
+                            LabelPoint = PointLabel,
+
+                            Fill = chartColors[i%chartColors.Count],
+
+                            Title = names[i% chartColors.Count],
+                            Values = new ChartValues<ObservableValue> { new ObservableValue(counts[i]) },
+                        });
+                    }
 
                     break;
             }
+
+            pcClientGroup.Series = clientSeries;
+            //DataContext = this;
         }
 
         void LoadClientsABC()
@@ -93,7 +244,6 @@ namespace DreamTrip.Windows
         #endregion
 
         #region Functions
-
         #endregion
 
         #region ButtonsClick
@@ -115,8 +265,10 @@ namespace DreamTrip.Windows
             //1 : пол
             //2 : возраст
             //3 : работа
-
-            if (cmbClientGroupType.SelectedIndex != 0) LoadPieChart();
+            if (pcClientGroup!=null)
+                if (cmbClientGroupType.SelectedIndex != -1) 
+                    LoadPieChart(cmbClientGroupType.SelectedIndex+1);
         }
+
     }
 }
