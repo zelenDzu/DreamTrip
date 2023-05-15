@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace DreamTrip.Windows
 {
@@ -43,26 +44,40 @@ namespace DreamTrip.Windows
         #region MenuButtonsClick
         private void btnClients_Click(object sender, RoutedEventArgs e)
         {
+            parentTabItemLink.ItemUserControl = new Clients(parentTabItemLink, this, thisPageParametres);
 
         }
 
         private void btnNewTask_Click(object sender, RoutedEventArgs e)
         {
+            parentTabItemLink.ItemUserControl = new EditTasks(parentTabItemLink, this, thisPageParametres);
 
         }
 
         private void btnTours_Click(object sender, RoutedEventArgs e)
         {
+            gridTourLoad.Visibility = Visibility.Visible;
 
+            DispatcherTimer dispatcherTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(0.1) };
+            dispatcherTimer.Start();
+            dispatcherTimer.Tick += new EventHandler((object c, EventArgs eventArgs) =>
+            {
+                parentTabItemLink.ItemUserControl = new Tours(parentTabItemLink, this, thisPageParametres, false);
+                gridTourLoad.Visibility = Visibility.Hidden;
+                ((DispatcherTimer)c).Stop();
+            });
         }
 
         private void btnAnalyzeClients_Click(object sender, RoutedEventArgs e)
         {
+            parentTabItemLink.ItemUserControl = new AnalyzeClients(parentTabItemLink, this, thisPageParametres);
 
         }
 
         private void btnAnalyzeTours_Click(object sender, RoutedEventArgs e)
         {
+            parentTabItemLink.ItemUserControl = new AnalyzeTrips(parentTabItemLink, this, thisPageParametres);
+            //parentTabItemLink.ItemUserControl = new Statistics(parentTabItemLink, this, thisPageParametres);
 
         }
         #endregion

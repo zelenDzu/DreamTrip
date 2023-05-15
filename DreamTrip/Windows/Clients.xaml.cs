@@ -54,6 +54,8 @@ namespace DreamTrip.Windows
             previousPageParametres = tempPreviousPageParametres;
             MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
 
+
+            LoadVisualElements();
             LoadClients("all");
             LoadFields();
             SecondItemCheckBoxField.IsChecked = true;
@@ -62,6 +64,26 @@ namespace DreamTrip.Windows
         #endregion
 
         #region Load Data
+        /// <summary>
+        /// Загрузка визуальных элементов (кнопок и тд) в зависимости от роли пользователя текущей сесссии
+        /// </summary>
+        private void LoadVisualElements()
+        {
+            switch (MainFunctions.GetUserRole())
+            {
+                case "manager":
+                    borderDeleteButton.Visibility = Visibility.Visible;
+                    borderEdit.Visibility = Visibility.Visible;
+                    break;
+
+                default:
+                    borderDeleteButton.Visibility = Visibility.Hidden;
+                    borderEdit.Visibility = Visibility.Hidden;
+                    break;
+
+            }
+        }
+
         /// <summary>
         /// Загрузка данных клиентов
         /// </summary>

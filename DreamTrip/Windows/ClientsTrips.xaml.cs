@@ -54,6 +54,7 @@ namespace DreamTrip.Windows
             previousPageParametres = tempPreviousPageParametres;
             MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
 
+            LoadVisualElements();
             IsFromClients = tempIsFromClients;
             LoadTrips("all", clientId);
             LoadCountries();
@@ -64,6 +65,27 @@ namespace DreamTrip.Windows
         #endregion
 
         #region LoadData
+        /// <summary>
+        /// Загрузка визуальных элементов (кнопок и тд) в зависимости от роли пользователя текущей сесссии
+        /// </summary>
+        private void LoadVisualElements()
+        {
+            switch (MainFunctions.GetUserRole())
+            {
+                case "manager":
+                    borderDeleteButton.Visibility = Visibility.Visible;
+                    borderEditButton.Visibility = Visibility.Visible;
+                    break;
+
+                default:
+                    borderDeleteButton.Visibility = Visibility.Hidden;
+                    borderEditButton.Visibility = Visibility.Hidden;
+                    borderSaveButton.Margin = new Thickness(0,10,10,0);
+                    break;
+
+            }
+        }
+
         /// <summary>
         /// Загрузка поездок
         /// </summary>

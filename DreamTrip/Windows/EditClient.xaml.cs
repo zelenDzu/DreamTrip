@@ -389,6 +389,7 @@ namespace DreamTrip.Windows
                     $"\n\tPassport: {currentClient.PassportSeria} {currentClient.PassportNumber}");
                     if ((previousPage as Clients) != null) (previousPage as Clients).btnSearch_Click(sender, e);
                     if ((previousPage as Tasks) != null) (previousPage as Tasks).LoadTasks();
+                    if ((previousPage as EditTasks) != null) (previousPage as EditTasks).LoadTasks();
                 }
                 else
                 {

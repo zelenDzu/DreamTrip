@@ -539,6 +539,72 @@ namespace DreamTrip.Functions
             }
         }
 
+        /// <summary>
+        /// Удалить временные фото аккаунтов
+        /// </summary>
+        public static void ClearAccountsPhotos()
+        {
+            DataTable photosData = MainFunctions.NewQuery($"SELECT image_path FROM Worker");
+            List<string> photoPaths = new List<string>();
+
+            for (int i = 0; i < photosData.Rows.Count; i++)
+            {
+                string path = photosData.Rows[i][0].ToString();
+                path = path.Substring(path.LastIndexOf('/') + 1, path.Length - path.LastIndexOf('/') - 1);
+                photoPaths.Add(path);
+            }
+
+            if (!photoPaths.Contains("default.jpg")) photoPaths.Add("default.jpg");
+
+            foreach(string file in Directory.GetFiles(GetAppPath() + "/Resources/AccountsPhotos")) 
+            {
+                string fileName = Path.GetFileName(file);
+
+                try
+                {
+                    if (!photoPaths.Contains(fileName))
+                        File.Delete(file);
+                }
+                catch
+                {
+                    //файл не удалился, может удалится в следующий раз
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Удалить временные фото сервисов
+        /// </summary>
+        public static void ClearServicesPhotos()
+        {
+            DataTable photosData = MainFunctions.NewQuery($"SELECT icon_path FROM Service");
+            List<string> photoPaths = new List<string>();
+
+            for (int i = 0; i < photosData.Rows.Count; i++)
+            {
+                string path = photosData.Rows[i][0].ToString();
+                path = path.Substring(path.LastIndexOf('/') + 1, path.Length - path.LastIndexOf('/') - 1);
+                photoPaths.Add(path);
+            }
+
+            foreach (string file in Directory.GetFiles(GetAppPath() + "/Resources/ServicesPhotos"))
+            {
+                string fileName = Path.GetFileName(file);
+
+                try
+                {
+                    if (!photoPaths.Contains(fileName))
+                        File.Delete(file);
+                }
+                catch
+                {
+                    //файл не удалился, может удалится в следующий раз
+                }
+
+            }
+        }
+
     }
 
     /// <summary>
@@ -758,6 +824,170 @@ namespace DreamTrip.Functions
         }
 
 
+    }
+
+    /// <summary>
+    /// Функции, используемые в аналитике
+    /// </summary>
+    public static class Analytics
+    {
+       /// <summary>
+       /// Получить количество поездок в данный момент времени и процент, показывающий динамика изменения этого показателя
+       /// Формат: {[количество],[процент]}
+       /// </summary>
+       /// <returns></returns>
+        public static List<int> GetCurrentTrips_CountPercent()
+        {
+            List<int> countPercent = new List<int>();
+
+            int currentCount = MainFunctions.NewQuery($"SELECT * FROM Trip WHERE start_date <= getdate() AND end_date >= GETDATE()").Rows.Count;
+            int prevCount = MainFunctions.NewQuery($"SELECT * FROM Trip WHERE start_date <= DATEADD(month,-1,getdate()) " +
+                $"AND end_date >= DATEADD(month, -1, getdate())").Rows.Count;
+
+            countPercent.Add(currentCount);
+
+            if (prevCount == 0)
+            {
+                if (currentCount==0) countPercent.Add(0);
+                else countPercent.Add(100);
+            }
+            else
+            {
+                int diff = currentCount - prevCount;
+                int percent = 0;
+
+                if (diff >= 0)
+                {
+                    percent = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(Convert.ToDouble(diff) / Convert.ToDouble(prevCount) * 100)));
+                }
+                else
+                {
+                    percent = -Convert.ToInt32(Math.Ceiling(Convert.ToDouble(Convert.ToDouble(-diff) / Convert.ToDouble(prevCount) / prevCount * 100)));
+                }
+
+                countPercent.Add(percent);
+            }
+
+
+            return countPercent;
+        }
+
+        /// <summary>
+        /// Получить выручку на текущий месяц и процент, показывающий ее динамику изменения
+        /// Формат: {[выручка],[процент]}
+        /// </summary>
+        /// <returns></returns>
+        public static List<int> GetCurrentTrips_IncomePercent()
+        {
+            List<int> incomePercent = new List<int>();
+
+            int currentIncome = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip WHERE booking_datetime BETWEEN " +
+                $"(SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date)) AND " +
+                $"DATEADD(month, 1, (SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date)))").Rows[0][0].ToString());
+
+            int prevIncome = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip WHERE booking_datetime BETWEEN " +
+                $"DATEADD(month, -1, (SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date))) AND " +
+                $"(SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date))").Rows[0][0].ToString());
+
+            incomePercent.Add(currentIncome);
+
+            if (prevIncome == 0)
+            {
+                if (currentIncome == 0) incomePercent.Add(0);
+                else incomePercent.Add(100);
+            }
+            else
+            {
+                int diff = currentIncome - prevIncome;
+                int percent = 0;
+
+                if (diff >= 0)
+                {
+                    percent = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(Convert.ToDouble(diff) / Convert.ToDouble(prevIncome) * 100)));
+                }
+                else
+                {
+                    percent = -Convert.ToInt32(Math.Ceiling(Convert.ToDouble(Convert.ToDouble(-diff) / Convert.ToDouble(prevIncome) * 100)));
+                }
+
+                incomePercent.Add(percent);
+            }
+
+            return incomePercent;
+        }
+
+        /// <summary>
+        /// Получить текущий топ 3 туров
+        /// Формат: {"[Название тура1],[Количество поездок1]", "[Название тура2],[Количество поездок2]"....}
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> GetTopTours()
+        {
+            List<string> topTours = new List<string>();
+
+            DataTable toursData = MainFunctions.NewQuery($"SELECT TOP 3 " +
+                $"(SELECT name FROM Tour t WHERE t.id_tour = tr.id_tour), " +
+                $"COUNT(*) as tripCount, " +
+                $"AVG(ABS(DAY(getdate() - tr.start_date))) as daysDistance " +
+                $"FROM Trip as tr " +
+                $"" +
+                $"WHERE ABS(DAY(getdate() - tr.start_date)) <= 15 " +
+                $"GROUP BY id_tour " +
+                $"ORDER BY tripCount DESC, daysDistance ASC");
+
+            for (int i = 0; i < toursData.Rows.Count; i++)
+            {
+                topTours.Add(toursData.Rows[i][0].ToString() + "," + toursData.Rows[i][1].ToString());
+            }
+
+
+            return topTours;
+        }
+
+        /// <summary>
+        /// Получить количество новых клиентов за этот месяц и процент, показывающий динамику изменения этого показателя
+        /// Формат: "{[количество],[процент]}"
+        /// </summary>
+        /// <returns></returns>
+        public static List<int> GetCurrentClients_CountPercent()
+        {
+            List<int> countPercent = new List<int>();
+
+            int currentCount = MainFunctions.NewQuery($"SELECT * FROM Client " +
+                $"WHERE date_creation BETWEEN(SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date)) " +
+                $"AND DATEADD(month, 1, (SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date)))").Rows.Count;
+
+            int prevCount = MainFunctions.NewQuery($"SELECT * FROM Client " +
+                $"WHERE date_creation BETWEEN DATEADD(month, -1, (SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date))) " +
+                $"AND(SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date))").Rows.Count;
+
+            countPercent.Add(currentCount);
+
+            if (prevCount == 0)
+            {
+                if (currentCount == 0) countPercent.Add(0);
+                else countPercent.Add(100);
+            }
+            else
+            {
+                int diff = currentCount - prevCount;
+                int percent = 0;
+
+                if (diff >= 0)
+                {
+                    percent = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(Convert.ToDouble(diff) / Convert.ToDouble(prevCount) * 100)));
+                }
+                else
+                {
+                    percent = -Convert.ToInt32(Math.Ceiling(Convert.ToDouble(Convert.ToDouble(-diff) / Convert.ToDouble(prevCount) * 100)));
+                }
+
+                countPercent.Add(percent);
+            }
+
+            return countPercent;
+        }
+    
     }
 }
 

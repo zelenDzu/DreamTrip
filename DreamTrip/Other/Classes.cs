@@ -335,6 +335,10 @@ namespace DreamTrip.Classes
             }
         }
 
+        public string FullName {
+            get { return this.Surname + " " + this.Name + " " + this.Patronymic; }
+        }
+
         private string passportSeria;
         public string PassportSeria
         {
@@ -531,8 +535,37 @@ namespace DreamTrip.Classes
             }
         }
 
-        public string ImageSource { get; set; }
-        public Visibility ClientVisible { get; set; }
+        private string imageSource;
+        public string ImageSource
+        {
+            get { return this.imageSource; }
+            set
+            {
+                this.imageSource = value;
+                if (this.isDone) this.Color = "#FF9EE8E1";
+                else this.Color = "#FFB1B1B1";
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("ImageSource"));
+                }
+            }
+        }
+        private Visibility clientVisible;
+        public Visibility ClientVisible
+        {
+            get { return this.clientVisible; }
+            set
+            {
+                this.clientVisible = value;
+                if (this.isDone) this.Color = "#FF9EE8E1";
+                else this.Color = "#FFB1B1B1";
+                if (this.PropertyChanged != null)
+                {
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("ClientVisible"));
+                }
+            }
+        }
+        public Client taskClient { get; set; }
         public int ClientId { get; set; }
         public string ClientName { get; set; }
         public string ClientContact { get; set; }

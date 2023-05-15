@@ -42,6 +42,10 @@ namespace DreamTrip.Windows
             MainFunctions.DeleteTempFolders();
             MainFunctions.ClearLogs();
 
+
+            MainFunctions.ClearAccountsPhotos();
+            MainFunctions.ClearServicesPhotos();
+
             userType = tempUserType;
             login = tempLogin;
 
