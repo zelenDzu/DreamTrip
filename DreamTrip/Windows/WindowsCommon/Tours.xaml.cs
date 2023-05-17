@@ -635,10 +635,6 @@ namespace DreamTrip.Windows
                     toursIds += dataTours.Rows[i][0].ToString();
                 }
 
-                MainFunctions.AddLogRecord($"Tour search:" +
-                    $"\n\tName: {tbxTourNameSearch.Text}" +
-                    $"\n\tPrice: from {tbxPriceFrom.Text} to {tbxPriceTo.Text}");
-
                 LoadTours(toursIds);
             }
         }

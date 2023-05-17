@@ -90,76 +90,85 @@ namespace DreamTrip.Windows
         /// <param name="clientsIds"></param>
         private void LoadClients(string clientsIds)
         {
-            dtgClients.ItemsSource = null;
-            ClientsList.Clear();
-
-            tbNothingFound.Visibility = Visibility.Hidden;
-            if (clientsIds == "")
+            try
             {
-                tbNothingFound.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                DataTable dataClients;
+                dtgClients.ItemsSource = null;
+                ClientsList.Clear();
 
-                if (clientsIds == "all")
+                tbNothingFound.Visibility = Visibility.Hidden;
+                if (clientsIds == "")
                 {
-                    dataClients = MainFunctions.NewQuery("SELECT * FROM [dbo].[Client] ORDER BY surname, name, patronymic");
+                    tbNothingFound.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    dataClients = MainFunctions.NewQuery($"SELECT * FROM [dbo].[Client] WHERE id_client IN ({clientsIds}) ORDER BY surname, name, patronymic");
-                }
+                    DataTable dataClients;
 
-                for (int i = 0; i < dataClients.Rows.Count; i++)
-                {
-                    DataTable clientContacts = MainFunctions.NewQuery($"SELECT phone, email FROM [dbo].[Client_contacts] WHERE id_client={int.Parse(dataClients.Rows[i][0].ToString())}");
-                    string tempPhone = "отсутствует";
-                    string tempEmail = "отсутствует";
-                    if (clientContacts.Rows.Count != 0)
+                    if (clientsIds == "all")
                     {
-                        if (clientContacts.Rows[0][0].ToString() != "") tempPhone = "8" + clientContacts.Rows[0][0].ToString();
-                        if (clientContacts.Rows[0][1].ToString() != "") tempEmail = clientContacts.Rows[0][1].ToString();
+                        dataClients = MainFunctions.NewQuery("SELECT * FROM [dbo].[Client] ORDER BY surname, name, patronymic");
+                    }
+                    else
+                    {
+                        dataClients = MainFunctions.NewQuery($"SELECT * FROM [dbo].[Client] WHERE id_client IN ({clientsIds}) ORDER BY surname, name, patronymic");
                     }
 
-                    DataTable clientWorkInfo = MainFunctions.NewQuery($"SELECT cwi.id_client, cwi.id_work_field, wf.name, cwi.id_work_post, wp.name FROM Client_work_info as cwi " +
-                        $"JOIN Work_field as wf ON wf.id_work_field = cwi.id_work_field " +
-                        $"JOIN Work_post as wp ON wp.id_work_post = cwi.id_work_post " +
-                        $"WHERE id_client = {int.Parse(dataClients.Rows[i][0].ToString())}");
-
-                    int tempWorkFieldId = 0, tempWorkPostId = 0;
-                    string tempWorkField = "отсутствует", tempWorkPost = "отсутствует";
-                    if (clientWorkInfo.Rows.Count != 0)
+                    for (int i = 0; i < dataClients.Rows.Count; i++)
                     {
-                        tempWorkFieldId = int.Parse(clientWorkInfo.Rows[0][1].ToString());
-                        tempWorkField = clientWorkInfo.Rows[0][2].ToString().ToLower();
-                        tempWorkPostId = int.Parse(clientWorkInfo.Rows[0][3].ToString());
-                        tempWorkPost = clientWorkInfo.Rows[0][4].ToString().ToLower();
+                        DataTable clientContacts = MainFunctions.NewQuery($"SELECT phone, email FROM [dbo].[Client_contacts] WHERE id_client={int.Parse(dataClients.Rows[i][0].ToString())}");
+                        string tempPhone = "отсутствует";
+                        string tempEmail = "отсутствует";
+                        if (clientContacts.Rows.Count != 0)
+                        {
+                            if (clientContacts.Rows[0][0].ToString() != "") tempPhone = "8" + clientContacts.Rows[0][0].ToString();
+                            if (clientContacts.Rows[0][1].ToString() != "") tempEmail = clientContacts.Rows[0][1].ToString();
+                        }
 
+                        DataTable clientWorkInfo = MainFunctions.NewQuery($"SELECT cwi.id_client, cwi.id_work_field, wf.name, cwi.id_work_post, wp.name FROM Client_work_info as cwi " +
+                            $"JOIN Work_field as wf ON wf.id_work_field = cwi.id_work_field " +
+                            $"JOIN Work_post as wp ON wp.id_work_post = cwi.id_work_post " +
+                            $"WHERE id_client = {int.Parse(dataClients.Rows[i][0].ToString())}");
+
+                        int tempWorkFieldId = 0, tempWorkPostId = 0;
+                        string tempWorkField = "отсутствует", tempWorkPost = "отсутствует";
+                        if (clientWorkInfo.Rows.Count != 0)
+                        {
+                            tempWorkFieldId = int.Parse(clientWorkInfo.Rows[0][1].ToString());
+                            tempWorkField = clientWorkInfo.Rows[0][2].ToString().ToLower();
+                            tempWorkPostId = int.Parse(clientWorkInfo.Rows[0][3].ToString());
+                            tempWorkPost = clientWorkInfo.Rows[0][4].ToString().ToLower();
+
+                        }
+
+
+                        Client dataClient = new Client()
+                        {
+                            ClientId = int.Parse(dataClients.Rows[i][0].ToString()),
+                            Surname = dataClients.Rows[i][1].ToString(),
+                            Name = dataClients.Rows[i][2].ToString(),
+                            Patronymic = dataClients.Rows[i][3].ToString(),
+                            PassportSeria = dataClients.Rows[i][4].ToString(),
+                            PassportNumber = dataClients.Rows[i][5].ToString(),
+                            Birthday = dataClients.Rows[i][6].ToString().Replace("0:00:00", "").Trim(),
+                            Age = int.Parse(dataClients.Rows[i][8].ToString()),
+                            Gender = dataClients.Rows[i][7].ToString(),
+                            Phone = tempPhone,
+                            Email = tempEmail,
+                            WorkFieldId = tempWorkFieldId,
+                            WorkFieldName = tempWorkField,
+                            WorkPostId = tempWorkPostId,
+                            WorkPostName = tempWorkPost,
+                        };
+                        ClientsList.Add(dataClient);
                     }
-
-
-                    Client dataClient = new Client()
-                    {
-                        ClientId = int.Parse(dataClients.Rows[i][0].ToString()),
-                        Surname = dataClients.Rows[i][1].ToString(),
-                        Name = dataClients.Rows[i][2].ToString(),
-                        Patronymic = dataClients.Rows[i][3].ToString(),
-                        PassportSeria = dataClients.Rows[i][4].ToString(),
-                        PassportNumber = dataClients.Rows[i][5].ToString(),
-                        Birthday = dataClients.Rows[i][6].ToString().Replace("0:00:00", "").Trim(),
-                        Age = int.Parse(dataClients.Rows[i][8].ToString()),
-                        Gender = dataClients.Rows[i][7].ToString(),
-                        Phone = tempPhone,
-                        Email = tempEmail,
-                        WorkFieldId = tempWorkFieldId,
-                        WorkFieldName = tempWorkField,
-                        WorkPostId = tempWorkPostId,
-                        WorkPostName = tempWorkPost,
-                    };
-                    ClientsList.Add(dataClient);
+                    dtgClients.ItemsSource = ClientsList;
                 }
-                dtgClients.ItemsSource = ClientsList;
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Clients LoadClients error: {ex.Message}");
             }
         }
 
@@ -168,49 +177,57 @@ namespace DreamTrip.Windows
         /// </summary>
         private void LoadFields()
         {
-            DataTable dataTableWithoutWork = MainFunctions.NewQuery("SELECT * FROM [dbo].[Work_field] WHERE name = 'Безработный'");
-            WorkField dataWithoutWork = new WorkField()
+            try
             {
-                WorkFieldId = int.Parse(dataTableWithoutWork.Rows[0][0].ToString()),
-                Name = dataTableWithoutWork.Rows[0][1].ToString(),
-                IsChecked = false,
-            };
-            lstField.Items.Add(dataWithoutWork);
-            FieldsList.Add(dataWithoutWork);
-
-            DataTable dataTableNullWork = MainFunctions.NewQuery("SELECT * FROM [dbo].[Work_field] WHERE name = 'Отсутствует'");
-            WorkField dataNullWork = new WorkField()
-            {
-                WorkFieldId = int.Parse(dataTableNullWork.Rows[0][0].ToString()),
-                Name = dataTableNullWork.Rows[0][1].ToString(),
-                IsChecked = false,
-            };
-            lstField.Items.Add(dataNullWork);
-            FieldsList.Add(dataNullWork);
-
-
-            DataTable dataFields = MainFunctions.NewQuery("SELECT * FROM [dbo].[Work_field] WHERE name NOT IN ('Безработный','Другое','Отсутствует') ORDER BY name");
-            for (int i = 0; i < dataFields.Rows.Count; i++)
-            {
-                WorkField dataField = new WorkField()
+                DataTable dataTableWithoutWork = MainFunctions.NewQuery("SELECT * FROM [dbo].[Work_field] WHERE name = 'Безработный'");
+                WorkField dataWithoutWork = new WorkField()
                 {
-                    WorkFieldId = int.Parse(dataFields.Rows[i][0].ToString()),
-                    Name = dataFields.Rows[i][1].ToString(),
+                    WorkFieldId = int.Parse(dataTableWithoutWork.Rows[0][0].ToString()),
+                    Name = dataTableWithoutWork.Rows[0][1].ToString(),
                     IsChecked = false,
                 };
-                lstField.Items.Add(dataField);
-                FieldsList.Add(dataField);
-            }
+                lstField.Items.Add(dataWithoutWork);
+                FieldsList.Add(dataWithoutWork);
 
-            DataTable dataTableOther = MainFunctions.NewQuery("SELECT * FROM [dbo].[Work_field] WHERE name = 'Другое'");
-            WorkField dataOther = new WorkField()
+                DataTable dataTableNullWork = MainFunctions.NewQuery("SELECT * FROM [dbo].[Work_field] WHERE name = 'Отсутствует'");
+                WorkField dataNullWork = new WorkField()
+                {
+                    WorkFieldId = int.Parse(dataTableNullWork.Rows[0][0].ToString()),
+                    Name = dataTableNullWork.Rows[0][1].ToString(),
+                    IsChecked = false,
+                };
+                lstField.Items.Add(dataNullWork);
+                FieldsList.Add(dataNullWork);
+
+
+                DataTable dataFields = MainFunctions.NewQuery("SELECT * FROM [dbo].[Work_field] WHERE name NOT IN ('Безработный','Другое','Отсутствует') ORDER BY name");
+                for (int i = 0; i < dataFields.Rows.Count; i++)
+                {
+                    WorkField dataField = new WorkField()
+                    {
+                        WorkFieldId = int.Parse(dataFields.Rows[i][0].ToString()),
+                        Name = dataFields.Rows[i][1].ToString(),
+                        IsChecked = false,
+                    };
+                    lstField.Items.Add(dataField);
+                    FieldsList.Add(dataField);
+                }
+
+                DataTable dataTableOther = MainFunctions.NewQuery("SELECT * FROM [dbo].[Work_field] WHERE name = 'Другое'");
+                WorkField dataOther = new WorkField()
+                {
+                    WorkFieldId = int.Parse(dataTableOther.Rows[0][0].ToString()),
+                    Name = dataTableOther.Rows[0][1].ToString(),
+                    IsChecked = false,
+                };
+                lstField.Items.Add(dataOther);
+                FieldsList.Add(dataOther);
+            }
+            catch (Exception ex)
             {
-                WorkFieldId = int.Parse(dataTableOther.Rows[0][0].ToString()),
-                Name = dataTableOther.Rows[0][1].ToString(),
-                IsChecked = false,
-            };
-            lstField.Items.Add(dataOther);
-            FieldsList.Add(dataOther);
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                MainFunctions.AddLogRecord($"Clients LoadFields error: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -218,60 +235,68 @@ namespace DreamTrip.Windows
         /// </summary>
         private void LoadPosts()
         {
-            int[] checkedFields = CommonFunctions.CheckedFields(FieldsList);
-            int fieldListId = -1;
-            if (checkedFields.Length == 1) fieldListId = checkedFields[0];
-            if (fieldListId != lastChosenField)
+            try
             {
-                SecondItemCheckBoxPost.IsChecked = false;
-
-                lastChosenField = fieldListId;
-                tempFirstItemPost = lstPost.Items[0] as ComboBoxItem;
-                tempSecondItemPost = lstPost.Items[1] as ComboBoxItem;
-                tempThirdItemPost = lstPost.Items[2] as ComboBoxItem;
-
-                lstPost.Items.Clear();
-
-                lstPost.Items.Add(tempFirstItemPost);
-                lstPost.Items.Add(tempSecondItemPost);
-                lstPost.Items.Add(tempThirdItemPost);
-
-                lstPost.SelectedIndex = 0;
-
-                CurrentPostsList.Clear();
-
-                if (fieldListId == -1)
+                int[] checkedFields = CommonFunctions.CheckedFields(FieldsList);
+                int fieldListId = -1;
+                if (checkedFields.Length == 1) fieldListId = checkedFields[0];
+                if (fieldListId != lastChosenField)
                 {
-                    (lstPost.Items[1] as ComboBoxItem).Visibility = Visibility.Collapsed;
-                    (lstPost.Items[1] as ComboBoxItem).IsEnabled = false;
-                    (lstPost.Items[2] as ComboBoxItem).Visibility = Visibility.Visible;
-                    (lstPost.Items[2] as ComboBoxItem).IsEnabled = true;
+                    SecondItemCheckBoxPost.IsChecked = false;
 
-                }
-                else
-                {
-                    (lstPost.Items[2] as ComboBoxItem).Visibility = Visibility.Collapsed;
-                    (lstPost.Items[2] as ComboBoxItem).IsEnabled = false;
-                    (lstPost.Items[1] as ComboBoxItem).Visibility = Visibility.Visible;
-                    (lstPost.Items[1] as ComboBoxItem).IsEnabled = true;
+                    lastChosenField = fieldListId;
+                    tempFirstItemPost = lstPost.Items[0] as ComboBoxItem;
+                    tempSecondItemPost = lstPost.Items[1] as ComboBoxItem;
+                    tempThirdItemPost = lstPost.Items[2] as ComboBoxItem;
 
-                    DataTable dataPosts = MainFunctions.NewQuery($"SELECT id_work_post, name FROM [dbo].[Work_post] WHERE id_work_field={fieldListId} ORDER BY name");
+                    lstPost.Items.Clear();
 
-                    for (int j = 0; j < dataPosts.Rows.Count; j++)
+                    lstPost.Items.Add(tempFirstItemPost);
+                    lstPost.Items.Add(tempSecondItemPost);
+                    lstPost.Items.Add(tempThirdItemPost);
+
+                    lstPost.SelectedIndex = 0;
+
+                    CurrentPostsList.Clear();
+
+                    if (fieldListId == -1)
                     {
-                        WorkPost dataPost = new WorkPost()
-                        {
-                            WorkPostId = int.Parse(dataPosts.Rows[j][0].ToString()),
-                            WorkFieldId = fieldListId,
-                            Name = dataPosts.Rows[j][1].ToString(),
-                            IsChecked = false,
-                        };
-                        lstPost.Items.Add(dataPost);
-                        CurrentPostsList.Add(dataPost);
-                    }
+                        (lstPost.Items[1] as ComboBoxItem).Visibility = Visibility.Collapsed;
+                        (lstPost.Items[1] as ComboBoxItem).IsEnabled = false;
+                        (lstPost.Items[2] as ComboBoxItem).Visibility = Visibility.Visible;
+                        (lstPost.Items[2] as ComboBoxItem).IsEnabled = true;
 
-                    SecondItemCheckBoxPost.IsChecked = true;
+                    }
+                    else
+                    {
+                        (lstPost.Items[2] as ComboBoxItem).Visibility = Visibility.Collapsed;
+                        (lstPost.Items[2] as ComboBoxItem).IsEnabled = false;
+                        (lstPost.Items[1] as ComboBoxItem).Visibility = Visibility.Visible;
+                        (lstPost.Items[1] as ComboBoxItem).IsEnabled = true;
+
+                        DataTable dataPosts = MainFunctions.NewQuery($"SELECT id_work_post, name FROM [dbo].[Work_post] WHERE id_work_field={fieldListId} ORDER BY name");
+
+                        for (int j = 0; j < dataPosts.Rows.Count; j++)
+                        {
+                            WorkPost dataPost = new WorkPost()
+                            {
+                                WorkPostId = int.Parse(dataPosts.Rows[j][0].ToString()),
+                                WorkFieldId = fieldListId,
+                                Name = dataPosts.Rows[j][1].ToString(),
+                                IsChecked = false,
+                            };
+                            lstPost.Items.Add(dataPost);
+                            CurrentPostsList.Add(dataPost);
+                        }
+
+                        SecondItemCheckBoxPost.IsChecked = true;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
         }
 
@@ -507,140 +532,149 @@ namespace DreamTrip.Windows
             }
             else
             {
-                string condition = "";
-
-                if (tbxNameSearch.Text != "")
+                try
                 {
-                    string[] fullName = tbxNameSearch.Text.Split(' ');
-                    string[] name = new string[3];
-                    int currentNameIndex = 0;
-                    for (int i = 0; i < fullName.Length; i++)
+                    string condition = "";
+
+                    if (tbxNameSearch.Text != "")
                     {
-                        fullName[i] = fullName[i].Trim();
-                        if (MainFunctions.ValidateString_RuEng(fullName[i]) && currentNameIndex < 3)
+                        string[] fullName = tbxNameSearch.Text.Split(' ');
+                        string[] name = new string[3];
+                        int currentNameIndex = 0;
+                        for (int i = 0; i < fullName.Length; i++)
                         {
-                            name[currentNameIndex] = fullName[i];
-                            currentNameIndex++;
-                        }
-                        if (currentNameIndex >= 3) break;
-                    }
-
-                    if (name[0] != null && MainFunctions.ValidateString_RuEng(name[0].ToLower()))
-                    {
-                        condition += String.Format("WHERE (surname LIKE '%{0}%' OR name LIKE '%{0}%' OR patronymic LIKE '%{0}%')", name[0]);
-                    }
-                    if (name[1] != null && MainFunctions.ValidateString_RuEng(name[1].ToLower()))
-                    {
-                        if (condition == "") condition += "WHERE ";
-                        else condition += " AND ";
-
-                        condition += String.Format("(surname LIKE '%{0}%' OR name LIKE '%{0}%' OR patronymic LIKE '%{0}%')", name[1]);
-                    }
-                    if (name[2] != null && MainFunctions.ValidateString_RuEng(name[2].ToLower()))
-                    {
-                        if (condition == "") condition += "WHERE ";
-                        else condition += " AND ";
-
-                        condition += String.Format("(surname LIKE '%{0}%' OR name LIKE '%{0}%' OR patronymic LIKE '%{0}%')", name[2]);
-                    }
-                }
-
-                if (cmbGender.SelectedIndex == 2 || cmbGender.SelectedIndex == 3)
-                {
-                    if (condition == "") condition += "WHERE ";
-                    else condition += " AND ";
-
-                    condition += String.Format("gender='{0}'", (cmbGender.SelectedItem as ComboBoxItem).Content.ToString().ToCharArray()[0].ToString());
-                }
-
-
-
-                if (tbxAgeFrom.Text != "")
-                {
-                    if (condition == "") condition += "WHERE ";
-                    else condition += " AND ";
-
-                    condition += String.Format("age>={0}", tbxAgeFrom.Text);
-                }
-
-                if (tbxAgeTo.Text != "")
-                {
-                    if (condition == "") condition += "WHERE ";
-                    else condition += " AND ";
-
-                    condition += String.Format("age<={0}", tbxAgeTo.Text);
-                }
-
-                if (SecondItemCheckBoxField.IsChecked == false)
-                {
-                    int[] checkedFields = CommonFunctions.CheckedFields(FieldsList);
-                    if (checkedFields.Length > 0)
-                    {
-                        string checkedFieldsIds = "";
-                        for (int i = 0; i < checkedFields.Length; i++)
-                        {
-                            if (checkedFieldsIds != "") checkedFieldsIds += ",";
-                            checkedFieldsIds += checkedFields[i].ToString();
+                            fullName[i] = fullName[i].Trim();
+                            if (MainFunctions.ValidateString_RuEng(fullName[i]) && currentNameIndex < 3)
+                            {
+                                name[currentNameIndex] = fullName[i];
+                                currentNameIndex++;
+                            }
+                            if (currentNameIndex >= 3) break;
                         }
 
-                        if (checkedFieldsIds != "")
+                        if (name[0] != null && MainFunctions.ValidateString_RuEng(name[0].ToLower()))
+                        {
+                            condition += String.Format("WHERE (surname LIKE '%{0}%' OR name LIKE '%{0}%' OR patronymic LIKE '%{0}%')", name[0]);
+                        }
+                        if (name[1] != null && MainFunctions.ValidateString_RuEng(name[1].ToLower()))
                         {
                             if (condition == "") condition += "WHERE ";
                             else condition += " AND ";
 
-                            condition += String.Format("id_client IN (SELECT id_client FROM [dbo].[Client_work_info] WHERE id_work_field IN ({0}))", checkedFieldsIds);
+                            condition += String.Format("(surname LIKE '%{0}%' OR name LIKE '%{0}%' OR patronymic LIKE '%{0}%')", name[1]);
                         }
-                    }
-                    else
-                    {
-                        if (condition == "") condition += "WHERE ";
-                        else condition += " AND ";
-
-                        condition += "id_client IN (SELECT id_client FROM [dbo].[Client_work_info] WHERE id_work_field IS NULL OR id_work_field = 37)";
-                    }
-                }
-
-
-
-                if (SecondItemPost.Visibility == Visibility.Visible && CurrentPostsList.Count > 0)
-                {
-                    string checkedPosts = "";
-                    for (int i = 0; i < CurrentPostsList.Count; i++)
-                    {
-                        if (CurrentPostsList[i].IsChecked)
+                        if (name[2] != null && MainFunctions.ValidateString_RuEng(name[2].ToLower()))
                         {
-                            if (checkedPosts != "") checkedPosts += ",";
-                            checkedPosts += CurrentPostsList[i].WorkPostId.ToString();
+                            if (condition == "") condition += "WHERE ";
+                            else condition += " AND ";
+
+                            condition += String.Format("(surname LIKE '%{0}%' OR name LIKE '%{0}%' OR patronymic LIKE '%{0}%')", name[2]);
                         }
                     }
 
-                    if (checkedPosts != "")
+                    if (cmbGender.SelectedIndex == 2 || cmbGender.SelectedIndex == 3)
                     {
                         if (condition == "") condition += "WHERE ";
                         else condition += " AND ";
 
-                        condition += String.Format("id_client IN (SELECT id_client FROM [dbo].[Client_work_info] WHERE id_work_post IN ({0}", checkedPosts);
-                        if (SecondItemCheckBoxPost.IsChecked == true) condition += ", 1471) OR id_work_post IS NULL)";
-                        else condition += "))";
+                        condition += String.Format("gender='{0}'", (cmbGender.SelectedItem as ComboBoxItem).Content.ToString().ToCharArray()[0].ToString());
                     }
-                    else
+
+
+
+                    if (tbxAgeFrom.Text != "")
                     {
                         if (condition == "") condition += "WHERE ";
                         else condition += " AND ";
 
-                        condition += String.Format("id_client IN (SELECT id_client FROM [dbo].[Client_work_info] WHERE id_work_field = {0} AND (id_work_post IS NULL OR id_work_post = 1471))", CurrentPostsList[0].WorkFieldId.ToString());
+                        condition += String.Format("age>={0}", tbxAgeFrom.Text);
                     }
-                }
 
-                DataTable dataClients = MainFunctions.NewQuery($"SELECT id_client FROM [dbo].[Client] {condition}");
-                string clientsIds = "";
-                for (int i = 0;i < dataClients.Rows.Count; i++)
-                {
-                    if (clientsIds != "") clientsIds += ",";
-                    clientsIds += dataClients.Rows[i][0].ToString();
-                }
+                    if (tbxAgeTo.Text != "")
+                    {
+                        if (condition == "") condition += "WHERE ";
+                        else condition += " AND ";
+
+                        condition += String.Format("age<={0}", tbxAgeTo.Text);
+                    }
+
+                    if (SecondItemCheckBoxField.IsChecked == false)
+                    {
+                        int[] checkedFields = CommonFunctions.CheckedFields(FieldsList);
+                        if (checkedFields.Length > 0)
+                        {
+                            string checkedFieldsIds = "";
+                            for (int i = 0; i < checkedFields.Length; i++)
+                            {
+                                if (checkedFieldsIds != "") checkedFieldsIds += ",";
+                                checkedFieldsIds += checkedFields[i].ToString();
+                            }
+
+                            if (checkedFieldsIds != "")
+                            {
+                                if (condition == "") condition += "WHERE ";
+                                else condition += " AND ";
+
+                                condition += String.Format("id_client IN (SELECT id_client FROM [dbo].[Client_work_info] WHERE id_work_field IN ({0}))", checkedFieldsIds);
+                            }
+                        }
+                        else
+                        {
+                            if (condition == "") condition += "WHERE ";
+                            else condition += " AND ";
+
+                            condition += "id_client IN (SELECT id_client FROM [dbo].[Client_work_info] WHERE id_work_field IS NULL OR id_work_field = 37)";
+                        }
+                    }
+
+
+
+                    if (SecondItemPost.Visibility == Visibility.Visible && CurrentPostsList.Count > 0)
+                    {
+                        string checkedPosts = "";
+                        for (int i = 0; i < CurrentPostsList.Count; i++)
+                        {
+                            if (CurrentPostsList[i].IsChecked)
+                            {
+                                if (checkedPosts != "") checkedPosts += ",";
+                                checkedPosts += CurrentPostsList[i].WorkPostId.ToString();
+                            }
+                        }
+
+                        if (checkedPosts != "")
+                        {
+                            if (condition == "") condition += "WHERE ";
+                            else condition += " AND ";
+
+                            condition += String.Format("id_client IN (SELECT id_client FROM [dbo].[Client_work_info] WHERE id_work_post IN ({0}", checkedPosts);
+                            if (SecondItemCheckBoxPost.IsChecked == true) condition += ", 1471) OR id_work_post IS NULL)";
+                            else condition += "))";
+                        }
+                        else
+                        {
+                            if (condition == "") condition += "WHERE ";
+                            else condition += " AND ";
+
+                            condition += String.Format("id_client IN (SELECT id_client FROM [dbo].[Client_work_info] WHERE id_work_field = {0} AND (id_work_post IS NULL OR id_work_post = 1471))", CurrentPostsList[0].WorkFieldId.ToString());
+                        }
+                    }
+
+                    DataTable dataClients = MainFunctions.NewQuery($"SELECT id_client FROM [dbo].[Client] {condition}");
+                    string clientsIds = "";
+                    for (int i = 0; i < dataClients.Rows.Count; i++)
+                    {
+                        if (clientsIds != "") clientsIds += ",";
+                        clientsIds += dataClients.Rows[i][0].ToString();
+                    }
 
                 LoadClients(clientsIds);
+                }
+                catch (Exception ex)
+                {
+                    new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                    MainFunctions.AddLogRecord($"Unknown search error: {ex.Message}");
+                }
+
             }
 
 

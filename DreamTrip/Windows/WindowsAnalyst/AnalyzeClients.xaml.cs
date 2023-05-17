@@ -60,12 +60,18 @@ namespace DreamTrip.Windows
                 new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4D64E0")),
             };
 
-            
-
-
-            LoadNewClientsCount();
-            LoadClientsABC();
-            LoadPieChart(2);
+            try
+            {
+                LoadNewClientsCount();
+                LoadClientsABC();
+                LoadPieChart(2);
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown analyze clients load error: {ex.Message}");
+            }
 
         }
         #endregion
@@ -275,27 +281,36 @@ namespace DreamTrip.Windows
             MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
         }
 
+        private void tbClientFullName_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            int clientId = int.Parse((sender as TextBlock).Tag.ToString());
+            parentTabItemLink.ItemUserControl = new EditClient(parentTabItemLink, this, thisPageParametres, clientId);
+        }
         #endregion
 
         #region Changed
-
-        #endregion
-
         private void cmbClientGroupType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //index : type
             //1 : пол
             //2 : возраст
             //3 : работа
-            if (pcClientGroup!=null)
-                if (cmbClientGroupType.SelectedIndex != -1) 
-                    LoadPieChart(cmbClientGroupType.SelectedIndex+1);
+
+            try
+            {
+                if (pcClientGroup != null)
+                    if (cmbClientGroupType.SelectedIndex != -1)
+                        LoadPieChart(cmbClientGroupType.SelectedIndex + 1);
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
+            }
         }
 
-        private void tbClientFullName_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            int clientId = int.Parse((sender as TextBlock).Tag.ToString());
-            parentTabItemLink.ItemUserControl = new EditClient(parentTabItemLink, this, thisPageParametres, clientId);
-        }
+        #endregion
+
+
     }
 }

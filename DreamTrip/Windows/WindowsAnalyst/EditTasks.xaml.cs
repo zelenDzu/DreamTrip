@@ -62,87 +62,96 @@ namespace DreamTrip.Windows
         #region LoadData
         public void LoadTasks()
         {
-            tasks.Clear();
-            lvTasks.ItemsSource = null;
-
-            DataTable tasksData = MainFunctions.NewQuery($"SELECT t.id_task, " +
-                $"t.text, " +
-                $"t.date_creation, " +
-                $"t.is_done, " +
-                $"tt.icon_path, " +
-                $"t.id_task_type, " +
-                $"tc.id_client, " +
-                $"CONCAT(c.surname, ' ', c.name, ' ', c.patronymic), " +
-                $"ISNULL(cc.phone,'нет'), " +
-                $"ISNULL(cc.email,'нет')  " +
-
-                $"FROM Task t " +
-                $"JOIN Task_type tt ON tt.id_task_type = t.id_task_type " +
-                $"LEFT JOIN Task_call tc ON tc.id_task = t.id_task " +
-                $"LEFT JOIN Client c ON c.id_client = tc.id_client " +
-                $"LEFT JOIN Client_contacts cc ON cc.id_client = tc.id_client " +
-                $"WHERE t.is_done = 0 " +
-                $"ORDER BY t.date_creation DESC");
-
-            for (int i = 0; i < tasksData.Rows.Count; i++)
+            try
             {
-                MTask task = new MTask()
+                tasks.Clear();
+                lvTasks.ItemsSource = null;
+
+                DataTable tasksData = MainFunctions.NewQuery($"SELECT t.id_task, " +
+                    $"t.text, " +
+                    $"t.date_creation, " +
+                    $"t.is_done, " +
+                    $"tt.icon_path, " +
+                    $"t.id_task_type, " +
+                    $"tc.id_client, " +
+                    $"CONCAT(c.surname, ' ', c.name, ' ', c.patronymic), " +
+                    $"ISNULL(cc.phone,'нет'), " +
+                    $"ISNULL(cc.email,'нет')  " +
+
+                    $"FROM Task t " +
+                    $"JOIN Task_type tt ON tt.id_task_type = t.id_task_type " +
+                    $"LEFT JOIN Task_call tc ON tc.id_task = t.id_task " +
+                    $"LEFT JOIN Client c ON c.id_client = tc.id_client " +
+                    $"LEFT JOIN Client_contacts cc ON cc.id_client = tc.id_client " +
+                    $"WHERE t.is_done = 0 " +
+                    $"ORDER BY t.date_creation DESC");
+
+                for (int i = 0; i < tasksData.Rows.Count; i++)
                 {
-                    Id = int.Parse(tasksData.Rows[i][0].ToString()),
-                    Text = tasksData.Rows[i][1].ToString(),
-                    Date = Convert.ToDateTime(tasksData.Rows[i][2]).ToShortDateString().ToString(),
-                    IsDone = Convert.ToBoolean(tasksData.Rows[i][3]),
-                    ImageSource = tasksData.Rows[i][4].ToString(),
-                    TaskTypeId = int.Parse(tasksData.Rows[i][5].ToString()),
-                    ClientId = 0,
-                    ClientName = "",
-                    ClientContact = "",
-                    ClientVisible = Visibility.Hidden,
-                    Color = "#FFB1B1B1",
-                };
-
-
-                if (task.TaskTypeId == 1 || task.TaskTypeId == 2)
-                {
-                    task.ClientVisible = Visibility.Visible;
-                    task.ClientName = tasksData.Rows[i][7].ToString();
-                    task.ClientId = int.Parse(tasksData.Rows[i][6].ToString());
-
-                    switch (task.TaskTypeId)
+                    MTask task = new MTask()
                     {
-                        case 1:
-                            string phone = tasksData.Rows[i][8].ToString();
-                            try
-                            {
-                                task.ClientContact = "8 (" + phone.Substring(0, 3) + ") " + phone.Substring(3, 3) + "-" + phone.Substring(6, 2) + "-" + phone.Substring(8, 2);
-                            }
-                            catch
-                            {
-                                task.ClientContact = "нет";
-                            }
-                            
-                            
-                            break;
-
-                        case 2:
-                            try
-                            {
-                                task.ClientContact = tasksData.Rows[i][9].ToString();
-                            }
-                            catch
-                            {
-                                task.ClientContact = "нет";
-                            }
+                        Id = int.Parse(tasksData.Rows[i][0].ToString()),
+                        Text = tasksData.Rows[i][1].ToString(),
+                        Date = Convert.ToDateTime(tasksData.Rows[i][2]).ToShortDateString().ToString(),
+                        IsDone = Convert.ToBoolean(tasksData.Rows[i][3]),
+                        ImageSource = tasksData.Rows[i][4].ToString(),
+                        TaskTypeId = int.Parse(tasksData.Rows[i][5].ToString()),
+                        ClientId = 0,
+                        ClientName = "",
+                        ClientContact = "",
+                        ClientVisible = Visibility.Hidden,
+                        Color = "#FFB1B1B1",
+                    };
 
 
-                            break;
+                    if (task.TaskTypeId == 1 || task.TaskTypeId == 2)
+                    {
+                        task.ClientVisible = Visibility.Visible;
+                        task.ClientName = tasksData.Rows[i][7].ToString();
+                        task.ClientId = int.Parse(tasksData.Rows[i][6].ToString());
+
+                        switch (task.TaskTypeId)
+                        {
+                            case 1:
+                                string phone = tasksData.Rows[i][8].ToString();
+                                try
+                                {
+                                    task.ClientContact = "8 (" + phone.Substring(0, 3) + ") " + phone.Substring(3, 3) + "-" + phone.Substring(6, 2) + "-" + phone.Substring(8, 2);
+                                }
+                                catch
+                                {
+                                    task.ClientContact = "нет";
+                                }
+
+
+                                break;
+
+                            case 2:
+                                try
+                                {
+                                    task.ClientContact = tasksData.Rows[i][9].ToString();
+                                }
+                                catch
+                                {
+                                    task.ClientContact = "нет";
+                                }
+
+
+                                break;
+                        }
                     }
+
+                    tasks.Add(task);
                 }
 
-                tasks.Add(task);
+                lvTasks.ItemsSource = tasks;
             }
-
-            lvTasks.ItemsSource = tasks;
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Load Tasks error: {ex.Message}");
+            }
         }
 
         void LoadNewTask()
@@ -178,57 +187,64 @@ namespace DreamTrip.Windows
             //{
             //    cmbClient.Items.RemoveAt(i);
             //}
-
-            currentClients.Clear();
-            cmbClient.ItemsSource = null;
-            if (cmbClient.Items.Count > 0) cmbClient.Items.Clear();
-
-            DataTable clientsData = MainFunctions.NewQuery($"SELECT id_client, " +
-                $"surname, " +
-                $"name, " +
-                $"patronymic " +
-                $"FROM Client " +
-                $"WHERE(lower(surname) LIKE '%{nameSearch.ToLower()}%') " +
-                $"OR(lower(name) LIKE '%{nameSearch.ToLower() }% ') " +
-                $"OR(lower(patronymic) LIKE '%{nameSearch.ToLower() }% ')");
-
-            for (int i = 0; i < clientsData.Rows.Count; i++)
+            try
             {
-                Client newClient = new Client()
+                currentClients.Clear();
+                cmbClient.ItemsSource = null;
+                if (cmbClient.Items.Count > 0) cmbClient.Items.Clear();
+
+                DataTable clientsData = MainFunctions.NewQuery($"SELECT id_client, " +
+                    $"surname, " +
+                    $"name, " +
+                    $"patronymic " +
+                    $"FROM Client " +
+                    $"WHERE(lower(surname) LIKE '%{nameSearch.ToLower()}%') " +
+                    $"OR(lower(name) LIKE '%{nameSearch.ToLower() }% ') " +
+                    $"OR(lower(patronymic) LIKE '%{nameSearch.ToLower() }% ')");
+
+                for (int i = 0; i < clientsData.Rows.Count; i++)
                 {
-                    ClientId = Convert.ToInt32(clientsData.Rows[i][0].ToString()),
-                    Surname = clientsData.Rows[i][1].ToString(),
-                    Name = clientsData.Rows[i][2].ToString(),
-                    Patronymic = clientsData.Rows[i][3].ToString()
-                };
-
-                currentClients.Add(newClient);
-            }
-
-            
-
-
-            if (currentClients.Count == 0)
-            {
-                cmbClient.Items.Add(cmiNoMatches);
-            }
-            else
-            {
-                cmbClient.ItemsSource = currentClients;
-
-                bool selectedUpdated = false;
-
-                for (int i = 0; i < currentClients.Count; i++)
-                {
-                    if (currentClients[i].ClientId == newTask.ClientId)
+                    Client newClient = new Client()
                     {
-                        cmbClient.SelectedItem = currentClients[i];
-                        selectedUpdated = true;
-                        break;
-                    }
+                        ClientId = Convert.ToInt32(clientsData.Rows[i][0].ToString()),
+                        Surname = clientsData.Rows[i][1].ToString(),
+                        Name = clientsData.Rows[i][2].ToString(),
+                        Patronymic = clientsData.Rows[i][3].ToString()
+                    };
+
+                    currentClients.Add(newClient);
                 }
 
-                if (!selectedUpdated) cmbClient.SelectedIndex = 0;
+
+
+
+                if (currentClients.Count == 0)
+                {
+                    cmbClient.Items.Add(cmiNoMatches);
+                }
+                else
+                {
+                    cmbClient.ItemsSource = currentClients;
+
+                    bool selectedUpdated = false;
+
+                    for (int i = 0; i < currentClients.Count; i++)
+                    {
+                        if (currentClients[i].ClientId == newTask.ClientId)
+                        {
+                            cmbClient.SelectedItem = currentClients[i];
+                            selectedUpdated = true;
+                            break;
+                        }
+                    }
+
+                    if (!selectedUpdated) cmbClient.SelectedIndex = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                MainFunctions.AddLogRecord($"Tasks LoadClients error: {ex.Message}");
             }
 
         }
@@ -309,8 +325,6 @@ namespace DreamTrip.Windows
         {
             int clientId = int.Parse((sender as TextBlock).Tag.ToString());
             parentTabItemLink.ItemUserControl = new EditClient(parentTabItemLink, this, thisPageParametres, clientId);
-
-
         }
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

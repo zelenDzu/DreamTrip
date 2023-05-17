@@ -34,6 +34,7 @@ namespace DreamTrip.Windows
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
+
             if (isPasswordChanged)
             {
                 this.Close();
@@ -44,29 +45,33 @@ namespace DreamTrip.Windows
                 {
                     if (pwbPassword.Password == pwbPassword2.Password)
                     {
-                        MainFunctions.NewQuery($"UPDATE User_login_data SET password_hash  = '{MainFunctions.GetHash(pwbPassword.Password)}' " +
-                            $" WHERE login = '{MainFunctions.СurrentSessionLogin}' ");
+                        try
+                        {
+                            MainFunctions.NewQuery($"UPDATE User_login_data SET password_hash  = '{MainFunctions.GetHash(pwbPassword.Password)}' " +
+                                $" WHERE login = '{MainFunctions.СurrentSessionLogin}' ");
 
-                        MainFunctions.AddLogRecord($"Password change success");
+                            MainFunctions.AddLogRecord($"Password change success");
+                            tbTitle.Text = "Пароль успешно изменен!";
+                            this.Height = 250;
+                            this.MinHeight = 250;
+                            this.MaxHeight = 250;
+                            tbTitle.FontSize = 26;
+                            pwbPassword.Visibility = Visibility.Hidden;
+                            pwbPassword2.Visibility = Visibility.Hidden;
+                            borderPassword.Visibility = Visibility.Hidden;
+                            borderPassword2.Visibility = Visibility.Hidden;
+                            borderCancel.Visibility = Visibility.Hidden;
+                            borderOk.Margin = new Thickness(0,0,0,0);
+                            borderOk.VerticalAlignment = VerticalAlignment.Bottom;
+                            borderOk.SetValue(Grid.RowProperty,2);
+                            isPasswordChanged = true;
 
-
-                        tbTitle.Text = "Пароль успешно изменен!";
-                        this.Height = 250;
-                        this.MinHeight = 250;
-                        this.MaxHeight = 250;
-                        tbTitle.FontSize = 26;
-                        pwbPassword.Visibility = Visibility.Hidden;
-                        pwbPassword2.Visibility = Visibility.Hidden;
-                        borderPassword.Visibility = Visibility.Hidden;
-                        borderPassword2.Visibility = Visibility.Hidden;
-                        borderCancel.Visibility = Visibility.Hidden;
-                        borderOk.Margin = new Thickness(0,0,0,0);
-                        borderOk.VerticalAlignment = VerticalAlignment.Bottom;
-                        borderOk.SetValue(Grid.RowProperty,2);
-                        isPasswordChanged = true;
-
-
-
+                        }
+                        catch (Exception ex)
+                        {
+                            new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                            MainFunctions.AddLogRecord($"Password changing error: {ex.Message}");
+                        }
                     }
                     else
                     {

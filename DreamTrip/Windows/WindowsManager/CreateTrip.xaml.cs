@@ -328,40 +328,48 @@ namespace DreamTrip.Windows
             }
             else
             {
-                string startDate = tbxStartDate.Text.Remove(4, 1).Remove(6, 1);
-                string endDate = tbxEndDate.Text.Remove(4, 1).Remove(6, 1);
-
-                string insertTripString = $"INSERT INTO Trip VALUES ({chosenClient.ClientId},{currentTour.TourId}, " +
-                    $"{(cmbRoom.SelectedItem as TourHotelRoom).RoomTypeId}, {(cmbFeed.SelectedItem as FeedType).FeedTypeId}, " +
-                    $"'{startDate}', '{endDate}', {CalculateTotalPrice()}, 2, '{DateTime.Now}')";
-
-                MainFunctions.NewQuery(insertTripString);
-
-                DataTable tempDate = MainFunctions.NewQuery("SELECT MAX(id_trip) FROM Trip");
-                int currentTripId = int.Parse(tempDate.Rows[0][0].ToString());
-
-                MainFunctions.NewQuery($"INSERT INTO Trip_docs (id_trip) VALUES ({currentTripId})");
-
-                for (int i = 0; i < tourServiceList.Count; i++)
+                try
                 {
-                    if (tourServiceList[i].IsChecked)
+                    string startDate = tbxStartDate.Text.Remove(4, 1).Remove(6, 1);
+                    string endDate = tbxEndDate.Text.Remove(4, 1).Remove(6, 1);
+
+                    string insertTripString = $"INSERT INTO Trip VALUES ({chosenClient.ClientId},{currentTour.TourId}, " +
+                        $"{(cmbRoom.SelectedItem as TourHotelRoom).RoomTypeId}, {(cmbFeed.SelectedItem as FeedType).FeedTypeId}, " +
+                        $"'{startDate}', '{endDate}', {CalculateTotalPrice()}, 2, '{DateTime.Now}')";
+
+                    MainFunctions.NewQuery(insertTripString);
+
+                    DataTable tempDate = MainFunctions.NewQuery("SELECT MAX(id_trip) FROM Trip");
+                    int currentTripId = int.Parse(tempDate.Rows[0][0].ToString());
+
+                    MainFunctions.NewQuery($"INSERT INTO Trip_docs (id_trip) VALUES ({currentTripId})");
+
+                    for (int i = 0; i < tourServiceList.Count; i++)
                     {
-                        MainFunctions.NewQuery($"INSERT INTO Trip_services VALUES ({currentTripId}, {tourServiceList[i].ServiceId})");
+                        if (tourServiceList[i].IsChecked)
+                        {
+                            MainFunctions.NewQuery($"INSERT INTO Trip_services VALUES ({currentTripId}, {tourServiceList[i].ServiceId})");
+                        }
                     }
+
+                    MainFunctions.AddLogRecord($"Trip created:" +
+                        $"\n\tTrip ID: {currentTripId}" +
+                        $"\n\tTour ID: {currentTour.TourId}" +
+                        $"\n\tTour Name: {currentTour.Name}" +
+                        $"\n\tClient ID: {chosenClient.ClientId}" +
+                        $"\n\tClient Name: {chosenClient.Surname} {chosenClient.Name} {chosenClient.Patronymic}");
+
+                    Message endMessage = new Message("Успех", "Новая поездка была успешно создана!", false, false);
+                    endMessage.ShowDialog();
+
+
+                    parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
                 }
-
-                MainFunctions.AddLogRecord($"Trip created:" +
-                    $"\n\tTrip ID: {currentTripId}" +
-                    $"\n\tTour ID: {currentTour.TourId}" +
-                    $"\n\tTour Name: {currentTour.Name}" +
-                    $"\n\tClient ID: {chosenClient.ClientId}" +
-                    $"\n\tClient Name: {chosenClient.Surname} {chosenClient.Name} {chosenClient.Patronymic}");
-
-                Message endMessage = new Message("Успех", "Новая поездка была успешно создана!", false, false);
-                endMessage.ShowDialog();
-
-
-                parentTabItemLink.ItemUserControl = new ManagerMenuUserControl(parentTabItemLink);
+                catch (Exception ex)
+                {
+                    new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                    MainFunctions.AddLogRecord($"Trip creation error: {ex.Message}");
+                }
                 //parentTabItemLink.ItemUserControl = previousPage;
                 //MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
 

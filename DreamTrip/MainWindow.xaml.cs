@@ -36,22 +36,27 @@ namespace DreamTrip
         }
         #endregion
 
+        
         #region Functions
         /// <summary>
         /// Активирует кнопку Войти
         /// </summary>
         private void EnableLoginButton()
         {
-            if (tbxLogin.Text.Length >= 1 && pwbPassword.Password.Length >= 1 
-                && MainFunctions.ValidateString_EngNum(tbxLogin.Text) 
-                && MainFunctions.ValidateString_RuEngNumSpec(pwbPassword.Password))
+            try
             {
-                borderLoginButton.IsEnabled = true;
+                if (tbxLogin.Text.Length >= 1 && pwbPassword.Password.Length >= 1
+                    && MainFunctions.ValidateString_EngNum(tbxLogin.Text)
+                    && MainFunctions.ValidateString_RuEngNumSpec(pwbPassword.Password))
+                {
+                    borderLoginButton.IsEnabled = true;
+                }
+                else
+                {
+                    borderLoginButton.IsEnabled = false;
+                }
             }
-            else
-            {
-                borderLoginButton.IsEnabled = false;
-            }
+            catch { }
         }
 
         /// <summary>
@@ -91,15 +96,19 @@ namespace DreamTrip
 
         private void pwbPassword_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            PasswordBox textBox = sender as PasswordBox;
-            char[] charList = textBox.Password.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+            try
             {
-                if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+                PasswordBox textBox = sender as PasswordBox;
+                char[] charList = textBox.Password.ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
                 {
-                    textBox.Password = textBox.Password.Remove(i, 1);
+                    if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+                    {
+                        textBox.Password = textBox.Password.Remove(i, 1);
+                    }
                 }
             }
+            catch { }
 
             EnableLoginButton();
         }
@@ -113,33 +122,37 @@ namespace DreamTrip
         #region TextBoxLogin
         private void tbxLogin_TextChanged(object sender, TextChangedEventArgs e)
         {
-            switch (tbxLogin.Text)
+            try
             {
-                case "m":
-                    tbxLogin.Text = "manager";
-                    pwbPassword.Password = "manager1234";
-                    break;
-
-                case "ad":
-                    tbxLogin.Text = "admin";
-                    pwbPassword.Password = "admin1234";
-                    break;
-
-                case "an":
-                    tbxLogin.Text = "analyst";
-                    pwbPassword.Password = "analyst1234";
-                    break;
-            }
-
-            TextBox textBox = sender as TextBox;
-            char[] charList = textBox.Text.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
-            {
-                if (!MainFunctions.ValidateString_EngNum(charList[i].ToString()))
+                switch (tbxLogin.Text)
                 {
-                    textBox.Text = textBox.Text.Remove(i, 1);
+                    case "m":
+                        tbxLogin.Text = "manager";
+                        pwbPassword.Password = "manager1234";
+                        break;
+
+                    case "ad":
+                        tbxLogin.Text = "admin";
+                        pwbPassword.Password = "admin1234";
+                        break;
+
+                    case "an":
+                        tbxLogin.Text = "analyst";
+                        pwbPassword.Password = "analyst1234";
+                        break;
+                }
+
+                TextBox textBox = sender as TextBox;
+                char[] charList = textBox.Text.ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
+                {
+                    if (!MainFunctions.ValidateString_EngNum(charList[i].ToString()))
+                    {
+                        textBox.Text = textBox.Text.Remove(i, 1);
+                    }
                 }
             }
+            catch { }
 
             EnableLoginButton();
         }
@@ -156,79 +169,88 @@ namespace DreamTrip
             LoginMakeStandard();
             PasswordMakeStandard();
 
-            string login = tbxLogin.Text;
-            string passwordHash = MainFunctions.GetHash(pwbPassword.Password);
 
-            DataTable loginData = MainFunctions.NewQuery($"SELECT * FROM User_login_data WHERE login = '{login}'");
-            if (loginData.Rows.Count == 0)
+            try
             {
-                borderLogin.BorderBrush = tbWrongPassword.Foreground;
-                borderLogin.BorderBrush = tbWrongPassword.Foreground;
-                tbWrongLogin.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                if (passwordHash == loginData.Rows[0][1].ToString())
+                string login = tbxLogin.Text;
+                string passwordHash = MainFunctions.GetHash(pwbPassword.Password);
+
+                DataTable loginData = MainFunctions.NewQuery($"SELECT * FROM User_login_data WHERE login = '{login}'");
+                if (loginData.Rows.Count == 0)
                 {
-                    string role = loginData.Rows[0][2].ToString();
-                    if (role == "1" || role == "2" || role == "3" || role == "4")
+                    borderLogin.BorderBrush = tbWrongPassword.Foreground;
+                    borderLogin.BorderBrush = tbWrongPassword.Foreground;
+                    tbWrongLogin.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    if (passwordHash == loginData.Rows[0][1].ToString())
                     {
-                        if (role == "1" || role == "2" || role == "3")
+                        string role = loginData.Rows[0][2].ToString();
+                        if (role == "1" || role == "2" || role == "3" || role == "4")
                         {
-                            bool isActivated = Convert.ToBoolean(MainFunctions.NewQuery($"SELECT is_activated FROM worker WHERE login = '{login}'").Rows[0][0].ToString());
-                            if (isActivated == false)
+                            if (role == "1" || role == "2" || role == "3")
                             {
-                                new Message($"Предупреждение", $"Ваш аккаунт заблокирован. Вход запрещен. Свяжитесь с администратором.").ShowDialog();
+                                bool isActivated = Convert.ToBoolean(MainFunctions.NewQuery($"SELECT is_activated FROM worker WHERE login = '{login}'").Rows[0][0].ToString());
+                                if (isActivated == false)
+                                {
+                                    new Message($"Предупреждение", $"Ваш аккаунт заблокирован. Вход запрещен. Свяжитесь с администратором.").ShowDialog();
+                                }
+                                else
+                                {
+                                    MainFunctions.LogInSystemEvent(login, role);
+
+                                    switch (role)
+                                    {
+                                        case "1":
+                                            Windows.Menu adminMenuWindow = new Windows.Menu("admin", login);
+                                            this.Close();
+                                            adminMenuWindow.Show();
+                                            break;
+
+                                        case "2":
+                                            Windows.Menu managerMenuWindow = new Windows.Menu("manager", login);
+                                            this.Close();
+                                            managerMenuWindow.Show();
+                                            break;
+
+                                        case "3":
+                                            Windows.Menu analystMenuWindow = new Windows.Menu("analyst", login);
+                                            this.Close();
+                                            analystMenuWindow.Show();
+                                            break;
+
+                                        case "4":
+                                            int clientId = int.Parse(MainFunctions.NewQuery($"SELECT id_client FROM Client_login WHERE login = '{login}'").Rows[0][0].ToString());
+                                            MessageBox.Show($"clientId = {clientId}");
+                                            break;
+                                    }
+                                }
                             }
                             else
                             {
-                                MainFunctions.LogInSystemEvent(login, role);
-
-                                switch (role)
-                                {
-                                    case "1":
-                                        Windows.Menu adminMenuWindow = new Windows.Menu("admin", login);
-                                        this.Close();
-                                        adminMenuWindow.Show();
-                                        break;
-
-                                    case "2":
-                                        Windows.Menu managerMenuWindow = new Windows.Menu("manager", login);
-                                        this.Close();
-                                        managerMenuWindow.Show();
-                                        break;
-
-                                    case "3":
-                                        Windows.Menu analystMenuWindow = new Windows.Menu("analyst", login);
-                                        this.Close();
-                                        analystMenuWindow.Show();
-                                        break;
-
-                                    case "4":
-                                        int clientId = int.Parse(MainFunctions.NewQuery($"SELECT id_client FROM Client_login WHERE login = '{login}'").Rows[0][0].ToString());
-                                        MessageBox.Show($"clientId = {clientId}");
-                                        break;
-                                }
+                                new Message($"Ошибка", $"Ваш тип учетной записи не поддерживается. " +
+                                    $"Если вы увидели это окно, свяжитесь с администратором.").ShowDialog();
                             }
                         }
                         else
                         {
-                            new Message($"Ошибка", $"Ваш тип учетной записи не поддерживается. " +
-                                $"Если вы увидели это окно, свяжитесь с администратором.").ShowDialog();
+                            Message message = new Message("Ошибка", "Что-то пошло не так.", false, false);
+                            message.ShowDialog();
                         }
                     }
                     else
                     {
-                        Message message = new Message("Ошибка", "Что-то пошло не так.", false, false);
-                        message.ShowDialog();
+                        borderPWBPassword.BorderBrush = tbWrongPassword.Foreground;
+                        borderTBXPassword.BorderBrush = tbWrongPassword.Foreground;
+                        tbWrongPassword.Visibility = Visibility.Visible;
                     }
                 }
-                else
-                {
-                    borderPWBPassword.BorderBrush = tbWrongPassword.Foreground;
-                    borderTBXPassword.BorderBrush = tbWrongPassword.Foreground;
-                    tbWrongPassword.Visibility = Visibility.Visible;
-                }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
 
         }

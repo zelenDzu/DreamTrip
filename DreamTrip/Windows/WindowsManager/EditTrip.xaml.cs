@@ -420,37 +420,46 @@ namespace DreamTrip.Windows
             }
             else
             {
-                string startDate = tbxStartDate.Text.Remove(4, 1).Remove(6, 1);
-                string endDate = tbxEndDate.Text.Remove(4, 1).Remove(6, 1);
-
-                string updateTripString = $"UPDATE Trip SET id_client = {chosenClient.ClientId}, id_tour = {currentTour.TourId}, " +
-                    $"id_room_type = {(cmbRoom.SelectedItem as TourHotelRoom).RoomTypeId}, " +
-                    $"id_feed_type = {(cmbFeed.SelectedItem as FeedType).FeedTypeId}, " +
-                    $"start_date = '{startDate}', end_date = '{endDate}', total_price = {CalculateTotalPrice()} WHERE id_trip = {currentTrip.TripId}";
-
-                MainFunctions.NewQuery(updateTripString);
-                MainFunctions.NewQuery($"DELETE FROM Trip_services WHERE id_trip = {currentTrip.TripId}");
-
-                for (int i = 0; i < tourServiceList.Count; i++)
+                try
                 {
-                    if (tourServiceList[i].IsChecked)
+                    string startDate = tbxStartDate.Text.Remove(4, 1).Remove(6, 1);
+                    string endDate = tbxEndDate.Text.Remove(4, 1).Remove(6, 1);
+
+                    string updateTripString = $"UPDATE Trip SET id_client = {chosenClient.ClientId}, id_tour = {currentTour.TourId}, " +
+                        $"id_room_type = {(cmbRoom.SelectedItem as TourHotelRoom).RoomTypeId}, " +
+                        $"id_feed_type = {(cmbFeed.SelectedItem as FeedType).FeedTypeId}, " +
+                        $"start_date = '{startDate}', end_date = '{endDate}', total_price = {CalculateTotalPrice()} WHERE id_trip = {currentTrip.TripId}";
+
+                    MainFunctions.NewQuery(updateTripString);
+                    MainFunctions.NewQuery($"DELETE FROM Trip_services WHERE id_trip = {currentTrip.TripId}");
+
+                    for (int i = 0; i < tourServiceList.Count; i++)
                     {
-                        MainFunctions.NewQuery($"INSERT INTO Trip_services VALUES ({currentTrip.TripId}, {tourServiceList[i].ServiceId})");
+                        if (tourServiceList[i].IsChecked)
+                        {
+                            MainFunctions.NewQuery($"INSERT INTO Trip_services VALUES ({currentTrip.TripId}, {tourServiceList[i].ServiceId})");
+                        }
                     }
+
+                    MainFunctions.AddLogRecord($"Edited Trip ID: {currentTrip.TripId}");
+
+                    Message endMessage = new Message("Успех", "Поездка была успешно изменена!", false, false);
+                    endMessage.ShowDialog();
+
+
+                    parentTabItemLink.ItemUserControl = previousPage;
+                    string clientId = chosenClient.ClientId.ToString();
+                    if (!(previousPage as ClientsTrips).IsFromClients) clientId = "";
+                    (previousPage as ClientsTrips).LoadTrips("all", clientId);
+                    (previousPage as ClientsTrips).ClearSearch();
+                    MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
                 }
-
-                MainFunctions.AddLogRecord($"Edited Trip ID: {currentTrip.TripId}");
-
-                Message endMessage = new Message("Успех", "Поездка была успешно изменена!", false, false);
-                endMessage.ShowDialog();
-
-
-                parentTabItemLink.ItemUserControl = previousPage;
-                string clientId = chosenClient.ClientId.ToString();
-                if (!(previousPage as ClientsTrips).IsFromClients) clientId = "";
-                (previousPage as ClientsTrips).LoadTrips("all", clientId);
-                (previousPage as ClientsTrips).ClearSearch();
-                MainFunctions.ChangeTabParametres(parentTabItemLink, previousPageParametres);
+                catch (Exception ex)
+                {
+                    new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                    btnCancel_Click(btnCancel, new RoutedEventArgs());
+                    MainFunctions.AddLogRecord($"Trip ID {currentTrip.TripId} edition error: {ex.Message}");
+                }
             }
         }
         #endregion

@@ -548,32 +548,39 @@ namespace DreamTrip.Functions
         /// </summary>
         public static void ClearAccountsPhotos()
         {
-            DataTable photosData = MainFunctions.NewQuery($"SELECT image_path FROM Worker");
-            List<string> photoPaths = new List<string>();
-
-            for (int i = 0; i < photosData.Rows.Count; i++)
+            try
             {
-                string path = photosData.Rows[i][0].ToString();
-                path = path.Substring(path.LastIndexOf('/') + 1, path.Length - path.LastIndexOf('/') - 1);
-                photoPaths.Add(path);
+                DataTable photosData = MainFunctions.NewQuery($"SELECT image_path FROM Worker");
+                List<string> photoPaths = new List<string>();
+
+                for (int i = 0; i < photosData.Rows.Count; i++)
+                {
+                    string path = photosData.Rows[i][0].ToString();
+                    path = path.Substring(path.LastIndexOf('/') + 1, path.Length - path.LastIndexOf('/') - 1);
+                    photoPaths.Add(path);
+                }
+
+                if (!photoPaths.Contains("default.jpg")) photoPaths.Add("default.jpg");
+
+                foreach (string file in Directory.GetFiles(GetAppPath() + "/Resources/AccountsPhotos"))
+                {
+                    string fileName = Path.GetFileName(file);
+
+                    try
+                    {
+                        if (!photoPaths.Contains(fileName))
+                            File.Delete(file);
+                    }
+                    catch
+                    {
+                        //файл не удалился, может удалится в следующий раз
+                    }
+
+                }
             }
-
-            if (!photoPaths.Contains("default.jpg")) photoPaths.Add("default.jpg");
-
-            foreach(string file in Directory.GetFiles(GetAppPath() + "/Resources/AccountsPhotos")) 
+            catch (Exception ex)
             {
-                string fileName = Path.GetFileName(file);
-
-                try
-                {
-                    if (!photoPaths.Contains(fileName))
-                        File.Delete(file);
-                }
-                catch
-                {
-                    //файл не удалился, может удалится в следующий раз
-                }
-
+                MainFunctions.AddLogRecord($"Clear account photos error: {ex.Message}");
             }
         }
 
@@ -582,30 +589,37 @@ namespace DreamTrip.Functions
         /// </summary>
         public static void ClearServicesPhotos()
         {
-            DataTable photosData = MainFunctions.NewQuery($"SELECT icon_path FROM Service");
-            List<string> photoPaths = new List<string>();
-
-            for (int i = 0; i < photosData.Rows.Count; i++)
+            try
             {
-                string path = photosData.Rows[i][0].ToString();
-                path = path.Substring(path.LastIndexOf('/') + 1, path.Length - path.LastIndexOf('/') - 1);
-                photoPaths.Add(path);
+                DataTable photosData = MainFunctions.NewQuery($"SELECT icon_path FROM Service");
+                List<string> photoPaths = new List<string>();
+
+                for (int i = 0; i < photosData.Rows.Count; i++)
+                {
+                    string path = photosData.Rows[i][0].ToString();
+                    path = path.Substring(path.LastIndexOf('/') + 1, path.Length - path.LastIndexOf('/') - 1);
+                    photoPaths.Add(path);
+                }
+
+                foreach (string file in Directory.GetFiles(GetAppPath() + "/Resources/ServicesPhotos"))
+                {
+                    string fileName = Path.GetFileName(file);
+
+                    try
+                    {
+                        if (!photoPaths.Contains(fileName))
+                            File.Delete(file);
+                    }
+                    catch
+                    {
+                        //файл не удалился, может удалится в следующий раз
+                    }
+
+                }
             }
-
-            foreach (string file in Directory.GetFiles(GetAppPath() + "/Resources/ServicesPhotos"))
+            catch (Exception ex)
             {
-                string fileName = Path.GetFileName(file);
-
-                try
-                {
-                    if (!photoPaths.Contains(fileName))
-                        File.Delete(file);
-                }
-                catch
-                {
-                    //файл не удалился, может удалится в следующий раз
-                }
-
+                MainFunctions.AddLogRecord($"Clear Services photos error: {ex.Message}");
             }
         }
 

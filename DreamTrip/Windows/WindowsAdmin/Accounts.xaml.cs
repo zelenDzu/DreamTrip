@@ -45,8 +45,17 @@ namespace DreamTrip.Windows
             previousPageParametres = tempPreviousPageParametres;
             MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
 
-            LoadAccountTypes();
-            LoadAccounts();
+            try
+            {
+                LoadAccountTypes();
+                LoadAccounts();
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown load error: {ex.Message}");
+            }
         }
         #endregion
 
@@ -229,17 +238,25 @@ namespace DreamTrip.Windows
                 }
 
                 // удаление
-                MainFunctions.NewQuery($"DELETE FROM Login_history WHERE login = '{accountLogin}'");
-                MainFunctions.NewQuery($"DELETE FROM Worker WHERE login = '{accountLogin}'");
-                if (accountLogin != "TEMP")
-                    MainFunctions.NewQuery($"DELETE FROM User_login_data WHERE login = '{accountLogin}'");
-                new Message("Успех", "Аккаунт успешно удален!").ShowDialog();
-                MainFunctions.AddLogRecord($"Delete account success" +
-                    $"\n\tID: {accountId}" +
-                    $"\n\tLogin: {accountLogin}" +
-                    $"\n\tFull name: {thisAccount.Surname} {thisAccount.Name} {thisAccount.Patronymic}" +
-                    $"\n\tPhone: {thisAccount.Phone}," +
-                    $"\n\tRole: {thisAccount.Type.TypeName}");
+                try
+                {
+                    MainFunctions.NewQuery($"DELETE FROM Login_history WHERE login = '{accountLogin}'");
+                    MainFunctions.NewQuery($"DELETE FROM Worker WHERE login = '{accountLogin}'");
+                    if (accountLogin != "TEMP")
+                        MainFunctions.NewQuery($"DELETE FROM User_login_data WHERE login = '{accountLogin}'");
+                    new Message("Успех", "Аккаунт успешно удален!").ShowDialog();
+                    MainFunctions.AddLogRecord($"Delete account success" +
+                        $"\n\tID: {accountId}" +
+                        $"\n\tLogin: {accountLogin}" +
+                        $"\n\tFull name: {thisAccount.Surname} {thisAccount.Name} {thisAccount.Patronymic}" +
+                        $"\n\tPhone: {thisAccount.Phone}," +
+                        $"\n\tRole: {thisAccount.Type.TypeName}");
+                }
+                catch (Exception ex)
+                {
+                    new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                    MainFunctions.AddLogRecord($"Account deletion error: {ex.Message}");
+                }
 
                 LoadAccounts();
             }
@@ -375,28 +392,49 @@ namespace DreamTrip.Windows
         private void tbLogin_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            char[] charList = textBox.Text.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+
+            try
             {
-                if (!MainFunctions.ValidateString_EngNum(charList[i].ToString()) && charList[i].ToString()!=" ")
+                char[] charList = textBox.Text.ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
                 {
-                    textBox.Text = textBox.Text.Remove(i, 1);
+                    if (!MainFunctions.ValidateString_EngNum(charList[i].ToString()) && charList[i].ToString() != " ")
+                    {
+                        textBox.Text = textBox.Text.Remove(i, 1);
+                    }
                 }
+
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
 
             if (textBox.Text.Length == 0) textBox.Text = " ";
+            
         }
 
         private void tbPassword_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            char[] charList = textBox.Text.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+            try
             {
-                if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+                char[] charList = textBox.Text.ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
                 {
-                    textBox.Text = textBox.Text.Remove(i, 1);
+                    if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+                    {
+                        textBox.Text = textBox.Text.Remove(i, 1);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
 
 
@@ -407,13 +445,22 @@ namespace DreamTrip.Windows
         private void FullNameTextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            char[] charList = textBox.Text.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+            try
             {
-                if (!MainFunctions.ValidateString_RuEng(charList[i].ToString()))
+                char[] charList = textBox.Text.ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
                 {
-                    textBox.Text = textBox.Text.Remove(i, 1);
+                    if (!MainFunctions.ValidateString_RuEng(charList[i].ToString()))
+                    {
+                        textBox.Text = textBox.Text.Remove(i, 1);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
 
             if (textBox.Text.Length == 0) textBox.Text = " ";
@@ -423,13 +470,22 @@ namespace DreamTrip.Windows
         {
             TextBox tbPhone = sender as TextBox;
 
-            char[] charList = tbPhone.Text.Trim().ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+            try
             {
-                if (Int32.TryParse(charList[i].ToString(), out int tempOut) == false)
+                char[] charList = tbPhone.Text.Trim().ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
                 {
-                    tbPhone.Text = tbPhone.Text.Remove(i, 1);
+                    if (Int32.TryParse(charList[i].ToString(), out int tempOut) == false)
+                    {
+                        tbPhone.Text = tbPhone.Text.Remove(i, 1);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
 
             if (tbPhone.Text.Length > 12) tbPhone.Text = tbPhone.Text.Substring(0, 12);

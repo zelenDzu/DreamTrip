@@ -39,12 +39,13 @@ namespace DreamTrip.Windows
         public Menu(string tempUserType, string tempLogin) 
         {
             InitializeComponent();
+
+
             MainFunctions.DeleteTempFolders();
             MainFunctions.ClearLogs();
-
-
             MainFunctions.ClearAccountsPhotos();
             MainFunctions.ClearServicesPhotos();
+
 
             userType = tempUserType;
             login = tempLogin;
@@ -217,6 +218,7 @@ namespace DreamTrip.Windows
             if (menuTabControl.SelectedIndex != -1)
             {
                 tempUserControl = (menuTabControl.SelectedItem as TabClass).ItemUserControl;
+
                 if (tempUserControl as Tours != null)
                     (tempUserControl as Tours).WindowSizeChanged(e.NewSize.Width, e.NewSize.Height);
 

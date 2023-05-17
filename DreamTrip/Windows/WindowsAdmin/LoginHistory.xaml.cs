@@ -43,8 +43,17 @@ namespace DreamTrip.Windows
             previousPageParametres = tempPreviousPageParametres;
             MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
 
-            LoadDate();
-            btnSearch_Click(btnSearch, new RoutedEventArgs());
+            try
+            {
+                LoadDate();
+                btnSearch_Click(btnSearch, new RoutedEventArgs());
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown load error: {ex.Message}");
+            }
         }
         #endregion
 
@@ -168,13 +177,21 @@ namespace DreamTrip.Windows
                 Message succesMessage = new Message("Успех", "Запись была успешно удалена!", false, false);
                 succesMessage.ShowDialog();
 
-                HistoryRecord currentRecord = dtgHistory.SelectedItem as HistoryRecord;
-                MainFunctions.AddLogRecord($"History record deleted:" +
-                    $"\n\tID record: {currentRecord.RecordId}" +
-                    $"\n\tUser login: {currentRecord.Login}" +
-                    $"\n\tLog In datetime: {currentRecord.LoginDatetime}" +
-                    $"\n\tLog out datetime: {currentRecord.LogoutDatetime}" +
-                    $"\n\tLogs: {currentRecord.Logs}");
+                try
+                {
+                    HistoryRecord currentRecord = dtgHistory.SelectedItem as HistoryRecord;
+                    MainFunctions.AddLogRecord($"History record deleted:" +
+                        $"\n\tID record: {currentRecord.RecordId}" +
+                        $"\n\tUser login: {currentRecord.Login}" +
+                        $"\n\tLog In datetime: {currentRecord.LoginDatetime}" +
+                        $"\n\tLog out datetime: {currentRecord.LogoutDatetime}" +
+                        $"\n\tLogs: {currentRecord.Logs}");
+                }
+                catch (Exception ex)
+                {
+                    new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                    MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
+                }
 
                 HistoryRecordsList.Remove(dtgHistory.SelectedItem as HistoryRecord);
             }
@@ -200,69 +217,77 @@ namespace DreamTrip.Windows
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            if (borderClear.Visibility == Visibility.Hidden)
+            try
             {
-                LoadHistory("all");
-            }
-            else
-            {
-                if (!CheckDatesAreValid())
+                if (borderClear.Visibility == Visibility.Hidden)
                 {
-                    Message messageErrorDate = new Message("Ошибка", "Неверно введены даты", false, false);
-                    messageErrorDate.ShowDialog();
+                    LoadHistory("all");
                 }
                 else
                 {
-                    string condition = "";
-                    if (tbxLoginSearch.Text != "")
+                    if (!CheckDatesAreValid())
                     {
-                        condition += $" WHERE LOWER(login) LIKE '%{tbxLoginSearch.Text.ToLower()}%'";
+                        Message messageErrorDate = new Message("Ошибка", "Неверно введены даты", false, false);
+                        messageErrorDate.ShowDialog();
                     }
-
-                    if (tbxLogsSearch.Text != "")
+                    else
                     {
-                        if (condition == "") condition += " WHERE ";
-                        else condition += " AND ";
+                        string condition = "";
+                        if (tbxLoginSearch.Text != "")
+                        {
+                            condition += $" WHERE LOWER(login) LIKE '%{tbxLoginSearch.Text.ToLower()}%'";
+                        }
 
-                        condition += $" LOWER(logs) LIKE '%{tbxLogsSearch.Text.ToLower()}%'";
+                        if (tbxLogsSearch.Text != "")
+                        {
+                            if (condition == "") condition += " WHERE ";
+                            else condition += " AND ";
+
+                            condition += $" LOWER(logs) LIKE '%{tbxLogsSearch.Text.ToLower()}%'";
+                        }
+
+                        if (tbxStartDate.Text != "")
+                        {
+                            string startDate = tbxStartDate.Text.Remove(4, 1).Remove(6, 1);
+
+                            if (condition == "") condition += " WHERE ";
+                            else condition += " AND ";
+
+                            condition += String.Format("log_in_datetime >= '{0}'", startDate);
+                        }
+
+                        if (tbxEndDate.Text != "")
+                        {
+                            string endDate = tbxEndDate.Text.Remove(4, 1).Remove(6, 1);
+
+                            if (condition == "") condition += " WHERE ";
+                            else condition += " AND ";
+
+                            condition += String.Format("log_in_datetime <= DATEADD(day,1, '{0}')", endDate);
+                        }
+
+                        int top = 100;
+                        if (tbxTop.Text.Length > 0) top = Convert.ToInt32(tbxTop.Text);
+
+                        string mainCondition = $"SELECT TOP {top} id_rec FROM Login_history {condition} ORDER BY log_in_datetime DESC";
+                        DataTable loginData = MainFunctions.NewQuery(mainCondition);
+
+                        string recordsIds = "";
+                        for (int i = 0; i < loginData.Rows.Count; i++)
+                        {
+                            if (recordsIds != "") recordsIds += ",";
+                            recordsIds += loginData.Rows[i][0].ToString();
+                        }
+
+                        LoadHistory(recordsIds);
+
                     }
-
-                    if (tbxStartDate.Text != "")
-                    {
-                        string startDate = tbxStartDate.Text.Remove(4, 1).Remove(6, 1);
-
-                        if (condition == "") condition += " WHERE ";
-                        else condition += " AND ";
-
-                        condition += String.Format("log_in_datetime >= '{0}'", startDate);
-                    }
-
-                    if (tbxEndDate.Text != "")
-                    {
-                        string endDate = tbxEndDate.Text.Remove(4, 1).Remove(6, 1);
-
-                        if (condition == "") condition += " WHERE ";
-                        else condition += " AND ";
-
-                        condition += String.Format("log_in_datetime <= DATEADD(day,1, '{0}')", endDate);
-                    }
-
-                    int top = 100;
-                    if (tbxTop.Text.Length > 0) top = Convert.ToInt32(tbxTop.Text);
-
-                    string mainCondition = $"SELECT TOP {top} id_rec FROM Login_history {condition} ORDER BY log_in_datetime DESC";
-                    DataTable loginData = MainFunctions.NewQuery(mainCondition);
-
-                    string recordsIds = "";
-                    for (int i = 0; i < loginData.Rows.Count; i++)
-                    {
-                        if (recordsIds != "") recordsIds += ",";
-                        recordsIds += loginData.Rows[i][0].ToString();
-                    }
-
-                    LoadHistory(recordsIds);
-
                 }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                MainFunctions.AddLogRecord($"Unknown history search error: {ex.Message}");
             }
         }
         #endregion
@@ -271,13 +296,22 @@ namespace DreamTrip.Windows
         private void tbxLoginSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            char[] charList = textBox.Text.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+            try
             {
-                if (!MainFunctions.ValidateString_EngNum(charList[i].ToString()))
+                char[] charList = textBox.Text.ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
                 {
-                    textBox.Text = textBox.Text.Remove(i, 1);
+                    if (!MainFunctions.ValidateString_EngNum(charList[i].ToString()))
+                    {
+                        textBox.Text = textBox.Text.Remove(i, 1);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
 
             FilterChanged();
@@ -320,18 +354,53 @@ namespace DreamTrip.Windows
         private void tbxLogsSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            char[] charList = textBox.Text.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+            try
             {
-                if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+                char[] charList = textBox.Text.ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
                 {
-                    textBox.Text = textBox.Text.Remove(i, 1);
+                    if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+                    {
+                        textBox.Text = textBox.Text.Remove(i, 1);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
 
             FilterChanged();
 
         }
+        private void tbxTop_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox tbTop = sender as TextBox;
+            try
+            {
+                char[] charList = tbTop.Text.Trim().ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
+                {
+                    if (Int32.TryParse(charList[i].ToString(), out int tempOut) == false)
+                    {
+                        tbTop.Text = tbTop.Text.Remove(i, 1);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
+            }
+
+            if (tbTop.Text.Length > 4) tbTop.Text = tbTop.Text.Substring(0, 4);
+
+            FilterChanged();
+        }
+        
         #endregion
 
         #region DataGridEvents
@@ -360,22 +429,5 @@ namespace DreamTrip.Windows
         }
         #endregion
 
-        private void tbxTop_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            TextBox tbTop = sender as TextBox;
-
-            char[] charList = tbTop.Text.Trim().ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
-            {
-                if (Int32.TryParse(charList[i].ToString(), out int tempOut) == false)
-                {
-                    tbTop.Text = tbTop.Text.Remove(i, 1);
-                }
-            }
-
-            if (tbTop.Text.Length > 4) tbTop.Text = tbTop.Text.Substring(0, 4);
-
-            FilterChanged();
-        }
     }
 }

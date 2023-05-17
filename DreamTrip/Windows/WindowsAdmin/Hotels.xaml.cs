@@ -182,17 +182,24 @@ namespace DreamTrip.Windows
                     return;
                 }
 
-                
+
 
                 // удаление
-
-                MainFunctions.NewQuery($"DELETE FROM Hotel_rooms WHERE id_hotel={hotelId}" +
-                    $"\nDELETE FROM Hotel_feed_types WHERE id_hotel={hotelId}" +
-                    $"\nDELETE FROM Hotel WHERE id_hotel = {hotelId}");
-                new Message("Успех", "Отель успешно удален!").ShowDialog();
-                MainFunctions.AddLogRecord($"Delete hotel success" +
-                    $"\n\tID: {hotelId}" +
-                    $"\n\tName: {hotelName}");
+                try
+                {
+                    MainFunctions.NewQuery($"DELETE FROM Hotel_rooms WHERE id_hotel={hotelId}" +
+                        $"\nDELETE FROM Hotel_feed_types WHERE id_hotel={hotelId}" +
+                        $"\nDELETE FROM Hotel WHERE id_hotel = {hotelId}");
+                    new Message("Успех", "Отель успешно удален!").ShowDialog();
+                    MainFunctions.AddLogRecord($"Delete hotel success" +
+                        $"\n\tID: {hotelId}" +
+                        $"\n\tName: {hotelName}");
+                }
+                catch (Exception ex)
+                {
+                    new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                    MainFunctions.AddLogRecord($"Unknown deletion error: {ex.Message}");
+                }
 
                 LoadHotels();
             }
@@ -296,34 +303,52 @@ namespace DreamTrip.Windows
         private void tbHotelName_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            char[] charList = textBox.Text.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+            try
             {
-                if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+                char[] charList = textBox.Text.ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
                 {
-                    textBox.Text = textBox.Text.Remove(i, 1);
+                    if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+                    {
+                        textBox.Text = textBox.Text.Remove(i, 1);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
 
             if ((sender as TextBox).Text.Length == 0) (sender as TextBox).Text = " ";
         }
         private void starCheckedChanged(object sender, RoutedEventArgs e)
         {
-            if (this.IsLoaded)
+            try
             {
-                Hotel thisHotel = GetHotel(int.Parse((sender as CheckBox).Tag.ToString()));
-                string cbName = (sender as CheckBox).Name;
-                int starIndex = int.Parse(cbName.Substring(cbName.Length - 1, 1)) - 1;
+                if (this.IsLoaded)
+                {
+                    Hotel thisHotel = GetHotel(int.Parse((sender as CheckBox).Tag.ToString()));
+                    string cbName = (sender as CheckBox).Name;
+                    int starIndex = int.Parse(cbName.Substring(cbName.Length - 1, 1)) - 1;
 
-                thisHotel.StarsCount = starIndex + 1;
+                    thisHotel.StarsCount = starIndex + 1;
 
 
-                thisHotel.Star1 = 1 <= thisHotel.StarsCount;
-                thisHotel.Star2 = 2 <= thisHotel.StarsCount;
-                thisHotel.Star3 = 3 <= thisHotel.StarsCount;
-                thisHotel.Star4 = 4 <= thisHotel.StarsCount;
-                thisHotel.Star5 = 5 <= thisHotel.StarsCount;
+                    thisHotel.Star1 = 1 <= thisHotel.StarsCount;
+                    thisHotel.Star2 = 2 <= thisHotel.StarsCount;
+                    thisHotel.Star3 = 3 <= thisHotel.StarsCount;
+                    thisHotel.Star4 = 4 <= thisHotel.StarsCount;
+                    thisHotel.Star5 = 5 <= thisHotel.StarsCount;
 
+                }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
         }
 

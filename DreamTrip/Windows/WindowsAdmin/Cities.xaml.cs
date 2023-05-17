@@ -43,8 +43,17 @@ namespace DreamTrip.Windows
             previousPageParametres = tempPreviousPageParametres;
             MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
 
-            LoadCountries();
-            LoadCities();
+            try
+            {
+                LoadCountries();
+                LoadCities();
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown load error: {ex.Message}");
+            }
         }
         #endregion
 
@@ -268,8 +277,9 @@ namespace DreamTrip.Windows
         private void btnDeleteCity_Click(object sender, RoutedEventArgs e)
         {
             
-                int cityId = (dtgCities.SelectedItem as City).CityId;
-                string cityName = (dtgCities.SelectedItem as City).CityName;
+            int cityId = (dtgCities.SelectedItem as City).CityId;
+            string cityName = (dtgCities.SelectedItem as City).CityName;
+
             try { 
                 if (cityId == 0)
                 {
@@ -490,13 +500,23 @@ namespace DreamTrip.Windows
         private void tbCountryName_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            char[] charList = textBox.Text.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+
+            try
             {
-                if (!MainFunctions.ValidateString_RuEng(charList[i].ToString()))
+                char[] charList = textBox.Text.ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
                 {
-                    textBox.Text = textBox.Text.Remove(i, 1);
+                    if (!MainFunctions.ValidateString_RuEng(charList[i].ToString()))
+                    {
+                        textBox.Text = textBox.Text.Remove(i, 1);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
 
             if ((sender as TextBox).Text.Length == 0) (sender as TextBox).Text = " ";
@@ -505,13 +525,22 @@ namespace DreamTrip.Windows
         private void tbCityName_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            char[] charList = textBox.Text.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+            try
             {
-                if (!MainFunctions.ValidateString_RuEng(charList[i].ToString()))
+                char[] charList = textBox.Text.ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
                 {
-                    textBox.Text = textBox.Text.Remove(i, 1);
+                    if (!MainFunctions.ValidateString_RuEng(charList[i].ToString()))
+                    {
+                        textBox.Text = textBox.Text.Remove(i, 1);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
             }
 
             if ((sender as TextBox).Text.Length == 0) (sender as TextBox).Text = " ";

@@ -65,249 +65,306 @@ namespace DreamTrip.Windows
         #region LoadData
         void LoadTourTypes()
         {
-
-            DataTable tourTypesData = MainFunctions.NewQuery($"SELECT * FROM Type_of_tour");
-
-            for (int i = 0; i < tourTypesData.Rows.Count; i++)
+            try
             {
-                TourType newType = new TourType()
+                DataTable tourTypesData = MainFunctions.NewQuery($"SELECT * FROM Type_of_tour");
+
+                for (int i = 0; i < tourTypesData.Rows.Count; i++)
                 {
-                    TourTypeId = Convert.ToInt32(tourTypesData.Rows[i][0].ToString()),
-                    Name = tourTypesData.Rows[i][1].ToString()
+                    TourType newType = new TourType()
+                    {
+                        TourTypeId = Convert.ToInt32(tourTypesData.Rows[i][0].ToString()),
+                        Name = tourTypesData.Rows[i][1].ToString()
 
-                };
+                    };
 
-                cmbTourType.Items.Add(newType);
+                    cmbTourType.Items.Add(newType);
+                }
+
+
+                cmbTourType.SelectedIndex = 0;
             }
-
-
-            cmbTourType.SelectedIndex = 0;
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"AnalyzeTrips LoadTourTypes error: {ex.Message}");
+            }
         }
 
         void LoadTours()
         {
-            if (currentTours != null) currentTours.Clear();
-            currentTours = new List<Tour>();
-            if (cmbTour.Items.Count > 0) cmbTour.Items.Clear();
-            cmbTour.ItemsSource = null;
-
-            int tourTypeId = (cmbTourType.SelectedItem as TourType).TourTypeId;
-
-            DataTable tourData = MainFunctions.NewQuery($"SELECT id_tour, name FROM Tour WHERE id_tour IN " +
-                $"(SELECT id_tour FROM Tour_types WHERE id_type = {tourTypeId})");
-
-            for (int i = 0; i < tourData.Rows.Count; i++)
+            try
             {
-                currentTours.Add(new Tour()
-                {
-                    TourId = Convert.ToInt32(tourData.Rows[i][0].ToString()),
-                    Name = tourData.Rows[i][1].ToString()
-                });
-            }
+                if (currentTours != null) currentTours.Clear();
+                currentTours = new List<Tour>();
+                if (cmbTour.Items.Count > 0) cmbTour.Items.Clear();
+                cmbTour.ItemsSource = null;
 
-            if (currentTours.Count == 0)
-            {
-                cmbTour.Items.Add(new ComboBoxItem()
+                int tourTypeId = (cmbTourType.SelectedItem as TourType).TourTypeId;
+
+                DataTable tourData = MainFunctions.NewQuery($"SELECT id_tour, name FROM Tour WHERE id_tour IN " +
+                    $"(SELECT id_tour FROM Tour_types WHERE id_type = {tourTypeId})");
+
+                for (int i = 0; i < tourData.Rows.Count; i++)
                 {
-                    Content = new TextBlock()
+                    currentTours.Add(new Tour()
                     {
-                        Text = "Нет туров данного типа",
-                        Foreground = Brushes.Gray,
-                    },
+                        TourId = Convert.ToInt32(tourData.Rows[i][0].ToString()),
+                        Name = tourData.Rows[i][1].ToString()
+                    });
+                }
 
-                    IsEnabled = false,
-                    Visibility = Visibility.Collapsed,
-                }) ;
+                if (currentTours.Count == 0)
+                {
+                    cmbTour.Items.Add(new ComboBoxItem()
+                    {
+                        Content = new TextBlock()
+                        {
+                            Text = "Нет туров данного типа",
+                            Foreground = Brushes.Gray,
+                        },
 
-                cmbTour.SelectedIndex = 0;
+                        IsEnabled = false,
+                        Visibility = Visibility.Collapsed,
+                    });
+
+                    cmbTour.SelectedIndex = 0;
+                }
+                else
+                {
+                    cmbTour.ItemsSource = currentTours;
+                    cmbTour.SelectedIndex = 0;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                cmbTour.ItemsSource = currentTours;
-                cmbTour.SelectedIndex = 0;
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"AnalyzeTrips LoadTours error: {ex.Message}");
             }
 
-            
+
         }
 
         void LoadTopTours()
         {
-            TextBlock[] textBoxesNames = new TextBlock[3] { tbTopTour1, tbTopTour2, tbTopTour3 };
-            TextBlock[] textBoxesCounts = new TextBlock[3] { tbTopTourCount1, tbTopTourCount2, tbTopTourCount3 };
-
-            for (int i = 0; i < 3; i++)
+            try
             {
-                textBoxesNames[i].Text = "";
-                textBoxesCounts[i].Text = "";
+                TextBlock[] textBoxesNames = new TextBlock[3] { tbTopTour1, tbTopTour2, tbTopTour3 };
+                TextBlock[] textBoxesCounts = new TextBlock[3] { tbTopTourCount1, tbTopTourCount2, tbTopTourCount3 };
+
+                for (int i = 0; i < 3; i++)
+                {
+                    textBoxesNames[i].Text = "";
+                    textBoxesCounts[i].Text = "";
+                }
+
+                List<string> toursNameCount = Analytics.GetTopTours();
+
+                for (int i = 0; i < toursNameCount.Count; i++)
+                {
+                    textBoxesNames[i].Text = toursNameCount[i].Split(',')[0];
+                    textBoxesCounts[i].Text = toursNameCount[i].Split(',')[1];
+                }
             }
-
-            List<string> toursNameCount = Analytics.GetTopTours();
-
-            for (int i = 0; i < toursNameCount.Count; i++)
+            catch (Exception ex)
             {
-                textBoxesNames[i].Text = toursNameCount[i].Split(',')[0];
-                textBoxesCounts[i].Text = toursNameCount[i].Split(',')[1];
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"AnalyzeTrips LoadTopTours error: {ex.Message}");
             }
 
         }
 
         void LoadIncome()
         {
-            List<int> incomePercent = Analytics.GetCurrentTrips_IncomePercent();
-            tbIncome.Text = incomePercent[0].ToString("### ### ###") + "₽";
+            try
+            {
+                List<int> incomePercent = Analytics.GetCurrentTrips_IncomePercent();
+                tbIncome.Text = incomePercent[0].ToString("### ### ###") + "₽";
 
-            int percent = incomePercent[1];
-            if (percent >= 0)
-            {
-                tbIncomePercent.Text = percent.ToString() + "%";
-                tbIncomePercent.Foreground = plgGreenIncome.Fill;
-                plgGreenIncome.Visibility = Visibility.Visible;
-                plgRedIncome.Visibility = Visibility.Hidden;
+                int percent = incomePercent[1];
+                if (percent >= 0)
+                {
+                    tbIncomePercent.Text = percent.ToString() + "%";
+                    tbIncomePercent.Foreground = plgGreenIncome.Fill;
+                    plgGreenIncome.Visibility = Visibility.Visible;
+                    plgRedIncome.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    tbIncomePercent.Text = (-percent).ToString() + "%";
+                    tbIncomePercent.Foreground = plgRedIncome.Fill;
+                    plgGreenIncome.Visibility = Visibility.Hidden;
+                    plgRedIncome.Visibility = Visibility.Visible;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                tbIncomePercent.Text = (-percent).ToString() + "%";
-                tbIncomePercent.Foreground = plgRedIncome.Fill;
-                plgGreenIncome.Visibility = Visibility.Hidden;
-                plgRedIncome.Visibility = Visibility.Visible;
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"AnalyzeTrips LoadIncome error: {ex.Message}");
             }
-            
+
 
         }
 
         void LoadTripsCount()
         {
-            List<int> countPercent = Analytics.GetCurrentTrips_CountPercent();
-            tbTripsCount.Text = countPercent[0].ToString();
+            try
+            {
+                List<int> countPercent = Analytics.GetCurrentTrips_CountPercent();
+                tbTripsCount.Text = countPercent[0].ToString();
 
-            int percent = countPercent[1];
-            if (percent >= 0)
-            {
-                tbTripsPercent.Text = percent.ToString() + "%";
-                tbTripsPercent.Foreground = plgGreenIncome.Fill;
-                plgGreenTrips.Visibility = Visibility.Visible;
-                plgRedTrips.Visibility = Visibility.Hidden;
+                int percent = countPercent[1];
+                if (percent >= 0)
+                {
+                    tbTripsPercent.Text = percent.ToString() + "%";
+                    tbTripsPercent.Foreground = plgGreenIncome.Fill;
+                    plgGreenTrips.Visibility = Visibility.Visible;
+                    plgRedTrips.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    tbTripsPercent.Text = (-percent).ToString() + "%";
+                    tbTripsPercent.Foreground = plgRedIncome.Fill;
+                    plgGreenTrips.Visibility = Visibility.Hidden;
+                    plgRedTrips.Visibility = Visibility.Visible;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                tbTripsPercent.Text = (-percent).ToString() + "%";
-                tbTripsPercent.Foreground = plgRedIncome.Fill;
-                plgGreenTrips.Visibility = Visibility.Hidden;
-                plgRedTrips.Visibility = Visibility.Visible;
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"AnalyzeTrips LoadTripsCount error: {ex.Message}");
             }
         }
 
         void LoadFirstChart()
         {
-            int bestTourId = Convert.ToInt32(MainFunctions.NewQuery($"SELECT TOP 1 id_tour " +
-                $"FROM Trip " +
-                $"GROUP BY id_tour " +
-                $"ORDER BY SUM(total_price) DESC").Rows[0][0].ToString());
-
-            int bestTourTypeId = Convert.ToInt32(MainFunctions.NewQuery($"SELECT TOP 1 id_Type " +
-                $"FROM Tour_types " +
-                $"WHERE id_tour = {bestTourId}").Rows[0][0].ToString());
-
-            for (int i = 1; i < cmbTourType.Items.Count; i++)
+            try
             {
-                if ((cmbTourType.Items[i] as TourType).TourTypeId == bestTourTypeId)
+                int bestTourId = Convert.ToInt32(MainFunctions.NewQuery($"SELECT TOP 1 id_tour " +
+                    $"FROM Trip " +
+                    $"GROUP BY id_tour " +
+                    $"ORDER BY SUM(total_price) DESC").Rows[0][0].ToString());
+
+                int bestTourTypeId = Convert.ToInt32(MainFunctions.NewQuery($"SELECT TOP 1 id_Type " +
+                    $"FROM Tour_types " +
+                    $"WHERE id_tour = {bestTourId}").Rows[0][0].ToString());
+
+                for (int i = 1; i < cmbTourType.Items.Count; i++)
                 {
-                    cmbTourType.SelectedItem = cmbTourType.Items[i];
-
-                    for (int j = 0; j < cmbTour.Items.Count; j++)
+                    if ((cmbTourType.Items[i] as TourType).TourTypeId == bestTourTypeId)
                     {
-                        if ((cmbTour.Items[j] as Tour).TourId == bestTourId)
-                        {
-                            cmbTour.SelectedItem = cmbTour.Items[j];
-                            break;
-                        }
-                    }
+                        cmbTourType.SelectedItem = cmbTourType.Items[i];
 
-                    break;
+                        for (int j = 0; j < cmbTour.Items.Count; j++)
+                        {
+                            if ((cmbTour.Items[j] as Tour).TourId == bestTourId)
+                            {
+                                cmbTour.SelectedItem = cmbTour.Items[j];
+                                break;
+                            }
+                        }
+
+                        break;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"AnalyzeTrips LoadFirstChart error: {ex.Message}");
             }
         }
 
         void LoadTourChart(int tourId = 0)
         {
-            DataContext = null;
-
-            ValuesIncome = value => value.ToString("C");
-            ValuesCount = value => value.ToString("N");
-            LabelFormat = value => value.ToString() + "₽";
-
-            List<string> months = new List<string>();
-            List<int> tripsCounts = new List<int>();
-            List<int> tourIncome = new List<int>();
-
-            for (int i = 0; i < 12; i++)
+            try
             {
-                months.Add(Analytics.GetMonthName(i));
-                tripsCounts.Add(Analytics.GetTourTripsCount(tourId, i));
-                tourIncome.Add(Analytics.GetTourIncome(tourId, i));
-            }
-            
+                DataContext = null;
 
-            months.Reverse();
-            tripsCounts.Reverse();
-            tourIncome.Reverse();
+                ValuesIncome = value => value.ToString("C");
+                ValuesCount = value => value.ToString("N");
+                LabelFormat = value => value.ToString() + "₽";
 
-            LabelsMonths = months.ToArray<string>();
+                List<string> months = new List<string>();
+                List<int> tripsCounts = new List<int>();
+                List<int> tourIncome = new List<int>();
 
-            ToursSeries = new SeriesCollection();
-
-            if (tripsCounts.Max() == 0)
-            {
-                chartAxisYCount = new Axis()
+                for (int i = 0; i < 12; i++)
                 {
-                    //Labels = new List<string>(){ "0","1"},
-                    Separator = new LiveCharts.Wpf.Separator
+                    months.Add(Analytics.GetMonthName(i));
+                    tripsCounts.Add(Analytics.GetTourTripsCount(tourId, i));
+                    tourIncome.Add(Analytics.GetTourIncome(tourId, i));
+                }
+
+
+                months.Reverse();
+                tripsCounts.Reverse();
+                tourIncome.Reverse();
+
+                LabelsMonths = months.ToArray<string>();
+
+                ToursSeries = new SeriesCollection();
+
+                if (tripsCounts.Max() == 0)
+                {
+                    chartAxisYCount = new Axis()
                     {
-                        Step = 1
-                    }
-                };
+                        //Labels = new List<string>(){ "0","1"},
+                        Separator = new LiveCharts.Wpf.Separator
+                        {
+                            Step = 1
+                        }
+                    };
 
-                chartAxisYIncome = new Axis()
-                {
-                    //Labels = new List<string>() { "0", "10000" },
-                    Separator = new LiveCharts.Wpf.Separator
+                    chartAxisYIncome = new Axis()
                     {
-                        Step = 10000
-                    }
-                };
+                        //Labels = new List<string>() { "0", "10000" },
+                        Separator = new LiveCharts.Wpf.Separator
+                        {
+                            Step = 10000
+                        }
+                    };
+                }
+                else
+                {
+                    ToursSeries.Add(new ColumnSeries
+                    {
+                        Title = "Выручка",
+                        Values = new ChartValues<int>(tourIncome),
+                        Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#61D8D8")),
+                        MaxColumnWidth = 60,
+                        ScalesYAt = 0,
+                    });
+
+                    ToursSeries.Add(new LineSeries
+                    {
+                        Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3DAFDB")),
+                        Fill = Brushes.Transparent,
+                        Title = "Кол-во поездок",
+                        Values = new ChartValues<int>(tripsCounts),
+                        StrokeThickness = 5,
+                        ScalesYAt = 1,
+                        DataLabels = true,
+                    });
+                }
+
+
+
+                DataContext = this;
+                if (chartAxisYIncome != null) chartAxisYIncome.LabelFormatter = LabelFormat;
             }
-            else
+            catch (Exception ex)
             {
-                ToursSeries.Add(new ColumnSeries
-                {
-                    Title = "Выручка",
-                    Values = new ChartValues<int>(tourIncome),
-                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#61D8D8")),
-                    MaxColumnWidth = 60,
-                    ScalesYAt = 0,
-                });
-
-                ToursSeries.Add(new LineSeries
-                {
-                    Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3DAFDB")),
-                    Fill = Brushes.Transparent,
-                    Title = "Кол-во поездок",
-                    Values = new ChartValues<int>(tripsCounts),
-                    StrokeThickness = 5,
-                    ScalesYAt = 1,
-                    DataLabels = true,
-                });
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                MainFunctions.AddLogRecord($"AnalyzeTrips LoadTourChart error: {ex.Message}");
             }
-            
-
-
-            DataContext = this;
-            if (chartAxisYIncome!=null) chartAxisYIncome.LabelFormatter = LabelFormat;
         }
-        #endregion
-
-        #region Functions
-
         #endregion
 
         #region ButtonsClick

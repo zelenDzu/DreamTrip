@@ -351,16 +351,25 @@ namespace DreamTrip.Windows
         private void tbServiceName_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            char[] charList = textBox.Text.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
+            try
             {
-                if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+                char[] charList = textBox.Text.ToCharArray();
+                for (int i = 0; i < charList.Length; i++)
                 {
-                    textBox.Text = textBox.Text.Remove(i, 1);
+                    if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+                    {
+                        textBox.Text = textBox.Text.Remove(i, 1);
+                    }
                 }
-            }
 
-            if ((sender as TextBox).Text.Length == 0) (sender as TextBox).Text = " ";
+                if ((sender as TextBox).Text.Length == 0) (sender as TextBox).Text = " ";
+            }
+            catch (Exception ex)
+            {
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                btnCancel_Click(btnCancel, new RoutedEventArgs());
+                MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");
+            }
         }
         #endregion
 

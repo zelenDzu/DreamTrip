@@ -445,16 +445,26 @@ namespace DreamTrip.Windows
             if (popupAnswer)
             {
                 int currentTripId = (dtgTrips.SelectedItem as Trip).TripId;
-                MainFunctions.NewQuery($"DELETE FROM Trip_services WHERE id_trip = {currentTripId} " +
-                    $"DELETE FROM Trip_docs WHERE id_trip = {currentTripId} " +
-                    $"DELETE FROM Trip_feedback WHERE id_trip = {currentTripId} " +
-                    $"DELETE FROM Trip WHERE id_trip = {currentTripId} ");
 
-                Message messageSuccessWindow = new Message("Успех", "Поездка была успешно удалена!", false, false);
-                messageSuccessWindow.ShowDialog();
-                MainFunctions.AddLogRecord($"Deleted trip with ID {currentTripId}");
+                try
+                {
+                    MainFunctions.NewQuery($"DELETE FROM Trip_services WHERE id_trip = {currentTripId} " +
+                        $"DELETE FROM Trip_docs WHERE id_trip = {currentTripId} " +
+                        $"DELETE FROM Trip_feedback WHERE id_trip = {currentTripId} " +
+                        $"DELETE FROM Trip WHERE id_trip = {currentTripId} ");
 
-                TripsList.Remove(dtgTrips.SelectedItem as Trip);
+                    Message messageSuccessWindow = new Message("Успех", "Поездка была успешно удалена!", false, false);
+                    messageSuccessWindow.ShowDialog();
+                    MainFunctions.AddLogRecord($"Deleted trip with ID {currentTripId}");
+
+
+                    TripsList.Remove(dtgTrips.SelectedItem as Trip);
+                }
+                catch (Exception ex)
+                {
+                    new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                    MainFunctions.AddLogRecord($"ClientTrip ID {currentTripId} deletion error: {ex.Message}");
+                }
             }
 
         }

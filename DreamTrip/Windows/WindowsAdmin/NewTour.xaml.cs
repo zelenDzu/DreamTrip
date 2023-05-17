@@ -554,7 +554,7 @@ namespace DreamTrip.Windows
                 MainFunctions.AddLogRecord($"Tour created:" +
                     $"\n\tID: {currentTourId}" +
                     $"\n\tName: {tbxTourName.Text}" +
-                    $"\n\tPhoto error: {(putImageResult ? "No" : "ERROR")}");
+                    $"{(putImageResult ? "" : "\n\tPhoto error: wrong format")}");
 
 
                 parentTabItemLink.ItemUserControl = previousPage;
@@ -601,7 +601,7 @@ namespace DreamTrip.Windows
 
         private void btnCreate_Click(object sender, RoutedEventArgs e)
         {
-            if (int.Parse(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Tour WHERE name = '{tbxTourName.Text}'").Rows[0][0].ToString()) > 0)
+            if (int.Parse(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Tour WHERE name = '{tbxTourName.Text}' AND id_tour != {editedTour.TourId}").Rows[0][0].ToString()) > 0)
             {
                 new Message($"Ошибка","Тур с таким названием уже есть").ShowDialog();
             }
