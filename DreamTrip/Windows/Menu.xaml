@@ -13,6 +13,7 @@
         <ImageBrush ImageSource="..\Resources\mainback.jpg" Stretch="UniformToFill">
 
         </ImageBrush>
+        <!--<SolidColorBrush Color="White"/>-->
     </Window.Background>
     <Grid>
         <Grid.RowDefinitions>

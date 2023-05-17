@@ -1034,6 +1034,81 @@ namespace DreamTrip.Functions
             return month;
         }
     
+
+        public static List<ClientABC> GetClientABCs()
+        {
+            List<ClientABC> clients = new List<ClientABC>();
+
+            DataTable clientsData = MainFunctions.NewQuery($"SELECT c.id_client,  " +
+                $"CONCAT(c.surname, ' ', c.name, ' ', c.patronymic), " +
+                $"ISNULL(SUM(t.total_price), 0) as total, " +
+                $"ROUND(ISNULL(SUM(t.total_price), 0) / (SELECT SUM(total_price) FROM Trip) * 100, 0) " +
+                $"FROM Client c " +
+                $"LEFT JOIN Trip t ON t.id_client = c.id_client " +
+                $"GROUP BY c.id_client, CONCAT(c.surname, ' ', c.name, ' ', c.patronymic) " +
+                $"ORDER BY total DESC");
+
+            double previousPercent = 0;
+
+            for (int i = 0; i < clientsData.Rows.Count; i++)
+            {
+                previousPercent += Convert.ToDouble(clientsData.Rows[i][3].ToString());
+                string category = "";
+                if (previousPercent < 80) category = "A";
+                if (previousPercent >=80 && previousPercent < 95) category = "B";
+                if (previousPercent >= 95) category = "C";
+
+                int clientId = Convert.ToInt32(clientsData.Rows[i][0].ToString());
+
+                DataTable lastTripData = MainFunctions.NewQuery($"SELECT TOP 1 c.id_client, t.start_date, t.end_date, t.total_price " +
+                    $"FROM Client c " +
+                    $"LEFT JOIN Trip t ON t.id_client = c.id_client " +
+                    $"WHERE c.id_client = {clientId} " +
+                    $"ORDER BY t.start_date DESC");
+
+                string tempLastTripDates = "";
+                string tempLastTripPrice = "";
+
+                if (lastTripData.Rows[0][1].ToString() == "")
+                {
+                    tempLastTripDates = "нет";
+                    tempLastTripPrice = "0₽";
+                }
+                else
+                {
+                    tempLastTripPrice = Convert.ToInt32(lastTripData.Rows[0][3]).ToString("### ### ###") + "₽";
+                    string tempDate1 = Convert.ToDateTime(lastTripData.Rows[0][1].ToString()).ToShortDateString();
+                    string tempDate2 = Convert.ToDateTime(lastTripData.Rows[0][2].ToString()).ToShortDateString();
+
+                    tempDate1 = tempDate1.Substring(0, tempDate1.LastIndexOf(".") + 1) + tempDate1.Substring(tempDate1.Length-2,2);
+                    tempDate2 = tempDate2.Substring(0, tempDate2.LastIndexOf(".") + 1) + tempDate2.Substring(tempDate2.Length-2,2);
+
+                    tempLastTripDates = $"{tempDate1} - " +
+                        $"{tempDate2}";
+                }
+
+
+
+                ClientABC tempClient = new ClientABC()
+                {
+                    ClientId = clientId,
+                    FullName = clientsData.Rows[i][1].ToString(),
+                    TotalIncome = Convert.ToInt32(clientsData.Rows[i][2].ToString()),
+                    TotalIncomeStr = clientsData.Rows[i][2].ToString() + "₽",
+                    CategoryABC = category,
+                    LastTripDates = tempLastTripDates,
+                    LastTripPrice = tempLastTripPrice
+                };
+
+                clients.Add(tempClient);
+
+            }
+
+
+            return clients;
+        }
+
+
     }
 }
 

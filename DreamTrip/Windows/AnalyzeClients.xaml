@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:DreamTrip.Windows"
              xmlns:LiveCharts ="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
-             d:DesignHeight="850" d:DesignWidth="1300">
+             d:DesignHeight="720" d:DesignWidth="1300">
     <UserControl.Resources>
         <Style TargetType="{x:Type Border}" x:Key="borderStyle">
             <Setter Property="Background" Value="#FFC9F6F2"/>
@@ -259,7 +259,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Foreground="Black" Text="Аналитика клиентов" FontWeight="Medium"
+        <TextBlock Grid.Row="0" Foreground="Black" Text="Аналитика по клиентам" FontWeight="Medium"
                        Grid.ColumnSpan="3"
                        FontFamily="Yu Gothic UI Semilight" FontSize="36"
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -286,7 +286,7 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="1" Margin="15">
+                <Grid Grid.Row="1" Margin="15" Height="620">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="35*"/>
                         <ColumnDefinition Width="60*"/>
@@ -354,6 +354,58 @@
 
                         </LiveCharts:PieChart>
                     </Border>
+
+                    <DataGrid x:Name="dtgClients" 
+                          FontFamily="Yu Gothic UI"
+                          FontSize="24"
+                          Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                          IsReadOnly="True"
+                          AutoGenerateColumns="False"
+                          RowDetailsVisibilityMode="Collapsed"  CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
+                          SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn CanUserSort="True" IsReadOnly="True" Header="ФИО клиента" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Cursor="Hand"  
+                                                   Name="tbClientFullName"
+                                                   MouseLeftButtonUp="tbClientFullName_MouseLeftButtonUp"
+                                                   Tag="{Binding ClientId}"
+                                                   Text="{Binding FullName}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Последняя поездка" Width="280">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <WrapPanel Orientation="Vertical">
+                                            <TextBlock Text="{Binding LastTripDates}" />
+                                            <TextBlock Text="{Binding LastTripPrice}" />
+                                        </WrapPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn CanUserSort="True" IsReadOnly="True" Header="Выручка" Binding="{Binding TotalIncomeStr}" Width="150"/>
+                            
+                        </DataGrid.Columns>
+
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CategoryABC}" Value="A">
+                                        <Setter Property="Background" Value="#FF9BE3CE"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding CategoryABC}" Value="B">
+                                        <Setter Property="Background" Value="#FFEFE4B0"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding CategoryABC}" Value="C">
+                                        <Setter Property="Background" Value="#FFF8CBCB"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                    </DataGrid>
+
                 </Grid>
             </Grid>
         </Border>

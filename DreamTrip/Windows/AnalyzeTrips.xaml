@@ -259,7 +259,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Foreground="Black" Text="Аналитика туров" FontWeight="Medium"
+        <TextBlock Grid.Row="0" Foreground="Black" Text="Аналитика по турам" FontWeight="Medium"
                        Grid.ColumnSpan="3"
                        FontFamily="Yu Gothic UI Semilight" FontSize="36"
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>

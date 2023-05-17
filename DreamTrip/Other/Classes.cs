@@ -123,6 +123,11 @@ namespace DreamTrip.Classes
                 (ItemUserControl as Tasks).ScrollEvent(delta);
                 return;
             }
+            if (ItemUserControl as AnalyzeClients != null)
+            {
+                (ItemUserControl as AnalyzeClients).ScrollEvent(delta);
+                return;
+            }
         }
         private string verticalScrollBarVisibility { get; set; } = "Auto";
         public string VerticalScrollBarVisibility
@@ -457,6 +462,17 @@ namespace DreamTrip.Classes
         public int[] FavoriteTours { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
+    }
+
+    public class ClientABC
+    {
+        public int ClientId { get; set; }
+        public string FullName { get; set; }
+        public string LastTripDates { get; set; }
+        public string LastTripPrice { get; set; }
+        public string TotalIncomeStr { get; set; }
+        public int TotalIncome { get; set; }
+        public string CategoryABC { get; set; }
     }
 
     /// <summary>

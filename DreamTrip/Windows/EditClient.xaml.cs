@@ -154,7 +154,7 @@ namespace DreamTrip.Windows
         {
             tbCallCount.Text = MainFunctions.NewQuery($"SELECT id_task FROM Task_call WHERE id_client={currentClient.ClientId} AND id_task IN (SELECT id_task FROM Task WHERE is_done=1)").Rows.Count.ToString();
             tbTripsCount.Text = MainFunctions.NewQuery($"SELECT id_trip FROM Trip WHERE  id_client={currentClient.ClientId}").Rows.Count.ToString();
-            tbTripsPrice.Text = MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip WHERE id_client={currentClient.ClientId}").Rows[0][0].ToString() + " руб.";
+            tbTripsPrice.Text = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip WHERE id_client={currentClient.ClientId}").Rows[0][0]).ToString("### ### ###") + "₽";
             
             
             DataTable LastCallData = MainFunctions.NewQuery($"SELECT TOP 1 CONVERT(date,date_done) FROM Task WHERE (is_done = 1) AND (date_done is not NULL)  AND (id_task_type=1) AND id_task IN" +

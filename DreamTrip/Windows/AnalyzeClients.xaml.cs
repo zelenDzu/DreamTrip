@@ -28,12 +28,13 @@ namespace DreamTrip.Windows
     {
         #region Variables
         TabClass parentTabItemLink;
-        string[] thisPageParametres = new string[] { "Auto", "Аналитика клиентов", "../Resources/analyze_client.png" };
+        string[] thisPageParametres = new string[] { "Auto", "Аналитика по клиентам", "../Resources/analyze_client.png" };
         UserControl previousPage;
         string[] previousPageParametres;
 
-        List<SolidColorBrush> chartColors;
+        List<ClientABC> clientsABC;
 
+        List<SolidColorBrush> chartColors;
         public Func<ChartPoint, string> PointLabel { get; set; }
         public SeriesCollection clientSeries { get; set; }
         #endregion
@@ -239,11 +240,32 @@ namespace DreamTrip.Windows
 
         void LoadClientsABC()
         {
-
+            clientsABC = Analytics.GetClientABCs();
+            dtgClients.ItemsSource = null;
+            dtgClients.ItemsSource = clientsABC;
         }
         #endregion
 
         #region Functions
+        /// <summary>
+        /// При событии "Скролл мыши"
+        /// </summary>
+        /// <param name="Delta">значение скролла</param>
+        public void ScrollEvent(int Delta)
+        {
+            int dtgDelta = Delta * 2 / 7;
+            if (Delta < 0) Delta = Delta / 40 + 2;
+            else Delta = Delta / 40 - 2;
+
+
+            
+            if (dtgClients.IsMouseOver)
+            {
+                ScrollViewer scv = dtgClients.Template.FindName("DG_ScrollViewer", dtgClients) as ScrollViewer;
+                scv.ScrollToVerticalOffset(scv.VerticalOffset - dtgDelta);
+            }
+        }
+
         #endregion
 
         #region ButtonsClick
@@ -270,5 +292,10 @@ namespace DreamTrip.Windows
                     LoadPieChart(cmbClientGroupType.SelectedIndex+1);
         }
 
+        private void tbClientFullName_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            int clientId = int.Parse((sender as TextBlock).Tag.ToString());
+            parentTabItemLink.ItemUserControl = new EditClient(parentTabItemLink, this, thisPageParametres, clientId);
+        }
     }
 }
