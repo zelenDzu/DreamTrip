@@ -61,7 +61,6 @@ namespace DreamTrip.Functions
             return currentSessionUserRole;
         }
 
-
         /// <summary>
         /// Изменение логов Logs
         /// </summary>
@@ -115,6 +114,11 @@ namespace DreamTrip.Functions
             }
         }
 
+        /// <summary>
+        /// Поменять параметры текущей вкладки (название, изображение)
+        /// </summary>
+        /// <param name="tabItem"></param>
+        /// <param name="parametres"></param>
         public static void ChangeTabParametres(TabClass tabItem, string[] parametres)
         {
             tabItem.VerticalScrollBarVisibility = parametres[0];
@@ -163,7 +167,7 @@ namespace DreamTrip.Functions
         /// </summary>
         /// <param name="tourName">название тура</param>
         /// <returns>результат проверки корректности</returns>
-        public static bool validateTourName(string tourName)
+        public static bool ValidateString_RuEngNumSpec(string tourName)
         {
             if (tourName.Length == 0) return false;
             tourName = tourName.ToLower();
@@ -173,7 +177,7 @@ namespace DreamTrip.Functions
                 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц',
                 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', '-', '—', 
                 '1','2','3','4','5','6','7','8','9','0','!','?','&','$', 
-                ' ',',','.','\\','/','\"', '\'', '№','#', '(', ')'};
+                ' ',',','.','\\','/','\"', '№','#', '(', ')'};
             foreach (char ch in tourName)
                 if (Array.IndexOf(letters, ch, 0) < 0)
                 {
@@ -187,13 +191,13 @@ namespace DreamTrip.Functions
         /// </summary>
         /// <param name="login">логин</param>
         /// <returns>результат проверки корректности</returns>
-        public static bool validateLogin(string login)
+        public static bool ValidateString_EngNum(string login)
         {
             if (login.Length == 0) return false;
             login = login.ToLower();
             char[] letters = { 'a','b','c','d','e','f','g','h','i','j','k',
                 'l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-                '-', '—', '1','2','3','4','5','6','7','8','9','0'};
+                '-', '—', '_', '1','2','3','4','5','6','7','8','9','0'};
             foreach (char ch in login)
                 if (Array.IndexOf(letters, ch, 0) < 0)
                 {
@@ -207,7 +211,7 @@ namespace DreamTrip.Functions
         /// </summary>
         /// <param name="name">имя</param>
         /// <returns>результат проверки корректности</returns>
-        public static bool validateName(string name)
+        public static bool ValidateString_RuEng(string name)
         {
             if (name.Length == 0) return false;
             name = name.ToLower();

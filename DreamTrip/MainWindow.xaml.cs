@@ -42,7 +42,9 @@ namespace DreamTrip
         /// </summary>
         private void EnableLoginButton()
         {
-            if (tbxLogin.Text.Length >= 1 && pwbPassword.Password.Length >= 1)
+            if (tbxLogin.Text.Length >= 1 && pwbPassword.Password.Length >= 1 
+                && MainFunctions.ValidateString_EngNum(tbxLogin.Text) 
+                && MainFunctions.ValidateString_RuEngNumSpec(pwbPassword.Password))
             {
                 borderLoginButton.IsEnabled = true;
             }
@@ -89,6 +91,16 @@ namespace DreamTrip
 
         private void pwbPassword_PasswordChanged(object sender, RoutedEventArgs e)
         {
+            PasswordBox textBox = sender as PasswordBox;
+            char[] charList = textBox.Password.ToCharArray();
+            for (int i = 0; i < charList.Length; i++)
+            {
+                if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+                {
+                    textBox.Password = textBox.Password.Remove(i, 1);
+                }
+            }
+
             EnableLoginButton();
         }
 
@@ -117,6 +129,16 @@ namespace DreamTrip
                     tbxLogin.Text = "analyst";
                     pwbPassword.Password = "analyst1234";
                     break;
+            }
+
+            TextBox textBox = sender as TextBox;
+            char[] charList = textBox.Text.ToCharArray();
+            for (int i = 0; i < charList.Length; i++)
+            {
+                if (!MainFunctions.ValidateString_EngNum(charList[i].ToString()))
+                {
+                    textBox.Text = textBox.Text.Remove(i, 1);
+                }
             }
 
             EnableLoginButton();

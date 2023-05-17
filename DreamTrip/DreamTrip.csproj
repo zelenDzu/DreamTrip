@@ -85,85 +85,85 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Accounts.xaml.cs">
+    <Compile Include="Windows\WindowsAdmin\Accounts.xaml.cs">
       <DependentUpon>Accounts.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\AdminMenuUserControl.xaml.cs">
+    <Compile Include="Windows\WindowsAdmin\AdminMenuUserControl.xaml.cs">
       <DependentUpon>AdminMenuUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\AnalystMenuUserControl.xaml.cs">
+    <Compile Include="Windows\WindowsAnalyst\AnalystMenuUserControl.xaml.cs">
       <DependentUpon>AnalystMenuUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\AnalyzeClients.xaml.cs">
+    <Compile Include="Windows\WindowsAnalyst\AnalyzeClients.xaml.cs">
       <DependentUpon>AnalyzeClients.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\AnalyzeTrips.xaml.cs">
+    <Compile Include="Windows\WindowsAnalyst\AnalyzeTrips.xaml.cs">
       <DependentUpon>AnalyzeTrips.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ChooseClient.xaml.cs">
+    <Compile Include="Windows\WindowsManager\ChooseClient.xaml.cs">
       <DependentUpon>ChooseClient.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ChooseSaveTripsFormat.xaml.cs">
+    <Compile Include="Windows\SubWindows\ChooseSaveTripsFormat.xaml.cs">
       <DependentUpon>ChooseSaveTripsFormat.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Cities.xaml.cs">
+    <Compile Include="Windows\WindowsAdmin\Cities.xaml.cs">
       <DependentUpon>Cities.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Clients.xaml.cs">
+    <Compile Include="Windows\WindowsCommon\Clients.xaml.cs">
       <DependentUpon>Clients.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ClientsTrips.xaml.cs">
+    <Compile Include="Windows\WindowsCommon\ClientsTrips.xaml.cs">
       <DependentUpon>ClientsTrips.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\CreateTrip.xaml.cs">
+    <Compile Include="Windows\WindowsManager\CreateTrip.xaml.cs">
       <DependentUpon>CreateTrip.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\EditClient.xaml.cs">
+    <Compile Include="Windows\WindowsCommon\EditClient.xaml.cs">
       <DependentUpon>EditClient.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\EditTasks.xaml.cs">
+    <Compile Include="Windows\WindowsAnalyst\EditTasks.xaml.cs">
       <DependentUpon>EditTasks.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\EditTrip.xaml.cs">
+    <Compile Include="Windows\WindowsManager\EditTrip.xaml.cs">
       <DependentUpon>EditTrip.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\EnterOldPassword.xaml.cs">
+    <Compile Include="Windows\SubWindows\EnterOldPassword.xaml.cs">
       <DependentUpon>EnterOldPassword.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Hotels.xaml.cs">
+    <Compile Include="Windows\WindowsAdmin\Hotels.xaml.cs">
       <DependentUpon>Hotels.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\LoginHistory.xaml.cs">
+    <Compile Include="Windows\WindowsAdmin\LoginHistory.xaml.cs">
       <DependentUpon>LoginHistory.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Menu.xaml.cs">
+    <Compile Include="Windows\WindowsCommon\Menu.xaml.cs">
       <DependentUpon>Menu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ManagerMenuUserControl.xaml.cs">
+    <Compile Include="Windows\WindowsManager\ManagerMenuUserControl.xaml.cs">
       <DependentUpon>ManagerMenuUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Message.xaml.cs">
+    <Compile Include="Windows\SubWindows\Message.xaml.cs">
       <DependentUpon>Message.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\NewTour.xaml.cs">
+    <Compile Include="Windows\WindowsAdmin\NewTour.xaml.cs">
       <DependentUpon>NewTour.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Profile.xaml.cs">
+    <Compile Include="Windows\WindowsCommon\Profile.xaml.cs">
       <DependentUpon>Profile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Services.xaml.cs">
+    <Compile Include="Windows\WindowsAdmin\Services.xaml.cs">
       <DependentUpon>Services.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Statistics.xaml.cs">
+    <Compile Include="Windows\WindowsAnalyst\Statistics.xaml.cs">
       <DependentUpon>Statistics.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Tasks.xaml.cs">
+    <Compile Include="Windows\WindowsManager\Tasks.xaml.cs">
       <DependentUpon>Tasks.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\TourInfo.xaml.cs">
+    <Compile Include="Windows\WindowsCommon\TourInfo.xaml.cs">
       <DependentUpon>TourInfo.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Tours.xaml.cs">
+    <Compile Include="Windows\WindowsCommon\Tours.xaml.cs">
       <DependentUpon>Tours.xaml</DependentUpon>
     </Compile>
     <Page Include="Assets\IconDictionary.xaml">
@@ -195,111 +195,111 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\Accounts.xaml">
+    <Page Include="Windows\WindowsAdmin\Accounts.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\AdminMenuUserControl.xaml">
+    <Page Include="Windows\WindowsAdmin\AdminMenuUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\AnalystMenuUserControl.xaml">
+    <Page Include="Windows\WindowsAnalyst\AnalystMenuUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\AnalyzeClients.xaml">
+    <Page Include="Windows\WindowsAnalyst\AnalyzeClients.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\AnalyzeTrips.xaml">
+    <Page Include="Windows\WindowsAnalyst\AnalyzeTrips.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\ChooseClient.xaml">
+    <Page Include="Windows\WindowsManager\ChooseClient.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\ChooseSaveTripsFormat.xaml">
+    <Page Include="Windows\SubWindows\ChooseSaveTripsFormat.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Cities.xaml">
+    <Page Include="Windows\WindowsAdmin\Cities.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Clients.xaml">
+    <Page Include="Windows\WindowsCommon\Clients.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\ClientsTrips.xaml">
+    <Page Include="Windows\WindowsCommon\ClientsTrips.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\CreateTrip.xaml">
+    <Page Include="Windows\WindowsManager\CreateTrip.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\EditClient.xaml">
+    <Page Include="Windows\WindowsCommon\EditClient.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\EditTasks.xaml">
+    <Page Include="Windows\WindowsAnalyst\EditTasks.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\EditTrip.xaml">
+    <Page Include="Windows\WindowsManager\EditTrip.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\EnterOldPassword.xaml">
+    <Page Include="Windows\SubWindows\EnterOldPassword.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Hotels.xaml">
+    <Page Include="Windows\WindowsAdmin\Hotels.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\LoginHistory.xaml">
+    <Page Include="Windows\WindowsAdmin\LoginHistory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Menu.xaml">
+    <Page Include="Windows\WindowsCommon\Menu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\ManagerMenuUserControl.xaml">
+    <Page Include="Windows\WindowsManager\ManagerMenuUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Message.xaml">
+    <Page Include="Windows\SubWindows\Message.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\NewTour.xaml">
+    <Page Include="Windows\WindowsAdmin\NewTour.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Profile.xaml">
+    <Page Include="Windows\WindowsCommon\Profile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Services.xaml">
+    <Page Include="Windows\WindowsAdmin\Services.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Statistics.xaml">
+    <Page Include="Windows\WindowsAnalyst\Statistics.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Tasks.xaml">
+    <Page Include="Windows\WindowsManager\Tasks.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\TourInfo.xaml">
+    <Page Include="Windows\WindowsCommon\TourInfo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\Tours.xaml">
+    <Page Include="Windows\WindowsCommon\Tours.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
