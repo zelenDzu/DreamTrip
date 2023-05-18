@@ -50,6 +50,11 @@ namespace DreamTrip.Windows
         public NewTour(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres, Tour tempEditedTour = null)
         {
             InitializeComponent();
+
+            parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+
             tourPhotoPath = MainFunctions.GetAppPath() + "/Resources/ToursPhotos/default.png";
             tourphoto = GetBitmapImageFromPath(tourPhotoPath);
             editedTour = tempEditedTour;
@@ -78,10 +83,8 @@ namespace DreamTrip.Windows
             double[] sizes = MainFunctions.MenuLink.GetWidthHeight();
             WindowSizeChanged(sizes[0], sizes[1]);
 
-            parentTabItemLink = tempTabItem;
-            previousPage = tempPreviousPage;
-            previousPageParametres = tempPreviousPageParametres;
             MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
         }
         #endregion
 

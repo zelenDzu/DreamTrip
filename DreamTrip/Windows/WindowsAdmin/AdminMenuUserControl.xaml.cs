@@ -61,7 +61,20 @@ namespace DreamTrip.Windows
 
         private void btnNewTour_Click(object sender, RoutedEventArgs e)
         {
-            parentTabItemLink.ItemUserControl = new NewTour(parentTabItemLink, this, thisPageParametres);
+            try
+            {
+                parentTabItemLink.ItemUserControl = new NewTour(parentTabItemLink, this, thisPageParametres);
+            }
+            catch (Exception ex)
+            {
+                //ЭТОТ TRY CATCH НЕ ОТРАБАТЫВАЕТ НОРМАЛЬНО И ПРОГРАММА ВЫЛЕТАЕТ ПОСЛЕ ПОКАЗА СООБЩЕНИЯ
+                //САМ TRY CATCH НУЖЕН ПРИ ОШИБКАХ С ПУТЯМИ КАРТИНОК
+                //ТАКОЙ БЛОК НАХОДИТСЯ В ОКНАХ AdminMenuUserControl (btnNewTour_Click), TourInfo (btnEdit_CLick), Tours (TourButton_Click)
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                MainFunctions.AddHistoryRecord("Unknown error: " + ex.Message);
+                parentTabItemLink.ItemUserControl = this;
+                MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+            }
         }
 
         private void btnTours_Click(object sender, RoutedEventArgs e)

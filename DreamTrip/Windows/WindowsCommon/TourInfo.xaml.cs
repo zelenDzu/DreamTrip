@@ -46,9 +46,15 @@ namespace DreamTrip.Windows
         public TourInfo(TabClass tempTabItem, UserControl tempPreviousPage, string[] tempPreviousPageParametres, int tempTourId)
         {
             InitializeComponent();
+
+            
+            parentTabItemLink = tempTabItem;
+            previousPage = tempPreviousPage;
+            previousPageParametres = tempPreviousPageParametres;
+
             starsList = new Image[] { imgStar1, imgStar2, imgStar3, imgStar4, imgStar5 };
-            servicesImageList = new Image[] {imgService1, imgService2, imgService3, imgService4, imgService5, imgService6 };
-            servicesTextList = new TextBlock[] {tbService1, tbService2, tbService3, tbService4, tbService5, tbService6 };
+            servicesImageList = new Image[] { imgService1, imgService2, imgService3, imgService4, imgService5, imgService6 };
+            servicesTextList = new TextBlock[] { tbService1, tbService2, tbService3, tbService4, tbService5, tbService6 };
             currentTourId = tempTourId;
 
             switch (MainFunctions.GetUserRole())
@@ -81,10 +87,8 @@ namespace DreamTrip.Windows
 
             thisPageParametres[1] = currentTour.Name;
 
-            parentTabItemLink = tempTabItem;
-            previousPage = tempPreviousPage;
-            previousPageParametres = tempPreviousPageParametres;
             MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
         }
         #endregion
 
@@ -316,7 +320,15 @@ namespace DreamTrip.Windows
                 DataTable serviceData = MainFunctions.NewQuery($"SELECT * FROM Service WHERE id_service={serviceId}");
 
                 //servicesImageList[i].Source = new BitmapImage(new Uri($"pack://application:,,,/DreamTrip;component/{serviceData.Rows[0][4].ToString()}"));
-                servicesImageList[i].Source = new BitmapImage(new Uri($"{MainFunctions.GetAppPath()}{serviceData.Rows[0][4].ToString()}"));
+                try
+                {
+                    servicesImageList[i].Source = new BitmapImage(new Uri($"{MainFunctions.GetAppPath()}{serviceData.Rows[0][4].ToString()}"));
+                }
+                catch
+                {
+                    servicesImageList[i].Source = new BitmapImage(new Uri($"pack://application:,,,/DreamTrip;component/Resources/service.png"));
+                }
+
 
                 servicesTextList[i].Text = serviceData.Rows[0][1].ToString();
 
@@ -452,7 +464,22 @@ namespace DreamTrip.Windows
                 ServicesIds = currentTour.ServicesIds,
                 ImageSource = currentTour.ImageSource
             };
-            parentTabItemLink.ItemUserControl = new NewTour(parentTabItemLink, this, thisPageParametres, editedTour);
+
+
+            try
+            {
+                parentTabItemLink.ItemUserControl = new NewTour(parentTabItemLink, this, thisPageParametres, editedTour);
+            }
+            catch (Exception ex)
+            {
+                //ЭТОТ TRY CATCH НЕ ОТРАБАТЫВАЕТ НОРМАЛЬНО И ПРОГРАММА ВЫЛЕТАЕТ ПОСЛЕ ПОКАЗА СООБЩЕНИЯ
+                //САМ TRY CATCH НУЖЕН ПРИ ОШИБКАХ С ПУТЯМИ КАРТИНОК
+                //ТАКОЙ БЛОК НАХОДИТСЯ В ОКНАХ AdminMenuUserControl (btnNewTour_Click), TourInfo (btnEdit_CLick), Tours (TourButton_Click)
+                new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                MainFunctions.AddHistoryRecord("Unknown error: " + ex.Message);
+                parentTabItemLink.ItemUserControl = this;
+                MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+            }
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)

@@ -495,7 +495,20 @@ namespace DreamTrip.Windows
             {
                 string tourName = MainFunctions.NewQuery($"SELECT name FROM Tour WHERE id_tour = {tourId}").Rows[0][0].ToString();
 
-                parentTabItemLink.ItemUserControl = new TourInfo(parentTabItemLink, this, thisPageParametres, tourId);
+                try
+                {
+                    parentTabItemLink.ItemUserControl = new TourInfo(parentTabItemLink, this, thisPageParametres, tourId);
+                }
+                catch (Exception ex)
+                {
+                    //ЭТОТ TRY CATCH НЕ ОТРАБАТЫВАЕТ НОРМАЛЬНО И ПРОГРАММА ВЫЛЕТАЕТ ПОСЛЕ ПОКАЗА СООБЩЕНИЯ
+                    //САМ TRY CATCH НУЖЕН ПРИ ОШИБКАХ С ПУТЯМИ КАРТИНОК
+                    //ТАКОЙ БЛОК НАХОДИТСЯ В ОКНАХ AdminMenuUserControl (btnNewTour_Click), TourInfo (btnEdit_CLick), Tours (TourButton_Click)
+                    new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
+                    MainFunctions.AddHistoryRecord("Unknown error: " + ex.Message);
+                    parentTabItemLink.ItemUserControl = this;
+                    MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+                }
             }
         }
 
