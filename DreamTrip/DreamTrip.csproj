@@ -74,10 +74,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BarsCode\ChartBackground.cs" />
-    <Compile Include="Charts\Chart.cs" />
-    <Compile Include="Charts\LineChart.cs" />
-    <Compile Include="Charts\PieChart.cs" />
     <Compile Include="Other\Classes.cs" />
     <Compile Include="Other\PasswordBoxMonitor.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -154,9 +150,6 @@
     <Compile Include="Windows\WindowsAdmin\Services.xaml.cs">
       <DependentUpon>Services.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\WindowsAnalyst\Statistics.xaml.cs">
-      <DependentUpon>Statistics.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\WindowsManager\Tasks.xaml.cs">
       <DependentUpon>Tasks.xaml</DependentUpon>
     </Compile>
@@ -166,10 +159,6 @@
     <Compile Include="Windows\WindowsCommon\Tours.xaml.cs">
       <DependentUpon>Tours.xaml</DependentUpon>
     </Compile>
-    <Page Include="Assets\IconDictionary.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Assets\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -191,7 +180,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\LightTheme.xaml">
+    <Page Include="Assets\LightTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -284,10 +273,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\WindowsAdmin\Services.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\WindowsAnalyst\Statistics.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

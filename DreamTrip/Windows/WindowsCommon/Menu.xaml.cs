@@ -243,8 +243,7 @@ namespace DreamTrip.Windows
                 if (tempUserControl as NewTour != null)
                     (tempUserControl as NewTour).WindowSizeChanged(e.NewSize.Width, e.NewSize.Height);
 
-                if (tempUserControl as Statistics != null)
-                    (tempUserControl as Statistics).WindowSizeChanged(e.NewSize.Width, e.NewSize.Height);
+                
             }
         }
 

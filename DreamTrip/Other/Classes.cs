@@ -113,11 +113,6 @@ namespace DreamTrip.Classes
                 (ItemUserControl as NewTour).ScrollEvent(delta);
                 return;
             }
-            if (ItemUserControl as Statistics != null)
-            {
-                (ItemUserControl as Statistics).ScrollEvent(delta);
-                return;
-            }
             if (ItemUserControl as Tasks != null)
             {
                 (ItemUserControl as Tasks).ScrollEvent(delta);

@@ -80,11 +80,7 @@ namespace DreamTrip.Windows
             parentTabItemLink.ItemUserControl = new ClientsTrips(parentTabItemLink, this, thisPageParametres);
         }
         
-        //удалено, переброшено к администратору
-        private void btnStatistics_Click(object sender, RoutedEventArgs e)
-        {
-            parentTabItemLink.ItemUserControl = new Statistics(parentTabItemLink, this, thisPageParametres);
-        }
+        
 
         //сделать
         private void btnNewClient_Click(object sender, RoutedEventArgs e)
