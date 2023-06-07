@@ -60,6 +60,8 @@ namespace DreamTrip.Windows
 
             DataContext = currentClient;
 
+            if (MainFunctions.GetShowPrompts()) btnHelpInfo.Visibility = Visibility.Visible;
+            else btnHelpInfo.Visibility = Visibility.Hidden;
         }
 
         #endregion
@@ -165,7 +167,11 @@ namespace DreamTrip.Windows
 
             DataTable LastTripData = MainFunctions.NewQuery($"SELECT TOP 1 CONVERT(date,start_date), CONVERT(date, end_date) " +
                 $"FROM Trip WHERE id_client = {currentClient.ClientId} AND start_date < getdate() ORDER BY start_date DESC");
-            if (LastTripData.Rows.Count == 0) tbLastTrip.Text = "нет";
+            if (LastTripData.Rows.Count == 0)
+            {
+                tbLastTrip.Text = "нет";
+                tbTripsPrice.Text = "0₽";
+            }
             else
             {
                 string startTripDate = Convert.ToDateTime(LastTripData.Rows[0][0].ToString()).ToShortDateString();

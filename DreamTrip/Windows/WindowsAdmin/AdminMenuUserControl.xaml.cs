@@ -71,7 +71,7 @@ namespace DreamTrip.Windows
                 //САМ TRY CATCH НУЖЕН ПРИ ОШИБКАХ С ПУТЯМИ КАРТИНОК
                 //ТАКОЙ БЛОК НАХОДИТСЯ В ОКНАХ AdminMenuUserControl (btnNewTour_Click), TourInfo (btnEdit_CLick), Tours (TourButton_Click)
                 new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
-                MainFunctions.AddHistoryRecord("Unknown error: " + ex.Message);
+                MainFunctions.AddLogRecord("Unknown error: " + ex.Message);
                 parentTabItemLink.ItemUserControl = this;
                 MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
             }

@@ -366,6 +366,28 @@
             </Button>
         </Border>
 
+        <Button x:Name="btnHelpInfo" Width="37" Height="37"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Grid.Row="0" Margin="160,0,0,0" Style="{StaticResource helpQuestion}" Background="White"
+                        ToolTipService.InitialShowDelay="200" ToolTipService.ShowDuration="60000" ToolTipService.Placement="Left" 
+                        ToolTipService.HorizontalOffset="-180" ToolTipService.VerticalOffset="50">
+            <Button.ToolTip>
+                <ToolTip Width="800" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                        <Border.Background>
+                            <SolidColorBrush Color="White" Opacity="1"/>
+                        </Border.Background>
+
+                        <WrapPanel Margin="10" Orientation="Vertical" >
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Даты: при изменении одного из параметров другие автоматически подстроятся под него."/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Документы: при добавлении документов не нужно нажимать кнопку Сохранить, все будет сохранено без нее. Вследствие этого действие, произведенное с документом, не может быть отменено."/>
+                        </WrapPanel>
+                    </Border>
+                </ToolTip>
+            </Button.ToolTip>
+            <TextBlock Text="?" FontSize="25"/>
+        </Button>
+
         <TextBlock Grid.Row="0" Foreground="Black" Text="Изменение поездки" FontWeight="Medium"
                        Grid.ColumnSpan="3"
                        FontFamily="Yu Gothic UI Semilight" FontSize="36"
@@ -667,9 +689,17 @@
                                         <Button x:Name="btnDownloadTransfer" TabIndex="7" Click="btnDownloadTransfer_Click" Height="25" Width="60"  Style="{StaticResource buttonStyle}" Cursor="Hand"
                                         HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
                                             <Button.ToolTip>
-                                                <StackPanel>
-                                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Скачать файл</TextBlock>
-                                                </StackPanel>
+                                                <ToolTip Width="170" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                                        </Border.Background>
+
+                                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Скачать файл"/>
+                                                        </WrapPanel>
+                                                    </Border>
+                                                </ToolTip>
                                             </Button.ToolTip>
                                             <Image Source="../../Resources/download.png" Height="20"/>
                                         </Button>
@@ -681,9 +711,17 @@
                                         <Button x:Name="btnUploadTransfer" TabIndex="8" Click="btnUploadTransfer_Click" Height="25" Width="40"  Style="{StaticResource buttonStyle}" Cursor="Hand"
                                         HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
                                             <Button.ToolTip>
-                                                <StackPanel>
-                                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Загрузить файл</TextBlock>
-                                                </StackPanel>
+                                                <ToolTip Width="170" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                                        </Border.Background>
+
+                                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Загрузить файл"/>
+                                                        </WrapPanel>
+                                                    </Border>
+                                                </ToolTip>
                                             </Button.ToolTip>
                                             <Image Source="../../Resources/upload.png" Height="20"/>
                                         </Button>
@@ -699,9 +737,17 @@
                                         <Button x:Name="btnDownloadCheckin" TabIndex="9" Click="btnDownloadCheckin_Click" Height="25" Width="60"  Style="{StaticResource buttonStyle}" Cursor="Hand"
                                         HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
                                             <Button.ToolTip>
-                                                <StackPanel>
-                                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Скачать файл</TextBlock>
-                                                </StackPanel>
+                                                <ToolTip Width="170" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                                        </Border.Background>
+
+                                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Скачать файл"/>
+                                                        </WrapPanel>
+                                                    </Border>
+                                                </ToolTip>
                                             </Button.ToolTip>
                                             <Image Source="../../Resources/download.png" Height="20"/>
                                         </Button>
@@ -713,9 +759,17 @@
                                         <Button x:Name="btnUploadCheckin" TabIndex="10" Click="btnUploadCheckin_Click" Height="25" Width="40"  Style="{StaticResource buttonStyle}" Cursor="Hand"
                                         HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
                                             <Button.ToolTip>
-                                                <StackPanel>
-                                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Загрузить файл</TextBlock>
-                                                </StackPanel>
+                                                <ToolTip Width="170" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                                        </Border.Background>
+
+                                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Загрузить файл"/>
+                                                        </WrapPanel>
+                                                    </Border>
+                                                </ToolTip>
                                             </Button.ToolTip>
                                             <Image Source="../../Resources/upload.png" Height="20"/>
                                         </Button>
@@ -756,9 +810,17 @@
                                         <Button x:Name="btnDownloadTickets" TabIndex="11" Click="btnDownloadTickets_Click" Height="25" Width="60"  Style="{StaticResource buttonStyle}" Cursor="Hand"
                                         HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
                                             <Button.ToolTip>
-                                                <StackPanel>
-                                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Скачать файл</TextBlock>
-                                                </StackPanel>
+                                                <ToolTip Width="170" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                                        </Border.Background>
+
+                                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Скачать файл"/>
+                                                        </WrapPanel>
+                                                    </Border>
+                                                </ToolTip>
                                             </Button.ToolTip>
                                             <Image Source="../../Resources/download.png" Height="20"/>
                                         </Button>
@@ -770,9 +832,17 @@
                                         <Button x:Name="btnUploadTickets" TabIndex="12" Click="btnUploadTickets_Click" Height="25" Width="40"  Style="{StaticResource buttonStyle}" Cursor="Hand"
                                         HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
                                             <Button.ToolTip>
-                                                <StackPanel>
-                                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Загрузить файл</TextBlock>
-                                                </StackPanel>
+                                                <ToolTip Width="170" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                                        </Border.Background>
+
+                                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Загрузить файл"/>
+                                                        </WrapPanel>
+                                                    </Border>
+                                                </ToolTip>
                                             </Button.ToolTip>
                                             <Image Source="../../Resources/upload.png" Height="20"/>
                                         </Button>
@@ -788,9 +858,17 @@
                                         <Button x:Name="btnDownloadVisa" TabIndex="13" Click="btnDownloadVisa_Click" Height="25" Width="60"  Style="{StaticResource buttonStyle}" Cursor="Hand"
                                         HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
                                             <Button.ToolTip>
-                                                <StackPanel>
-                                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Скачать файл</TextBlock>
-                                                </StackPanel>
+                                                <ToolTip Width="170" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                                        </Border.Background>
+
+                                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Скачать файл"/>
+                                                        </WrapPanel>
+                                                    </Border>
+                                                </ToolTip>
                                             </Button.ToolTip>
                                             <Image Source="../../Resources/download.png" Height="20"/>
                                         </Button>
@@ -802,9 +880,17 @@
                                         <Button x:Name="btnUploadVisa" TabIndex="14" Click="btnUploadVisa_Click" Height="25" Width="40"  Style="{StaticResource buttonStyle}" Cursor="Hand"
                                         HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
                                             <Button.ToolTip>
-                                                <StackPanel>
-                                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Загрузить файл</TextBlock>
-                                                </StackPanel>
+                                                <ToolTip Width="170" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                                        </Border.Background>
+
+                                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Загрузить файл"/>
+                                                        </WrapPanel>
+                                                    </Border>
+                                                </ToolTip>
                                             </Button.ToolTip>
                                             <Image Source="../../Resources/upload.png" Height="20"/>
                                         </Button>
@@ -820,9 +906,17 @@
                                         <Button x:Name="btnDownloadInsurance" TabIndex="15" Click="btnDownloadInsurance_Click" Height="25" Width="60"  Style="{StaticResource buttonStyle}" Cursor="Hand"
                                         HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
                                             <Button.ToolTip>
-                                                <StackPanel>
-                                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Скачать файл</TextBlock>
-                                                </StackPanel>
+                                                <ToolTip Width="170" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                                        </Border.Background>
+
+                                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Скачать файл"/>
+                                                        </WrapPanel>
+                                                    </Border>
+                                                </ToolTip>
                                             </Button.ToolTip>
                                             <Image Source="../../Resources/download.png" Height="20"/>
                                         </Button>
@@ -834,9 +928,17 @@
                                         <Button x:Name="btnUploadInsurance" TabIndex="16" Click="btnUploadInsurance_Click"  Height="25" Width="40"  Style="{StaticResource buttonStyle}" Cursor="Hand"
                                         HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent">
                                             <Button.ToolTip>
-                                                <StackPanel>
-                                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Загрузить файл</TextBlock>
-                                                </StackPanel>
+                                                <ToolTip Width="170" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                                        </Border.Background>
+
+                                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Загрузить файл"/>
+                                                        </WrapPanel>
+                                                    </Border>
+                                                </ToolTip>
                                             </Button.ToolTip>
                                             <Image Source="../../Resources/upload.png" Height="20"/>
                                         </Button>

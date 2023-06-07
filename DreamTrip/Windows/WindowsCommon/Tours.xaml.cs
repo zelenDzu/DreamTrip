@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Data;
+using System.Threading;
 
 namespace DreamTrip.Windows
 {
@@ -43,6 +44,7 @@ namespace DreamTrip.Windows
         int lastChosenCountry = -1;
         bool isToCreateTrip;
 
+
         #endregion
 
         #region Constructor
@@ -68,6 +70,10 @@ namespace DreamTrip.Windows
             previousPage = tempPreviousPage;
             previousPageParametres = tempPreviousPageParametres;
             MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
+
+            if (MainFunctions.GetShowPrompts()) btnHelpInfo.Visibility = Visibility.Visible;
+            else btnHelpInfo.Visibility = Visibility.Hidden;
+
         }
         #endregion
 
@@ -238,6 +244,11 @@ namespace DreamTrip.Windows
             }
         }
 
+        
+        
+        
+
+
         /// <summary>
         /// Загрузка туров
         /// </summary>
@@ -278,7 +289,6 @@ namespace DreamTrip.Windows
                         $"WHERE id_hotel={int.Parse(dataTours.Rows[i][5].ToString())} ORDER BY price_per_day").Rows[0][0].ToString());
 
 
-
                     int tempCityId = int.Parse(dataTours.Rows[i][4].ToString());
                     string tempCity = MainFunctions.NewQuery($"SELECT [name] FROM City WHERE id_city = {tempCityId}").Rows[0][0].ToString();
                     string tempCountry = MainFunctions.NewQuery($"SELECT [name] FROM Country WHERE id_country = " +
@@ -306,7 +316,7 @@ namespace DreamTrip.Windows
 
                     string appPath = MainFunctions.GetAppPath();
                     if (!appPath.Contains("DreamTrip")) appPath = MainFunctions.GetCurrentExePath() + "/DreamTrip";
-                    string imageFolderPath = $"/Resources/ToursPhotos/ID{tempTourId}_{tourName.ToLower().Replace(" ","-")}";
+                    string imageFolderPath = $"/Resources/ToursPhotos/ID{tempTourId}_{tourName.ToLower().Replace(" ", "-")}";
 
                     DataTable imageExtension = MainFunctions.NewQuery($"SELECT format FROM Tour_photos " +
                         $" WHERE id_tour = {tempTourId}");
@@ -470,6 +480,61 @@ namespace DreamTrip.Windows
         {
             int tourId = int.Parse((sender as Button).Tag.ToString());
 
+
+            //Tour thisTour = new Tour();
+
+            //for (int i = 0; i < ToursList.Count; i++)
+            //{
+            //    if (ToursList[i].TourId == tourId)
+            //    {
+            //        thisTour = ToursList[i];
+            //        break;
+            //    }
+            //}
+
+            //BitmapImage image = new BitmapImage();
+            //image.BeginInit();
+            //image.CacheOption = BitmapCacheOption.OnLoad;
+
+            //string appPath = MainFunctions.GetAppPath();
+            //if (!appPath.Contains("DreamTrip")) appPath = MainFunctions.GetCurrentExePath() + "/DreamTrip";
+            //string imageFolderPath = $"/Resources/ToursPhotos/ID{tourId}_{thisTour.Name.ToLower().Replace(" ", "-")}";
+
+            //DataTable imageExtension = MainFunctions.NewQuery($"SELECT format FROM Tour_photos " +
+            //    $" WHERE id_tour = {tourId}");
+            //if (imageExtension.Rows.Count != 0)
+            //{
+            //    FileStream stream = null;
+            //    if (!Directory.Exists(appPath + imageFolderPath))
+            //    {
+            //        string fullImagePath = appPath + imageFolderPath +
+            //            $"/photo" + $".{imageExtension.Rows[0][0].ToString()}";
+
+            //        Directory.CreateDirectory(appPath + imageFolderPath);
+            //        MainFunctions.SaveImage(tourId, fullImagePath);
+            //        stream = File.OpenRead(fullImagePath);
+
+            //        image.StreamSource = stream;
+            //        image.EndInit();
+            //        thisTour.ImageSource = image;
+            //    }
+            //    else
+            //    {
+            //        string[] tempFiles = Directory.GetFiles(appPath + imageFolderPath);
+            //        if (tempFiles.Length != 0)
+            //        {
+            //            stream = File.OpenRead(tempFiles[0]);
+            //            image.StreamSource = stream;
+            //            image.EndInit();
+            //            thisTour.ImageSource = image;
+
+            //        }
+            //    }
+            //    stream.Close();
+            //}
+
+
+
             if (isToCreateTrip)
             {
                 DataTable baseTourData = MainFunctions.NewQuery($"SELECT * FROM Tour where id_tour={tourId}");
@@ -505,7 +570,7 @@ namespace DreamTrip.Windows
                     //САМ TRY CATCH НУЖЕН ПРИ ОШИБКАХ С ПУТЯМИ КАРТИНОК
                     //ТАКОЙ БЛОК НАХОДИТСЯ В ОКНАХ AdminMenuUserControl (btnNewTour_Click), TourInfo (btnEdit_CLick), Tours (TourButton_Click)
                     new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
-                    MainFunctions.AddHistoryRecord("Unknown error: " + ex.Message);
+                    MainFunctions.AddLogRecord("Unknown error: " + ex.Message);
                     parentTabItemLink.ItemUserControl = this;
                     MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
                 }

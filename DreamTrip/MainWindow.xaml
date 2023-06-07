@@ -13,129 +13,6 @@
 
         </ImageBrush>
     </Window.Background>
-    <Window.Resources>
-        <Style x:Key="placeHolder" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type TextBox}">
-                        <Grid>
-                            <TextBox Text="{Binding Path=Text,
-                                                RelativeSource={RelativeSource TemplatedParent}, 
-                                                Mode=TwoWay,
-                                                UpdateSourceTrigger=PropertyChanged}"
-                                 x:Name="textSource" 
-                                 Background="Transparent" 
-                                 BorderBrush="Transparent"
-                                 BorderThickness="0"
-                                 SelectionBrush="#FFB1F3EE"
-                                 FontFamily="Yu Gothic UI"
-                                 Panel.ZIndex="2" />
-                            <TextBox Text="{TemplateBinding Tag}"  Background="Transparent" 
-                                 BorderBrush="Transparent"
-                                 BorderThickness="0"
-                                 FontFamily="Yu Gothic UI"
-                                 SelectionBrush="#FFB1F3EE" Panel.ZIndex="1">
-                                <TextBox.Style>
-                                    <Style TargetType="{x:Type TextBox}">
-                                        <Setter Property="Foreground" Value="Transparent"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Path=Text, Source={x:Reference textSource}}" Value="">
-                                                <Setter Property="Foreground" Value="LightGray"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="{x:Type PasswordBox}" 
-        TargetType="{x:Type PasswordBox}">
-            <Setter Property="DreamTrip:PasswordBoxMonitor.IsMonitoring" Value="True"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type PasswordBox}">
-                        <Border Name="Bd" 
-                    Background="{TemplateBinding Background}" 
-                    BorderThickness="{TemplateBinding BorderThickness}" 
-                    BorderBrush="{TemplateBinding BorderBrush}" 
-                    SnapsToDevicePixels="true">
-                            <Grid>
-                                <ScrollViewer x:Name="PART_ContentHost" 
-                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                <TextBlock Text="Пароль"  
-                           Margin="1, 3, 0, 0" 
-                           Cursor="IBeam"
-                           Foreground="LightGray"  
-                           FontSize="24"
-                           Visibility="Collapsed" 
-                           Name="txtPrompt" />
-                            </Grid>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsEnabled" Value="false">
-                                <Setter TargetName="Bd" Property="Background" 
-                                        Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
-                                <Setter Property="Foreground" 
-                                        Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                            </Trigger>
-                            <Trigger Property="DreamTrip:PasswordBoxMonitor.PasswordLength" Value="0">
-                                <Setter Property="Visibility" TargetName="txtPrompt" Value="Visible"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style TargetType="{x:Type CheckBox}" x:Key="starCheckBox">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type CheckBox}">
-                        <StackPanel Orientation="Horizontal">
-                            <Border Width="30" Height="30" BorderBrush="Transparent" BorderThickness="0" CornerRadius="3" VerticalAlignment="Top">
-                                <Image x:Name="checkboxImage" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                       Source="Resources/empty star.png" Width="35"/>
-                            </Border>
-                            <ContentPresenter Margin="4,0,0,0" MaxWidth="600" Height="auto">
-                                <ContentPresenter.ContentTemplate>
-                                    <DataTemplate>
-                                        <TextBlock TextWrapping="Wrap" MaxWidth="600"
-                                                   FontFamily="Yu Gothic UI" FontSize="24" Foreground="Black" 
-                                                   Text="{Binding Path=Content,
-                                                RelativeSource={RelativeSource TemplatedParent},
-                                                UpdateSourceTrigger=PropertyChanged}"/>
-                                    </DataTemplate>
-                                </ContentPresenter.ContentTemplate>
-                            </ContentPresenter>
-                        </StackPanel>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="checkboxImage" Property="Source" Value="Resources/filled star.png"/>
-                            </Trigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsMouseDirectlyOver" Value="True"/>
-                                    <Condition Property="IsChecked" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="checkboxImage" Property="Source" Value="Resources/filled star.png"/>
-                            </MultiTrigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsMouseDirectlyOver" Value="True"/>
-                                    <Condition Property="IsChecked" Value="False"/>
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="checkboxImage" Property="Source" Value="Resources/opacity star.png"/>
-                            </MultiTrigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -215,6 +92,34 @@
                          SelectionBrush="#FFB1F3EE" Style="{StaticResource placeHolder}" Tag="Пароль"/>
                 </Border>
 
+                <!--questionbutton-->
+
+
+
+                <Button x:Name="btnHelpInfo" TabIndex="3" Width="34" Height="34" Background="White"
+                            HorizontalAlignment="Right" VerticalAlignment="Center" 
+                            Grid.Row="1" Margin="0,0,11,0" Style="{StaticResource helpQuestion}" 
+                        ToolTipService.InitialShowDelay="200" ToolTipService.ShowDuration="60000" ToolTipService.Placement="Left" 
+                        ToolTipService.HorizontalOffset="10" ToolTipService.VerticalOffset="-30">
+                    <Button.ToolTip>
+                        <ToolTip Width="500" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                            <Border CornerRadius="10">
+                                <Border.Background>
+                                    <SolidColorBrush Color="White" Opacity="0.7"/>
+                                </Border.Background>
+
+                                <WrapPanel Margin="10" Orientation="Vertical" >
+                                    <TextBlock TextWrapping="Wrap" FontSize="18" Text="Для входа в систему введите логин и пароль от своего аккаунта."/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="18" Text="В случае возникновения неполадок обратитесь к администратору."/>
+                                    <TextBlock TextWrapping="Wrap" FontSize="18" Text="tg: @dreamtrip_service"/>
+                                </WrapPanel>
+                            </Border>
+                        </ToolTip>
+                    </Button.ToolTip>
+                    <TextBlock Text="?" FontSize="25"/>
+                </Button>
+
+                
                 <!--eyebutton-->
                 <Border x:Name="borderShowPassword" Grid.Row="2" Height="37" Width="37" BorderBrush="#FFD9D9D9" HorizontalAlignment="Right" VerticalAlignment="Center" BorderThickness="2" CornerRadius="5" Margin="0,0,10,0">
                     <Border.Style>

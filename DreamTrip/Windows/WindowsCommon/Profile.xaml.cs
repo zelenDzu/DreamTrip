@@ -46,6 +46,7 @@ namespace DreamTrip.Windows
 
             currentAccount = GetAccount(MainFunctions.СurrentSessionLogin);
             this.DataContext = currentAccount;
+
         }
         #endregion
 
@@ -80,6 +81,9 @@ namespace DreamTrip.Windows
             origImagePath = account.OrigImagePath;
             origPhone = account.Phone;
 
+
+            cbNeedprompts.IsChecked = MainFunctions.GetShowPrompts();
+            
             return account;
         }
 
@@ -174,6 +178,8 @@ namespace DreamTrip.Windows
                     origPhone = tbxPhone.Text;
                 }
 
+                MainFunctions.NewQuery($"UPDATE User_login_data SET show_prompts = {Convert.ToInt32(cbNeedprompts.IsChecked)} WHERE login = '{currentAccount.Login}'");
+
 
                 if (origImagePath != currentAccount.OrigImagePath)
                 {
@@ -220,6 +226,16 @@ namespace DreamTrip.Windows
         private void borderImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             changeImage();
+        }
+
+        private void cbNeedprompts_Checked(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void cbNeedprompts_Unchecked(object sender, RoutedEventArgs e)
+        {
+
         }
 
         #endregion

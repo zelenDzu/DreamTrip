@@ -59,6 +59,9 @@ namespace DreamTrip.Windows
             LoadClients("all");
             LoadFields();
             SecondItemCheckBoxField.IsChecked = true;
+
+            if (MainFunctions.GetShowPrompts()) btnHelpInfo1.Visibility = Visibility.Visible;
+            else btnHelpInfo1.Visibility = Visibility.Hidden;
         }
 
         #endregion

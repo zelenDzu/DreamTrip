@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="Assets/LightTheme.xaml"/>
                 <ResourceDictionary Source="Styles/DataGrid.xaml"/>
                 <ResourceDictionary Source="Assets/Icons.xaml"/>
+                <ResourceDictionary Source="Styles/CommonStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
         

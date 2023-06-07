@@ -56,6 +56,9 @@ namespace DreamTrip.Windows
             LoadClients();
 
             cmbClient.DataContext = currentClients;
+
+            if (MainFunctions.GetShowPrompts()) btnHelpInfo.Visibility = Visibility.Visible;
+            else btnHelpInfo.Visibility = Visibility.Hidden;
         }
         #endregion
 
@@ -199,8 +202,8 @@ namespace DreamTrip.Windows
                     $"patronymic " +
                     $"FROM Client " +
                     $"WHERE(lower(surname) LIKE '%{nameSearch.ToLower()}%') " +
-                    $"OR(lower(name) LIKE '%{nameSearch.ToLower() }% ') " +
-                    $"OR(lower(patronymic) LIKE '%{nameSearch.ToLower() }% ')");
+                    $"OR(lower(name) LIKE '%{nameSearch.ToLower()}%') " +
+                    $"OR(lower(patronymic) LIKE '%{nameSearch.ToLower()}%')");
 
                 for (int i = 0; i < clientsData.Rows.Count; i++)
                 {

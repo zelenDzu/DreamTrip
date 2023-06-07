@@ -54,6 +54,9 @@ namespace DreamTrip.Windows
                 btnCancel_Click(btnCancel, new RoutedEventArgs());
                 MainFunctions.AddLogRecord($"Unknown load error: {ex.Message}");
             }
+
+            if (MainFunctions.GetShowPrompts()) btnHelpInfo.Visibility = Visibility.Visible;
+            else btnHelpInfo.Visibility = Visibility.Hidden;
         }
         #endregion
 

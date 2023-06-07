@@ -77,6 +77,20 @@ namespace DreamTrip
             borderTBXPassword.BorderBrush = borderShowPassword.BorderBrush;
             tbWrongPassword.Visibility = Visibility.Hidden;
         }
+
+        private void PasswordMakeWrong()
+        {
+            borderPWBPassword.BorderBrush = tbWrongPassword.Foreground;
+            borderTBXPassword.BorderBrush = tbWrongPassword.Foreground;
+            tbWrongPassword.Visibility = Visibility.Visible;
+        }
+
+        private void LoginMakeWrong()
+        {
+            borderLogin.BorderBrush = tbWrongPassword.Foreground;
+            borderLogin.BorderBrush = tbWrongPassword.Foreground;
+            tbWrongLogin.Visibility = Visibility.Visible;
+        }
         #endregion
 
         #region PasswordBox
@@ -169,85 +183,63 @@ namespace DreamTrip
             LoginMakeStandard();
             PasswordMakeStandard();
 
-
             try
             {
                 string login = tbxLogin.Text;
                 string passwordHash = MainFunctions.GetHash(pwbPassword.Password);
 
-                DataTable loginData = MainFunctions.NewQuery($"SELECT * FROM User_login_data WHERE login = '{login}'");
-                if (loginData.Rows.Count == 0)
+                if (!MainFunctions.Authorize_LoginExists(login))
                 {
-                    borderLogin.BorderBrush = tbWrongPassword.Foreground;
-                    borderLogin.BorderBrush = tbWrongPassword.Foreground;
-                    tbWrongLogin.Visibility = Visibility.Visible;
+                    LoginMakeWrong();
                 }
                 else
                 {
-                    if (passwordHash == loginData.Rows[0][1].ToString())
+                    if (!MainFunctions.Authorize_CheckPassword(login, passwordHash))
                     {
-                        string role = loginData.Rows[0][2].ToString();
-                        if (role == "1" || role == "2" || role == "3" || role == "4")
-                        {
-                            if (role == "1" || role == "2" || role == "3")
-                            {
-                                bool isActivated = Convert.ToBoolean(MainFunctions.NewQuery($"SELECT is_activated FROM worker WHERE login = '{login}'").Rows[0][0].ToString());
-                                if (isActivated == false)
-                                {
-                                    new Message($"Предупреждение", $"Ваш аккаунт заблокирован. Вход запрещен. Свяжитесь с администратором.").ShowDialog();
-                                }
-                                else
-                                {
-                                    MainFunctions.LogInSystemEvent(login, role);
-
-                                    switch (role)
-                                    {
-                                        case "1":
-                                            Windows.Menu adminMenuWindow = new Windows.Menu("admin", login);
-                                            this.Close();
-                                            adminMenuWindow.Show();
-                                            break;
-
-                                        case "2":
-                                            Windows.Menu managerMenuWindow = new Windows.Menu("manager", login);
-                                            this.Close();
-                                            managerMenuWindow.Show();
-                                            break;
-
-                                        case "3":
-                                            Windows.Menu analystMenuWindow = new Windows.Menu("analyst", login);
-                                            this.Close();
-                                            analystMenuWindow.Show();
-                                            break;
-
-                                        case "4":
-                                            int clientId = int.Parse(MainFunctions.NewQuery($"SELECT id_client FROM Client_login WHERE login = '{login}'").Rows[0][0].ToString());
-                                            MessageBox.Show($"clientId = {clientId}");
-                                            break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                new Message($"Ошибка", $"Ваш тип учетной записи не поддерживается. " +
-                                    $"Если вы увидели это окно, свяжитесь с администратором.").ShowDialog();
-                            }
-                        }
-                        else
-                        {
-                            Message message = new Message("Ошибка", "Что-то пошло не так.", false, false);
-                            message.ShowDialog();
-                        }
+                        PasswordMakeWrong();
                     }
                     else
                     {
-                        borderPWBPassword.BorderBrush = tbWrongPassword.Foreground;
-                        borderTBXPassword.BorderBrush = tbWrongPassword.Foreground;
-                        tbWrongPassword.Visibility = Visibility.Visible;
+                        if (!MainFunctions.Authorize_IsAccountActivated(login))
+                        {
+                            new Message($"Предупреждение", $"Ваш аккаунт заблокирован. Вход запрещен. Свяжитесь с администратором.").ShowDialog();
+                        }
+                        else
+                        {
+                            string role = MainFunctions.GetUserRole(login);
+
+                            MainFunctions.LogInSystemEvent(login, role);
+
+                            switch (role)
+                            {
+                                case "1":
+                                    Windows.Menu adminMenuWindow = new Windows.Menu("admin", login);
+                                    this.Close();
+                                    adminMenuWindow.Show();
+                                    break;
+
+                                case "2":
+                                    Windows.Menu managerMenuWindow = new Windows.Menu("manager", login);
+                                    this.Close();
+                                    managerMenuWindow.Show();
+                                    break;
+
+                                case "3":
+                                    Windows.Menu analystMenuWindow = new Windows.Menu("analyst", login);
+                                    this.Close();
+                                    analystMenuWindow.Show();
+                                    break;
+
+                                default:
+                                    new Message($"Ошибка", $"Ваш тип учетной записи не поддерживается. " +
+                                    $"Если вы увидели это окно, свяжитесь с администратором.").ShowDialog();
+                                    break;
+                            }
+                        }
                     }
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 new Message("Ошибка", "Что-то пошло не так...").ShowDialog();
                 MainFunctions.AddLogRecord($"Unknown error: {ex.Message}");

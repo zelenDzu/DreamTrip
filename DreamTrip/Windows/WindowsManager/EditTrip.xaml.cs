@@ -64,6 +64,9 @@ namespace DreamTrip.Windows
             CheckDocsAreUploaded();
             double[] sizes = MainFunctions.MenuLink.GetWidthHeight();
             WindowSizeChanged(sizes[0], sizes[1]);
+
+            if (MainFunctions.GetShowPrompts()) btnHelpInfo.Visibility = Visibility.Visible;
+            else btnHelpInfo.Visibility = Visibility.Hidden;
         }
         #endregion
 

@@ -353,6 +353,8 @@
             </Button>
         </Border>
 
+
+
         <TextBlock Grid.Row="0" Foreground="Black" Text="Клиенты" FontWeight="Medium"
                        Grid.ColumnSpan="3"
                        FontFamily="Yu Gothic UI Semilight" FontSize="36"
@@ -525,9 +527,17 @@
                             Click="btnClear_Click" TabIndex="7">
                             <Image Source="../../Resources/clear.png"/>
                             <Button.ToolTip>
-                                <StackPanel>
-                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Очистить фильтр</TextBlock>
-                                </StackPanel>
+                                <ToolTip Width="180" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                    <Border CornerRadius="10">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                        </Border.Background>
+
+                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Очистить фильтр"/>
+                                        </WrapPanel>
+                                    </Border>
+                                </ToolTip>
                             </Button.ToolTip>
                             <Button.Style>
                                 <Style TargetType="{x:Type Button}">
@@ -554,7 +564,8 @@
                         </Button>
                     </Border>
 
-                    <Border x:Name="borderSearch" Grid.Row="1" Height="45" Width="45" BorderBrush="#FFD9D9D9" HorizontalAlignment="Right" VerticalAlignment="Center" BorderThickness="2" CornerRadius="5" Margin="0,0,10,0">
+                    <Border x:Name="borderSearch" Grid.Row="1" Height="45" Width="45" BorderBrush="#FFD9D9D9" 
+                            HorizontalAlignment="Right" VerticalAlignment="Center" BorderThickness="2" CornerRadius="5" Margin="0,0,10,0">
                         <Border.Style>
                             <Style TargetType="{x:Type Border}">
                                 <Setter Property="Background" Value="White"/>
@@ -571,12 +582,20 @@
 
                         <Button x:Name="btnSearch" Cursor="Hand" Height="37" Width="37" 
                             HorizontalAlignment="Center" VerticalAlignment="Center"
-                            Click="btnSearch_Click" TabIndex="8">
+                            Click="btnSearch_Click" TabIndex="8" ToolTipService.VerticalOffset="2">
                             <Image Source="../../Resources/search.png"/>
                             <Button.ToolTip>
-                                <StackPanel>
-                                    <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Поиск по фильтру</TextBlock>
-                                </StackPanel>
+                                <ToolTip Width="100" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                    <Border CornerRadius="10">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="White" Opacity="1"/>
+                                        </Border.Background>
+
+                                        <WrapPanel Margin="10" Orientation="Vertical" >
+                                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Поиск"/>
+                                        </WrapPanel>
+                                    </Border>
+                                </ToolTip>
                             </Button.ToolTip>
                             <Button.Style>
                                 <Style TargetType="{x:Type Button}">
@@ -608,6 +627,28 @@
                     <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" Foreground="#FF979797" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="630,0,0,0">Возраст</TextBlock>
                     <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" Foreground="#FF979797" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="790,0,0,0">Сфера работы</TextBlock>
                     <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" Foreground="#FF979797" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="1030,0,0,0">Специальность</TextBlock>
+
+                    <Button x:Name="btnHelpInfo1" Width="23" Height="23"
+                            HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="LightGray"
+                            Grid.Row="0"  Margin="930,0,0,0" Style="{StaticResource helpQuestion}" 
+                        ToolTipService.InitialShowDelay="200" ToolTipService.ShowDuration="60000" ToolTipService.Placement="Left" 
+                        ToolTipService.HorizontalOffset="-370" ToolTipService.VerticalOffset="17">
+                        <Button.ToolTip>
+                            <ToolTip Width="1000" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                <Border CornerRadius="10">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="White" Opacity="1"/>
+                                    </Border.Background>
+
+                                    <WrapPanel Margin="10" Orientation="Vertical" >
+                                        <TextBlock TextWrapping="Wrap" FontSize="18" Text="При отметке варианта «Любая» будут отмечены все сферы"/>
+                                        <TextBlock TextWrapping="Wrap" FontSize="18" Text="При снятии этой отметки все сферы будут также не отмечены"/>
+                                    </WrapPanel>
+                                </Border>
+                            </ToolTip>
+                        </Button.ToolTip>
+                        <TextBlock Text="?" FontSize="17"/>
+                    </Button>
 
                     <DataGrid x:Name="dtgClients" TabIndex="9"
                           FontFamily="Yu Gothic UI"

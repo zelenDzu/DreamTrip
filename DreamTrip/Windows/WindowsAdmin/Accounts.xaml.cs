@@ -56,6 +56,9 @@ namespace DreamTrip.Windows
                 btnCancel_Click(btnCancel, new RoutedEventArgs());
                 MainFunctions.AddLogRecord($"Unknown load error: {ex.Message}");
             }
+
+            if (MainFunctions.GetShowPrompts()) btnHelpInfo.Visibility = Visibility.Visible;
+            else btnHelpInfo.Visibility = Visibility.Hidden;
         }
         #endregion
 
@@ -307,7 +310,7 @@ namespace DreamTrip.Windows
 
                             MainFunctions.NewQuery($"INSERT INTO User_login_data VALUES ('{accountsList[i].Login}', " +
                                 $"'{MainFunctions.GetHash(accountsList[i].Password)}', " +
-                                $" {accountsList[i].Type.AccountTypeId})");
+                                $" {accountsList[i].Type.AccountTypeId}, 1)");
                             MainFunctions.NewQuery($"INSERT INTO Worker VALUES ('{accountsList[i].Surname}'," +
                                 $"'{accountsList[i].Name}', " +
                                 $"'{accountsList[i].Patronymic}', " +
@@ -332,12 +335,12 @@ namespace DreamTrip.Windows
                             if (previousLogin != accountsList[i].Login)
                             {
                                 if (Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM User_login_data " +
-                                    $"WHERE login = '{accountsList[i].Login}'").ToString()) == 0)
+                                    $"WHERE login = '{accountsList[i].Login}'").Rows[0][0].ToString()) == 0)
                                 {
                                     MainFunctions.NewQuery($"UPDATE Worker SET login = 'TEMP' WHERE id_worker = {accountsList[i].AccountId}");
                                     MainFunctions.NewQuery($"INSERT INTO User_login_data VALUES ('{accountsList[i].Login}', " +
                                         $"(SELECT password_hash FROM User_login_data WHERE login = '{previousLogin}'), " +
-                                        $"(SELECT id_role FROM User_login_data WHERE login = '{previousLogin}'))");
+                                        $"(SELECT id_role FROM User_login_data WHERE login = '{previousLogin}'), 1)");
                                     MainFunctions.NewQuery($"UPDATE Login_history SET login = '{accountsList[i].Login}' WHERE login = '{previousLogin}'");
                                     MainFunctions.NewQuery($"UPDATE Worker SET login = '{accountsList[i].Login}' WHERE id_worker = {accountsList[i].AccountId}");
                                     MainFunctions.NewQuery($"DELETE FROM User_login_data WHERE login = '{previousLogin}'");

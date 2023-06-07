@@ -690,15 +690,15 @@ namespace DreamTrip.Windows
 
         private void tbxDescription_TextChanged(object sender, TextChangedEventArgs e)
         {
-            TextBox textBox = sender as TextBox;
-            char[] charList = textBox.Text.ToCharArray();
-            for (int i = 0; i < charList.Length; i++)
-            {
-                if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
-                {
-                    textBox.Text = textBox.Text.Remove(i, 1);
-                }
-            }
+            //TextBox textBox = sender as TextBox;
+            //char[] charList = textBox.Text.ToCharArray();
+            //for (int i = 0; i < charList.Length; i++)
+            //{
+            //    if (!MainFunctions.ValidateString_RuEngNumSpec(charList[i].ToString()))
+            //    {
+            //        textBox.Text = textBox.Text.Remove(i, 1);
+            //    }
+            //}
 
             FilterChanged();
         }

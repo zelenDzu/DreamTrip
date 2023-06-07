@@ -87,6 +87,47 @@ namespace DreamTrip.Functions
             Logs = "";
         }
 
+        public static bool Authorize_LoginExists(string login)
+        {
+            bool exists = false;
+
+            exists = MainFunctions.NewQuery($"SELECT login FROM User_login_data WHERE login = '{login}'").Rows.Count != 0;
+
+            return exists;
+        }
+
+        public static bool Authorize_CheckPassword(string login, string passwordHash)
+        {
+            bool passwordCorrect = false;
+
+            passwordCorrect = passwordHash == MainFunctions.NewQuery($"SELECT password_hash FROM User_login_data WHERE login = '{login}'").Rows[0][0].ToString();
+
+            return passwordCorrect;
+        }
+
+        public static bool Authorize_IsAccountActivated(string login)
+        {
+            bool isActivated = false;
+
+            isActivated = Convert.ToBoolean(MainFunctions.NewQuery($"SELECT is_activated FROM worker WHERE login = '{login}'").Rows[0][0].ToString());
+
+            return isActivated;
+        }
+
+        public static string GetUserRole(string login)
+        {
+            string role = "";
+
+            role = MainFunctions.NewQuery($"SELECT id_role FROM User_login_data WHERE login = '{login}'").Rows[0][0].ToString();
+
+            return role;
+        }
+
+        public static bool GetShowPrompts()
+        {
+            return Convert.ToBoolean(NewQuery($"SELECT ISNULL(show_prompts,1) FROM User_login_data WHERE login = '{СurrentSessionLogin}'").Rows[0][0]);
+        }
+
         /// <summary>
         /// Событие входа в систему
         /// </summary>
@@ -513,34 +554,34 @@ namespace DreamTrip.Functions
         /// </summary>
         public static void DeleteTempFolders()
         {
-            try
-            {
-                string resourcesPath;
-                if (GetAppPath().Contains("DreamTrip"))
-                {
-                    resourcesPath = GetAppPath() + "/Resources/ToursPhotos";
-                    foreach (string folder in Directory.GetDirectories(resourcesPath))
-                    {
-                        foreach (string file in Directory.GetFiles(folder))
-                        {
-                            File.Delete(file);
-                        }
-                        Directory.Delete(folder);
-                    }
-                }
-                else
-                {
-                    resourcesPath = GetCurrentExePath() + "/DreamTrip";
+            //try
+            //{
+            //    string resourcesPath;
+            //    if (GetAppPath().Contains("DreamTrip"))
+            //    {
+            //        resourcesPath = GetAppPath() + "/Resources/ToursPhotos";
+            //        foreach (string folder in Directory.GetDirectories(resourcesPath))
+            //        {
+            //            foreach (string file in Directory.GetFiles(folder))
+            //            {
+            //                File.Delete(file);
+            //            }
+            //            Directory.Delete(folder);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        resourcesPath = GetCurrentExePath() + "/DreamTrip";
                     
-                    Directory.Delete(resourcesPath,true);
+            //        Directory.Delete(resourcesPath,true);
                     
-                }
-            }
-            catch (Exception ex)
-            {
-                AddLogRecord("DeleteTempFolders Error text: " + ex.Message);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    AddLogRecord("DeleteTempFolders Error text: " + ex.Message);
 
-            }
+            //}
         }
 
         /// <summary>
@@ -899,13 +940,8 @@ namespace DreamTrip.Functions
         {
             List<int> incomePercent = new List<int>();
 
-            int currentIncome = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip WHERE booking_datetime BETWEEN " +
-                $"(SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date)) AND " +
-                $"DATEADD(month, 1, (SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date)))").Rows[0][0].ToString());
-
-            int prevIncome = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip WHERE booking_datetime BETWEEN " +
-                $"DATEADD(month, -1, (SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date))) AND " +
-                $"(SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date))").Rows[0][0].ToString());
+            int currentIncome = Requests.SelectThisMonthIncome();
+            int prevIncome = Requests.SelectPreviousMonthIncome();
 
             incomePercent.Add(currentIncome);
 
@@ -943,15 +979,7 @@ namespace DreamTrip.Functions
         {
             List<string> topTours = new List<string>();
 
-            DataTable toursData = MainFunctions.NewQuery($"SELECT TOP 3 " +
-                $"(SELECT name FROM Tour t WHERE t.id_tour = tr.id_tour), " +
-                $"COUNT(*) as tripCount, " +
-                $"AVG(ABS(DAY(getdate() - tr.start_date))) as daysDistance " +
-                $"FROM Trip as tr " +
-                $"" +
-                $"WHERE ABS(DAY(getdate() - tr.start_date)) <= 15 " +
-                $"GROUP BY id_tour " +
-                $"ORDER BY tripCount DESC, daysDistance ASC");
+            DataTable toursData = Requests.SelectTop3Tours();
 
             for (int i = 0; i < toursData.Rows.Count; i++)
             {
@@ -1052,19 +1080,14 @@ namespace DreamTrip.Functions
             return month;
         }
     
-
+        /// <summary>
+        /// Сформировать список клиентов с категориями по результатам АВС-анализа
+        /// </summary>
+        /// <returns></returns>
         public static List<ClientABC> GetClientABCs()
         {
             List<ClientABC> clients = new List<ClientABC>();
-
-            DataTable clientsData = MainFunctions.NewQuery($"SELECT c.id_client,  " +
-                $"CONCAT(c.surname, ' ', c.name, ' ', c.patronymic), " +
-                $"ISNULL(SUM(t.total_price), 0) as total, " +
-                $"ROUND(ISNULL(SUM(t.total_price), 0) / (SELECT SUM(total_price) FROM Trip) * 100, 0) " +
-                $"FROM Client c " +
-                $"LEFT JOIN Trip t ON t.id_client = c.id_client " +
-                $"GROUP BY c.id_client, CONCAT(c.surname, ' ', c.name, ' ', c.patronymic) " +
-                $"ORDER BY total DESC");
+            DataTable clientsData = Requests.SelectClientAbcData();
 
             double previousPercent = 0;
 
@@ -1077,15 +1100,9 @@ namespace DreamTrip.Functions
                 if (previousPercent >= 95) category = "C";
 
                 int clientId = Convert.ToInt32(clientsData.Rows[i][0].ToString());
-
-                DataTable lastTripData = MainFunctions.NewQuery($"SELECT TOP 1 c.id_client, t.start_date, t.end_date, t.total_price " +
-                    $"FROM Client c " +
-                    $"LEFT JOIN Trip t ON t.id_client = c.id_client " +
-                    $"WHERE c.id_client = {clientId} " +
-                    $"ORDER BY t.start_date DESC");
-
+                DataTable lastTripData = Requests.SelectLastClientTrip(clientId);
                 string tempLastTripDates = "";
-                string tempLastTripPrice = "";
+                string tempLastTripPrice = "";  
 
                 if (lastTripData.Rows[0][1].ToString() == "")
                 {
@@ -1097,15 +1114,10 @@ namespace DreamTrip.Functions
                     tempLastTripPrice = Convert.ToInt32(lastTripData.Rows[0][3]).ToString("### ### ###") + "₽";
                     string tempDate1 = Convert.ToDateTime(lastTripData.Rows[0][1].ToString()).ToShortDateString();
                     string tempDate2 = Convert.ToDateTime(lastTripData.Rows[0][2].ToString()).ToShortDateString();
-
                     tempDate1 = tempDate1.Substring(0, tempDate1.LastIndexOf(".") + 1) + tempDate1.Substring(tempDate1.Length-2,2);
                     tempDate2 = tempDate2.Substring(0, tempDate2.LastIndexOf(".") + 1) + tempDate2.Substring(tempDate2.Length-2,2);
-
-                    tempLastTripDates = $"{tempDate1} - " +
-                        $"{tempDate2}";
+                    tempLastTripDates = $"{tempDate1} - {tempDate2}";
                 }
-
-
 
                 ClientABC tempClient = new ClientABC()
                 {
@@ -1117,16 +1129,69 @@ namespace DreamTrip.Functions
                     LastTripDates = tempLastTripDates,
                     LastTripPrice = tempLastTripPrice
                 };
-
                 clients.Add(tempClient);
-
             }
-
 
             return clients;
         }
 
 
     }
+
+
+    public static class Requests
+    {
+        public static int SelectThisMonthIncome()
+        {
+            int currentIncome = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip WHERE booking_datetime BETWEEN " +
+                $"(SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date)) AND " +
+                $"DATEADD(month, 1, (SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date)))").Rows[0][0].ToString());
+
+            return currentIncome;
+        }
+        
+        public static int SelectPreviousMonthIncome()
+        {
+            int prevIncome = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip WHERE booking_datetime BETWEEN " +
+                $"DATEADD(month, -1, (SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date))) AND " +
+                $"(SELECT cast(format(GETDATE(), 'yyyy-MM-01') as Date))").Rows[0][0].ToString());
+
+            return prevIncome;
+        }
+
+        public static DataTable SelectTop3Tours()
+        {
+            DataTable top3ToursData = MainFunctions.NewQuery($"SELECT TOP 3 " +
+                $"(SELECT name FROM Tour t WHERE t.id_tour = tr.id_tour), " +
+                $"COUNT(*) as tripCount, " +
+                $"AVG(ABS(DAY(getdate() - tr.start_date))) as daysDistance " +
+                $"FROM Trip as tr " +
+                $"WHERE ABS(DAY(getdate() - tr.start_date)) <= 15 " +
+                $"GROUP BY id_tour " +
+                $"ORDER BY tripCount DESC, daysDistance ASC");
+
+            return top3ToursData;
+        }
+
+        public static DataTable SelectClientAbcData()
+        {
+            DataTable clientsData = MainFunctions.NewQuery($"SELECT c.id_client, CONCAT(c.surname, ' ', c.name, ' ', c.patronymic), " +
+                $"ISNULL(SUM(t.total_price), 0) as total, ROUND(ISNULL(SUM(t.total_price), 0) / (SELECT SUM(total_price) FROM Trip) * 100, 0) " +
+                $"FROM Client c LEFT JOIN Trip t ON t.id_client = c.id_client " +
+                $"GROUP BY c.id_client, CONCAT(c.surname, ' ', c.name, ' ', c.patronymic) ORDER BY total DESC");
+
+            return clientsData;
+        }
+
+        public static DataTable SelectLastClientTrip(int clientId)
+        {
+            DataTable lastTrip = MainFunctions.NewQuery($"SELECT TOP 1 c.id_client, t.start_date, t.end_date, t.total_price " +
+                    $"FROM Client c LEFT JOIN Trip t ON t.id_client = c.id_client WHERE c.id_client = {clientId} ORDER BY t.start_date DESC");
+
+            return lastTrip;
+        }
+
+    }
+
 }
 

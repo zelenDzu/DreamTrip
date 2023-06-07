@@ -754,9 +754,17 @@
                                         </Style>
                                     </Button.Style>
                                     <Button.ToolTip>
-                                        <StackPanel>
-                                            <TextBlock Grid.Row="0" FontFamily="Yu Gothic UI" FontSize="20">Рассчитать стоимость</TextBlock>
-                                        </StackPanel>
+                                        <ToolTip Width="300" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                            <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="White" Opacity="1"/>
+                                                </Border.Background>
+
+                                                <WrapPanel Margin="10" Orientation="Vertical" >
+                                                    <TextBlock TextWrapping="Wrap" FontSize="18" Text="Рассчитать стоимость"/>
+                                                </WrapPanel>
+                                            </Border>
+                                        </ToolTip>
                                     </Button.ToolTip>
                                 </Button>
                             </Border>
@@ -1039,7 +1047,7 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
 
-                            <Border Margin="0,20" Grid.Row="5"  CornerRadius="10">
+                            <Border Margin="0,20" Grid.Row="5"  CornerRadius="10" Width="1240">
                                 <Border.Background>
                                     <SolidColorBrush Color="White" Opacity="0.4"/>
                                 </Border.Background>

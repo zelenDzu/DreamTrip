@@ -317,6 +317,28 @@
             </Button>
         </Border>
 
+        <Button x:Name="btnHelpInfo" Width="37" Height="37"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Grid.Row="0" Margin="160,0,0,0" Style="{StaticResource helpQuestion}" Background="White"
+                        ToolTipService.InitialShowDelay="200" ToolTipService.ShowDuration="60000" ToolTipService.Placement="Left" 
+                        ToolTipService.HorizontalOffset="-180" ToolTipService.VerticalOffset="50">
+            <Button.ToolTip>
+                <ToolTip Width="900" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                        <Border.Background>
+                            <SolidColorBrush Color="White" Opacity="1"/>
+                        </Border.Background>
+
+                        <WrapPanel Margin="10" Orientation="Vertical" >
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="При удалении сервиса информация о нем удаляется навсегда без возможности восстановления"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Никакие данные не будут сохранены до нажатия кнопки Сохранить (кроме удаления существующих сервисов)"/>
+                        </WrapPanel>
+                    </Border>
+                </ToolTip>
+            </Button.ToolTip>
+            <TextBlock Text="?" FontSize="25"/>
+        </Button>
+
         <WrapPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
             
 
@@ -403,9 +425,20 @@
                                         <Border BorderBrush="Black" BorderThickness="0" CornerRadius="0" Width="80" Height="80">
                                             <Image Tag="{Binding ServiceId}" Source="{Binding OrigImagePath, UpdateSourceTrigger=PropertyChanged}" 
                                                    Cursor="Hand" MouseLeftButtonUp="Image_MouseLeftButtonUp" 
-                                                   HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   ToolTipService.Placement="Bottom">
                                                 <Image.ToolTip>
-                                                    <TextBlock>Нажмите, чтоб изменить фото сервиса</TextBlock>
+                                                    <ToolTip Width="900" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                                        <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                            <Border.Background>
+                                                                <SolidColorBrush Color="White" Opacity="1"/>
+                                                            </Border.Background>
+
+                                                            <WrapPanel Margin="10" Orientation="Vertical" >
+                                                                <TextBlock TextWrapping="Wrap" FontSize="18" Text="Нажмите, чтобы изменить изображение"/>
+                                                            </WrapPanel>
+                                                        </Border>
+                                                    </ToolTip>
                                                 </Image.ToolTip>
                                             </Image>
                                         

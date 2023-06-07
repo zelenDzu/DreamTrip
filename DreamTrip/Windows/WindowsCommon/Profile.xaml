@@ -7,6 +7,51 @@
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1200">
     <UserControl.Resources>
+        <Style TargetType="{x:Type CheckBox}" x:Key="myCheckboxStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="32" Height="32" BorderBrush="#6fc3c3" BorderThickness="3" CornerRadius="3" VerticalAlignment="Top">
+                                <Image x:Name="checkboxImage" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                       Source="../../Resources/blank.png" Width="27"/>
+                            </Border>
+                            <ContentPresenter Margin="4,0,0,0" MaxWidth="600" Height="auto">
+                                <ContentPresenter.ContentTemplate>
+                                    <DataTemplate>
+                                        <TextBlock TextWrapping="Wrap" MaxWidth="600"
+                                                   FontFamily="Yu Gothic UI" FontSize="24" Foreground="Black" 
+                                                   Text="{Binding Path=Content,
+                                                RelativeSource={RelativeSource TemplatedParent},
+                                                UpdateSourceTrigger=PropertyChanged}"/>
+                                    </DataTemplate>
+                                </ContentPresenter.ContentTemplate>
+                            </ContentPresenter>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="checkboxImage" Property="Source" Value="../../Resources/arrow.png"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseDirectlyOver" Value="True"/>
+                                    <Condition Property="IsChecked" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="checkboxImage" Property="Source" Value="../../Resources/hover_arrow.png"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseDirectlyOver" Value="True"/>
+                                    <Condition Property="IsChecked" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="checkboxImage" Property="Source" Value="../../Resources/hover.png"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
         <Style TargetType="{x:Type Border}" x:Key="borderStyle">
             <Setter Property="Background" Value="#FFC9F6F2"/>
             <Style.Triggers>
@@ -273,19 +318,30 @@
 
                 </Grid>
 
-                <Border Grid.Row="2" Height="40" Width="250" IsEnabled="True"
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="45*"/>
+                        <ColumnDefinition Width="65*"/>
+                    </Grid.ColumnDefinitions>
+
+
+                    <Border Grid.Row="2" Height="40" Width="250" IsEnabled="True"
                         BorderBrush="#FFD9D9D9" BorderThickness="2" CornerRadius="5"
                         HorizontalAlignment="Left" VerticalAlignment="Top" Margin="60,0,0,0" 
                         Style="{StaticResource borderStyle}">
-                    <Button x:Name="btnChangePassword" Height="40" Width="250"  Style="{StaticResource buttonStyle}"
+                        <Button x:Name="btnChangePassword" Height="40" Width="250"  Style="{StaticResource buttonStyle}"
                             FontFamily="Yu Gothic UI" FontSize="30" Cursor="Hand" TabIndex="11"
                             HorizontalAlignment="Center" VerticalAlignment="Center" 
                             Content="Сменить пароль" Background="Transparent" Click="btnChangePassword_Click">
 
-                    </Button>
-                </Border>
+                        </Button>
+                    </Border>
 
-                
+                    <CheckBox Name="cbNeedprompts" Grid.Row="2" Grid.Column="1" Margin="70,0,85,0" HorizontalAlignment="Right"
+                              Style="{StaticResource myCheckboxStyle}" Checked="cbNeedprompts_Checked" Unchecked="cbNeedprompts_Unchecked" Content="Подсказки (?)"/>
+
+                </Grid>
+
             </Grid>
         </Border>
     </Grid>

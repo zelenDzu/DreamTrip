@@ -36,6 +36,9 @@ namespace DreamTrip.Windows
             MainFunctions.ChangeTabParametres(parentTabItemLink, thisPageParametres);
 
             LoadServices();
+
+            if (MainFunctions.GetShowPrompts()) btnHelpInfo.Visibility = Visibility.Visible;
+            else btnHelpInfo.Visibility = Visibility.Hidden;
         }
         #endregion
 

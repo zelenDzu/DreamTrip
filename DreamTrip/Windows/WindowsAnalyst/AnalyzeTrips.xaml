@@ -276,6 +276,32 @@
             </Button>
         </Border>
 
+        <Button x:Name="btnHelpInfo" Width="37" Height="37"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Grid.Row="0" Margin="160,0,0,0" Style="{StaticResource helpQuestion}" Background="White"
+                        ToolTipService.InitialShowDelay="200" ToolTipService.ShowDuration="60000" ToolTipService.Placement="Left" 
+                        ToolTipService.HorizontalOffset="-180" ToolTipService.VerticalOffset="50">
+            <Button.ToolTip>
+                <ToolTip Width="900" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                        <Border.Background>
+                            <SolidColorBrush Color="White" Opacity="1"/>
+                        </Border.Background>
+
+                        <WrapPanel Margin="10" Orientation="Vertical" >
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Показатели прироста (в %) формируется на основе данных этого и прошлого месяца"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Статистические данные по туру формируются для каждого месяца прошедшего 12-месячного периода"/>
+                            
+                            
+                            
+                            
+                        </WrapPanel>
+                    </Border>
+                </ToolTip>
+            </Button.ToolTip>
+            <TextBlock Text="?" FontSize="25"/>
+        </Button>
+
         <Border CornerRadius="20" Width="1300" Grid.Row="1">
             <Border.Background>
                 <SolidColorBrush Color="White" Opacity="0.7"/>

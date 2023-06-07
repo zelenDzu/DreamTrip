@@ -45,6 +45,9 @@ namespace DreamTrip.Windows
 
             LoadCities();
             LoadHotels();
+
+            if (MainFunctions.GetShowPrompts()) btnHelpInfo.Visibility = Visibility.Visible;
+            else btnHelpInfo.Visibility = Visibility.Hidden;
         }
 
         #endregion

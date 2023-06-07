@@ -350,6 +350,28 @@
             </Button>
         </Border>
 
+        <Button x:Name="btnHelpInfo" Width="37" Height="37"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Grid.Row="0" Margin="160,0,0,0" Style="{StaticResource helpQuestion}" Background="White"
+                        ToolTipService.InitialShowDelay="200" ToolTipService.ShowDuration="60000" ToolTipService.Placement="Left" 
+                        ToolTipService.HorizontalOffset="-180" ToolTipService.VerticalOffset="50">
+            <Button.ToolTip>
+                <ToolTip Width="900" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                        <Border.Background>
+                            <SolidColorBrush Color="White" Opacity="1"/>
+                        </Border.Background>
+
+                        <WrapPanel Margin="10" Orientation="Vertical" >
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Здесь отображены лишь еще не выполненные менеджером задачи"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="При нажатии на ФИО клиента, связанного с задачей, откроется страница с его данными"/>
+                        </WrapPanel>
+                    </Border>
+                </ToolTip>
+            </Button.ToolTip>
+            <TextBlock Text="?" FontSize="25"/>
+        </Button>
+
         <Border CornerRadius="20" Width="1300" Grid.Row="1">
             <Border.Background>
                 <SolidColorBrush Color="White" Opacity="0.7"/>
@@ -379,7 +401,23 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Image Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="70"
-                                           Source="{Binding ImageSource, UpdateSourceTrigger=PropertyChanged}" Cursor="Hand" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                                           Source="{Binding ImageSource, UpdateSourceTrigger=PropertyChanged}" Cursor="Hand" MouseLeftButtonDown="Image_MouseLeftButtonDown">
+
+                                    <Image.ToolTip>
+                                        <ToolTip Width="900" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                                            <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="White" Opacity="1"/>
+                                                </Border.Background>
+
+                                                <WrapPanel Margin="10" Orientation="Vertical" >
+                                                    <TextBlock TextWrapping="Wrap" FontSize="18" Text="Нажмите чтобы изменить тип задачи"/>
+                                                </WrapPanel>
+                                            </Border>
+                                        </ToolTip>
+                                    </Image.ToolTip>
+
+                                </Image>
 
                                 <Grid Grid.Column="1" Margin="10,5">
 

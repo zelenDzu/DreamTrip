@@ -276,6 +276,33 @@
             </Button>
         </Border>
 
+        <Button x:Name="btnHelpInfo" Width="37" Height="37"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Grid.Row="0" Margin="160,0,0,0" Style="{StaticResource helpQuestion}" Background="White"
+                        ToolTipService.InitialShowDelay="200" ToolTipService.ShowDuration="60000" ToolTipService.Placement="Left" 
+                        ToolTipService.HorizontalOffset="-180" ToolTipService.VerticalOffset="50">
+            <Button.ToolTip>
+                <ToolTip Width="900" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                        <Border.Background>
+                            <SolidColorBrush Color="White" Opacity="1"/>
+                        </Border.Background>
+
+                        <WrapPanel Margin="10" Orientation="Vertical" >
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="При нажатии на ФИО клиента откроется страница с его данными"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text=""/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Таблица результатов ABC-анализа формируется автоматически"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Зеленый цвет записи - категория А, желтый - В, красный - С"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text=""/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Показатель прироста количества клиентов (в %) формируется на основе данных этого и прошлого месяца"/>
+
+                        </WrapPanel>
+                    </Border>
+                </ToolTip>
+            </Button.ToolTip>
+            <TextBlock Text="?" FontSize="25"/>
+        </Button>
+
         <Border CornerRadius="20" Width="1300" Grid.Row="1">
             <Border.Background>
                 <SolidColorBrush Color="White" Opacity="0.7"/>
@@ -357,10 +384,10 @@
 
                     <DataGrid x:Name="dtgClients" 
                           FontFamily="Yu Gothic UI"
-                          FontSize="24"
+                          FontSize="24" Background="Transparent"
                           Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                           IsReadOnly="True"
-                          AutoGenerateColumns="False"
+                          AutoGenerateColumns="False" HorizontalScrollBarVisibility="Hidden"
                           RowDetailsVisibilityMode="Collapsed"  CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
                           SelectionMode="Single">
                         <DataGrid.Columns>
@@ -391,6 +418,8 @@
 
                         <DataGrid.RowStyle>
                             <Style TargetType="DataGridRow">
+                                <Setter Property="Margin" Value="3"/>
+
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding CategoryABC}" Value="A">
                                         <Setter Property="Background" Value="#FF9BE3CE"></Setter>

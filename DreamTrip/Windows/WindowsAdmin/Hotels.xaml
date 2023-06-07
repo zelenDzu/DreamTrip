@@ -397,6 +397,30 @@
             </Button>
         </Border>
 
+        <Button x:Name="btnHelpInfo" Width="37" Height="37"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Grid.Row="0" Margin="160,0,0,0" Style="{StaticResource helpQuestion}" Background="White"
+                        ToolTipService.InitialShowDelay="200" ToolTipService.ShowDuration="60000" ToolTipService.Placement="Left" 
+                        ToolTipService.HorizontalOffset="-180" ToolTipService.VerticalOffset="50">
+            <Button.ToolTip>
+                <ToolTip Width="900" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                        <Border.Background>
+                            <SolidColorBrush Color="White" Opacity="1"/>
+                        </Border.Background>
+
+                        <WrapPanel Margin="10" Orientation="Vertical" >
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Нельзя удалить отель, если с ним связан тур"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="При удалении отеля информация о нем удаляется навсегда без возможности восстановления"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Никакие данные не будут сохранены до нажатия кнопки Сохранить (кроме удаления существующих отелей)"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Названия отелей не должны повторяться"/>
+                        </WrapPanel>
+                    </Border>
+                </ToolTip>
+            </Button.ToolTip>
+            <TextBlock Text="?" FontSize="25"/>
+        </Button>
+
         <TextBlock Grid.Row="0" Foreground="Black" Text="Отели" FontWeight="Medium"
                        Grid.ColumnSpan="3" Margin="0,0,20,0"
                        FontFamily="Yu Gothic UI Semilight" FontSize="36"

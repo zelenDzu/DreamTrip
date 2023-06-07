@@ -59,6 +59,9 @@ namespace DreamTrip.Windows
             LoadTourTypes();
 
             LoadFirstChart();
+
+            if (MainFunctions.GetShowPrompts()) btnHelpInfo.Visibility = Visibility.Visible;
+            else btnHelpInfo.Visibility = Visibility.Hidden;
         }
         #endregion
 
@@ -182,7 +185,9 @@ namespace DreamTrip.Windows
             try
             {
                 List<int> incomePercent = Analytics.GetCurrentTrips_IncomePercent();
-                tbIncome.Text = incomePercent[0].ToString("### ### ###") + "₽";
+                tbIncome.Text = incomePercent[0].ToString("### ### ###");
+                if (tbIncome.Text.Trim().Length == 0) tbIncome.Text = "0";
+                tbIncome.Text += "₽";
 
                 int percent = incomePercent[1];
                 if (percent >= 0)

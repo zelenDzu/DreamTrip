@@ -338,6 +338,9 @@
 
                 </Button>
             </Border>
+            
+            
+            
 
         </WrapPanel>
 
@@ -352,6 +355,33 @@
 
             </Button>
         </Border>
+
+        <Button x:Name="btnHelpInfo" Width="37" Height="37"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Grid.Row="0" Margin="160,0,0,0" Style="{StaticResource helpQuestion}" Background="White"
+                        ToolTipService.InitialShowDelay="200" ToolTipService.ShowDuration="60000" ToolTipService.Placement="Left" 
+                        ToolTipService.HorizontalOffset="-180" ToolTipService.VerticalOffset="50">
+            <Button.ToolTip>
+                <ToolTip Width="900" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                    <Border CornerRadius="10" BorderBrush="LightGray" BorderThickness="2">
+                        <Border.Background>
+                            <SolidColorBrush Color="White" Opacity="1"/>
+                        </Border.Background>
+
+                        <WrapPanel Margin="10" Orientation="Vertical" >
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Правила работы с данными аккаунтов:"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="1. Логины не должны повторяться. Все остальные данные повторяться могут"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="2. Нельзя создавать пользователей с логином temp"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="3. Нельзя одновременно менять логины пользователей друг на друга (например, есть login1 и login2, и 1 меняется на 2, а 2 на 1)"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text=""/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="При удалении аккаунта вся связанная с ним информация (включая логи) удаляется навсегда без возможности восстановления"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="18" Text="Никакие данные не будут сохранены до нажатия кнопки Сохранить (кроме удаления существующих аккаунтов)"/>
+                        </WrapPanel>
+                    </Border>
+                </ToolTip>
+            </Button.ToolTip>
+            <TextBlock Text="?" FontSize="25"/>
+        </Button>
 
         <TextBlock Grid.Row="0" Foreground="Black" Text="Аккаунты" FontWeight="Medium"
                        Grid.ColumnSpan="3" Margin="0,0,20,0"

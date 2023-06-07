@@ -188,24 +188,43 @@
                         </Setter>
                     </Style>
                 </TabControl.Resources>
-                <TabItem TabIndex="11" Width="50" Height="40"  MouseLeftButtonUp="TabItemProfile_MouseLeftButtonUp">
+                <TabItem TabIndex="11" Width="50" Height="40"  MouseLeftButtonUp="TabItemProfile_MouseLeftButtonUp" 
+                         ToolTipService.InitialShowDelay="200" ToolTipService.ShowDuration="60000" ToolTipService.Placement="Bottom">
                     <TabItem.Header>
                         <Image  Width="35" Height="35" Margin="-8,0,0,0" Grid.Column="0" Source="..\..\Resources/profile.png"></Image>
                     </TabItem.Header>
                     <TabItem.ToolTip>
-                        <StackPanel>
-                            <TextBlock >Мой аккаунт</TextBlock>
-                        </StackPanel>
+                        <ToolTip Width="150" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                        <Border CornerRadius="10">
+                            <Border.Background>
+                                <SolidColorBrush Color="White" Opacity="0.7"/>
+                            </Border.Background>
+
+                            <WrapPanel Margin="10" Orientation="Vertical" >
+                                <TextBlock TextWrapping="Wrap" FontSize="18" Text="Мой аккаунт"/>
+                                
+                            </WrapPanel>
+                        </Border>
+                        </ToolTip>
                     </TabItem.ToolTip>
                 </TabItem>
-                <TabItem TabIndex="11" Width="50" Height="40"  MouseLeftButtonUp="TabItemExit_MouseLeftButtonUp">
+                <TabItem TabIndex="11" Width="50" Height="40"  MouseLeftButtonUp="TabItemExit_MouseLeftButtonUp"
+                         ToolTipService.InitialShowDelay="200" ToolTipService.ShowDuration="60000" ToolTipService.Placement="Bottom">
                     <TabItem.Header>
                         <Image  Width="35" Height="35" Margin="-8,0,0,0" Grid.Column="0" Source="..\..\Resources/logout.png"></Image>
                     </TabItem.Header>
                     <TabItem.ToolTip>
-                        <StackPanel>
-                            <TextBlock >Выход</TextBlock>
-                        </StackPanel>
+                        <ToolTip Width="100" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
+                            <Border CornerRadius="10">
+                                <Border.Background>
+                                    <SolidColorBrush Color="White" Opacity="0.7"/>
+                                </Border.Background>
+
+                                <WrapPanel Margin="10" Orientation="Vertical" >
+                                    <TextBlock TextWrapping="Wrap" FontSize="18" Text="Выход"/>
+                                </WrapPanel>
+                            </Border>
+                        </ToolTip>
                     </TabItem.ToolTip>
                 </TabItem>
             </TabControl>

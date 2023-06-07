@@ -73,6 +73,9 @@ namespace DreamTrip.Windows
                 MainFunctions.AddLogRecord($"Unknown analyze clients load error: {ex.Message}");
             }
 
+            if (MainFunctions.GetShowPrompts()) btnHelpInfo.Visibility = Visibility.Visible;
+            else btnHelpInfo.Visibility = Visibility.Hidden;
+
         }
         #endregion
 
