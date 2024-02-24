@@ -20,6 +20,7 @@ using DreamTrip.Classes;
 using System.Security.Cryptography;
 using DreamTrip.Windows;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 
 namespace DreamTrip.Functions
 {
@@ -28,10 +29,29 @@ namespace DreamTrip.Functions
     /// </summary>
     public static class MainFunctions
     {
+        #region Menu&Tabs
         /// <summary>
         /// Ссылка на меню менеджера - родительский элемент всех вкладок
         /// </summary>
         public static Windows.Menu MenuLink;
+
+        /// <summary>
+        /// Поменять параметры текущей вкладки (название, изображение)
+        /// </summary>
+        /// <param name="tabItem"></param>
+        /// <param name="parametres"></param>
+        public static void ChangeTabParametres(TabClass tabItem, string[] parametres)
+        {
+            tabItem.VerticalScrollBarVisibility = parametres[0];
+            tabItem.ItemHeaderText = parametres[1];
+            tabItem.ItemHeaderImageSource = parametres[2];
+        }
+
+        #endregion
+
+        #region CurrentSession
+
+        #region Variables
         /// <summary>
         /// Дата и время входа в систему для данной сессии
         /// </summary>
@@ -52,82 +72,9 @@ namespace DreamTrip.Functions
         /// </summary>
         private static string Logs;
 
-        /// <summary>
-        /// Получить роль пользователя текущей сессии
-        /// </summary>
-        /// <returns></returns>
-        public static string GetUserRole()
-        {
-            return currentSessionUserRole;
-        }
+        #endregion
 
-        /// <summary>
-        /// Изменение логов Logs
-        /// </summary>
-        /// <param name="record">Запись о действии</param>
-        public static void AddLogRecord(string record)
-        {
-            Logs += $"\n{DateTime.Now} {record}";
-        }
-
-        /// <summary>
-        /// Добавление новой записи БД в историю действий Login History
-        /// </summary>
-        /// <param name="login"></param>
-        public static void AddHistoryRecord(string login)
-        {
-            NewQuery($"INSERT INTO Login_history VALUES ('{login}', '{logInDateTime}' ,'{DateTime.Now}', '{Logs}\n{DateTime.Now} {login} logged out')");
-        }
-
-        /// <summary>
-        /// Очистить логи текущей сессиии
-        /// </summary>
-        public static void ClearLogs()
-        {
-            Logs = "";
-        }
-
-        public static bool Authorize_LoginExists(string login)
-        {
-            bool exists = false;
-
-            exists = MainFunctions.NewQuery($"SELECT login FROM User_login_data WHERE login = '{login}'").Rows.Count != 0;
-
-            return exists;
-        }
-
-        public static bool Authorize_CheckPassword(string login, string passwordHash)
-        {
-            bool passwordCorrect = false;
-
-            passwordCorrect = passwordHash == MainFunctions.NewQuery($"SELECT password_hash FROM User_login_data WHERE login = '{login}'").Rows[0][0].ToString();
-
-            return passwordCorrect;
-        }
-
-        public static bool Authorize_IsAccountActivated(string login)
-        {
-            bool isActivated = false;
-
-            isActivated = Convert.ToBoolean(MainFunctions.NewQuery($"SELECT is_activated FROM worker WHERE login = '{login}'").Rows[0][0].ToString());
-
-            return isActivated;
-        }
-
-        public static string GetUserRole(string login)
-        {
-            string role = "";
-
-            role = MainFunctions.NewQuery($"SELECT id_role FROM User_login_data WHERE login = '{login}'").Rows[0][0].ToString();
-
-            return role;
-        }
-
-        public static bool GetShowPrompts()
-        {
-            return Convert.ToBoolean(NewQuery($"SELECT ISNULL(show_prompts,1) FROM User_login_data WHERE login = '{СurrentSessionLogin}'").Rows[0][0]);
-        }
-
+        #region Functions Login&History
         /// <summary>
         /// Событие входа в систему
         /// </summary>
@@ -156,15 +103,159 @@ namespace DreamTrip.Functions
         }
 
         /// <summary>
-        /// Поменять параметры текущей вкладки (название, изображение)
+        /// Изменение логов Logs
         /// </summary>
-        /// <param name="tabItem"></param>
-        /// <param name="parametres"></param>
-        public static void ChangeTabParametres(TabClass tabItem, string[] parametres)
+        /// <param name="record">Запись о действии</param>
+        public static void AddLogRecord(string record)
         {
-            tabItem.VerticalScrollBarVisibility = parametres[0];
-            tabItem.ItemHeaderText = parametres[1];
-            tabItem.ItemHeaderImageSource = parametres[2];
+            Logs += $"\n{DateTime.Now} {record}";
+        }
+
+        /// <summary>
+        /// Добавление новой записи БД в историю действий Login History
+        /// </summary>
+        /// <param name="login"></param>
+        public static void AddHistoryRecord(string login)
+        {
+            NewQuery($"INSERT INTO Login_history VALUES ('{login}', '{logInDateTime}' ,'{DateTime.Now}', '{Logs}\n{DateTime.Now} {login} logged out')");
+        }
+
+        /// <summary>
+        /// Очистить логи текущей сессиии
+        /// </summary>
+        public static void ClearLogs()
+        {
+            Logs = "";
+        }
+        #endregion
+
+        #region Functions CurrentUserInfo
+        /// <summary>
+        /// Получить роль пользователя текущей сессии
+        /// </summary>
+        /// <returns></returns>
+        public static string GetUserRole()
+        {
+            return currentSessionUserRole;
+        }
+
+        /// <summary>
+        /// Нужно ли показывать подсказки для текущего пользователя
+        /// </summary>
+        /// <returns></returns>
+        public static bool GetShowPrompts()
+        {
+            return Convert.ToBoolean(NewQuery($"SELECT ISNULL(show_prompts,1) FROM User_login_data WHERE login = '{СurrentSessionLogin}'").Rows[0][0]);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Connection&Query
+
+        /// <summary>
+        /// Строка подключения
+        /// </summary>
+        private static string connectionString = "";
+
+        /// <summary>
+        /// Загрузить строку подключения
+        /// </summary>
+        public static void LoadConnectionString()
+        {
+            INIManager manager = new INIManager(GetAppPath() + "\\server.ini");
+
+            connectionString += $"server={manager.GetPrivateString("connectionString", "server")};";
+
+            connectionString += $"Trusted_Connection={manager.GetPrivateString("connectionString", "Trusted_Connection")};";
+            if (manager.GetPrivateString("connectionString", "Trusted_Connection") == "No")
+            {
+                connectionString += $"user={manager.GetPrivateString("connectionString", "user")};";
+                connectionString += $"password={manager.GetPrivateString("connectionString", "password")};";
+            }
+            connectionString += $"DataBase={manager.GetPrivateString("connectionString", "DataBase")};";
+        }
+
+
+        /// <summary>
+        /// Инициирует запрос к БД
+        /// </summary>
+        /// <param name="selectSQL">запрос</param>
+        /// <returns>таблица, сформированная запросом</returns>
+        public static DataTable NewQuery(string selectSQL)
+        {
+            DataTable dataTable = new DataTable("dataBase");
+            SqlConnection sqlConnection = new SqlConnection(connectionString);
+            sqlConnection.Open();
+            SqlCommand sqlCommand = sqlConnection.CreateCommand();
+            sqlCommand.CommandText = selectSQL;
+            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
+            sqlDataAdapter.Fill(dataTable);
+            SqlConnection.ClearAllPools();
+            return dataTable;
+        }
+        #endregion
+
+        #region Auth
+        /// <summary>
+        /// Проверка существования логина
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        public static bool Authorize_LoginExists(string login)
+        {
+            bool exists = false;
+
+            exists = MainFunctions.NewQuery($"SELECT login FROM User_login_data WHERE login = '{login}'").Rows.Count != 0;
+
+            return exists;
+        }
+
+        /// <summary>
+        /// Проверка корректности пароля (по хэшу)
+        /// </summary>
+        /// <param name="login"></param>
+        /// <param name="passwordHash"></param>
+        /// <returns></returns>
+        public static bool Authorize_CheckPassword(string login, string passwordHash)
+        {
+            bool passwordCorrect = false;
+
+            passwordCorrect = passwordHash == MainFunctions.NewQuery($"SELECT password_hash FROM User_login_data WHERE login = '{login}'").Rows[0][0].ToString();
+
+            return passwordCorrect;
+        }
+
+        /// <summary>
+        /// Проверка статуса аккаунта (активен или заблокирован)
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        public static bool Authorize_IsAccountActivated(string login)
+        {
+            bool isActivated = false;
+
+            isActivated = Convert.ToBoolean(MainFunctions.NewQuery($"SELECT is_activated FROM worker WHERE login = '{login}'").Rows[0][0].ToString());
+
+            return isActivated;
+        }
+
+        #endregion
+
+        #region Gets
+        /// <summary>
+        /// Получить роль пользователя по логину
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        public static string GetUserRole(string login)
+        {
+            string role = "";
+
+            role = MainFunctions.NewQuery($"SELECT id_role FROM User_login_data WHERE login = '{login}'").Rows[0][0].ToString();
+
+            return role;
         }
 
         /// <summary>
@@ -186,23 +277,48 @@ namespace DreamTrip.Functions
         }
 
         /// <summary>
-        /// Инициирует запрос к БД
+        /// Возвращает хэш указанной строки. Нужно для проверки корректности логина и пароля 
+        /// (в БД хранится хэш данных авторизации, а не сами данные)
         /// </summary>
-        /// <param name="selectSQL">запрос</param>
-        /// <returns>таблица, сформированная запросом</returns>
-        public static DataTable NewQuery(string selectSQL)
+        /// <param name="word">строка</param>
+        /// <returns>хэш</returns>
+        public static string GetHash(string hashing_string)
         {
-            DataTable dataTable = new DataTable("dataBase");
-            SqlConnection sqlConnection = new SqlConnection("server=BONJOVI\\SQLEXPRESS;Trusted_Connection=Yes;DataBase=DreamTrip_Project;");
-            sqlConnection.Open();
-            SqlCommand sqlCommand = sqlConnection.CreateCommand();
-            sqlCommand.CommandText = selectSQL;
-            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
-            sqlDataAdapter.Fill(dataTable);
-            SqlConnection.ClearAllPools();
-            return dataTable;
+            byte[] tmpSource = ASCIIEncoding.ASCII.GetBytes(hashing_string);
+            byte[] tmpHash = new MD5CryptoServiceProvider().ComputeHash(tmpSource);
+
+            int i;
+            StringBuilder sOutput = new StringBuilder(tmpHash.Length);
+            for (i = 0; i < tmpHash.Length; i++)
+            {
+                sOutput.Append(tmpHash[i].ToString("X2"));
+            }
+
+            return sOutput.ToString();
         }
 
+        /// <summary>
+        /// Возвращает дочерний элемент указанного типа у предоставленного родительского элемента
+        /// </summary>
+        /// <typeparam name="T">тип дочернего элемента</typeparam>
+        /// <param name="depObj">родительский элемент</param>
+        /// <returns>ссылка на дочерний элемент</returns>
+        public static T GetChildOfType<T>(this DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj == null) return null;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(depObj, i);
+
+                var result = (child as T) ?? GetChildOfType<T>(child);
+                if (result != null) return result;
+            }
+            return null;
+        }
+        #endregion
+
+        #region Validate
         /// <summary>
         /// Проверка корректности названия тура
         /// </summary>
@@ -214,10 +330,10 @@ namespace DreamTrip.Functions
             tourName = tourName.ToLower();
             char[] letters = { 'a','b','c','d','e','f','g','h','i','j','k',
                 'l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-                'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж','з', 'и', 'й', 'к', 
+                'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж','з', 'и', 'й', 'к',
                 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц',
-                'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', '-', '—', 
-                '1','2','3','4','5','6','7','8','9','0','!','?','&','$', 
+                'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', '-', '—',
+                '1','2','3','4','5','6','7','8','9','0','!','?','&','$',
                 ' ',',','.','\\','/','\"', '№','#', '(', ')'};
             foreach (char ch in tourName)
                 if (Array.IndexOf(letters, ch, 0) < 0)
@@ -257,10 +373,10 @@ namespace DreamTrip.Functions
             if (name.Length == 0) return false;
             name = name.ToLower();
             char[] letters = { 'a','b','c','d','e','f','g','h','i','j','k',
-                           'l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', 
-                           'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 
-                           'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 
-                           'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 
+                           'l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+                           'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж',
+                           'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о',
+                           'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц',
                            'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', '-', '—',' ' };
             foreach (char ch in name)
                 if (Array.IndexOf(letters, ch, 0) < 0)
@@ -269,48 +385,9 @@ namespace DreamTrip.Functions
                 }
             return true;
         }
+        #endregion
 
-        /// <summary>
-        /// Возвращает дочерний элемент указанного типа у предоставленного родительского элемента
-        /// </summary>
-        /// <typeparam name="T">тип дочернего элемента</typeparam>
-        /// <param name="depObj">родительский элемент</param>
-        /// <returns>ссылка на дочерний элемент</returns>
-        public static T GetChildOfType<T>(this DependencyObject depObj) where T : DependencyObject
-        {
-            if (depObj == null) return null;
-
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
-            {
-                var child = VisualTreeHelper.GetChild(depObj, i);
-
-                var result = (child as T) ?? GetChildOfType<T>(child);
-                if (result != null) return result;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Возвращает хэш указанной строки. Нужно для проверки корректности логина и пароля 
-        /// (в БД хранится хэш данных авторизации, а не сами данные)
-        /// </summary>
-        /// <param name="word">строка</param>
-        /// <returns>хэш</returns>
-        public static string GetHash(string hashing_string)
-        {
-            byte[] tmpSource = ASCIIEncoding.ASCII.GetBytes(hashing_string);
-            byte[] tmpHash = new MD5CryptoServiceProvider().ComputeHash(tmpSource);
-
-            int i;
-            StringBuilder sOutput = new StringBuilder(tmpHash.Length);
-            for (i = 0; i < tmpHash.Length; i++)
-            {
-                sOutput.Append(tmpHash[i].ToString("X2"));
-            }
-            
-            return sOutput.ToString();
-        }
-        
+        #region TourImages&DOcs
         /// <summary>
         /// Загрузить изображение тура в БД
         /// </summary>
@@ -349,7 +426,7 @@ namespace DreamTrip.Functions
                 messageError.ShowDialog();
                 AddLogRecord("PutTourImageInDb Error text: " + ex.Message);
                 return false;
-            } 
+            }
         }
 
         /// <summary>
@@ -388,7 +465,7 @@ namespace DreamTrip.Functions
             }
             catch (Exception ex)
             {
-                Message messageError = new Message("Ошибка", "Что-то пошло не так. Возможно, неверно был выбран тип файла. Файл должен иметь формат изображения.",false,false);
+                Message messageError = new Message("Ошибка", "Что-то пошло не так. Возможно, неверно был выбран тип файла. Файл должен иметь формат изображения.", false, false);
                 messageError.ShowDialog();
                 AddLogRecord("PutTourImageInDb Error text: " + ex.Message);
 
@@ -404,7 +481,7 @@ namespace DreamTrip.Functions
         {
             try
             {
-                List<string> iScreen = new List<string>(); 
+                List<string> iScreen = new List<string>();
                 List<string> iScreen_format = new List<string>();
                 using (SqlConnection sqlConnection = new SqlConnection("server=BONJOVI\\SQLEXPRESS;Trusted_Connection=Yes;DataBase=DreamTrip_Project;"))
                 {
@@ -414,11 +491,11 @@ namespace DreamTrip.Functions
                     sqlCommand.CommandText = $@"SELECT [{docType}_doc] , [{docType}_format] FROM Trip_docs WHERE id_trip = {tripId}";
                     SqlDataReader sqlReader = sqlCommand.ExecuteReader();
                     string iTrimText = null;
-                    while (sqlReader.Read()) 
+                    while (sqlReader.Read())
                     {
-                        iTrimText = sqlReader[$"{docType}_doc"].ToString().TrimStart().TrimEnd(); 
+                        iTrimText = sqlReader[$"{docType}_doc"].ToString().TrimStart().TrimEnd();
                         iScreen.Add(iTrimText);
-                        iTrimText = sqlReader[$"{docType}_format"].ToString().TrimStart().TrimEnd(); 
+                        iTrimText = sqlReader[$"{docType}_format"].ToString().TrimStart().TrimEnd();
                         iScreen_format.Add(iTrimText);
                     }
                     sqlConnection.Close();
@@ -548,7 +625,9 @@ namespace DreamTrip.Functions
 
             }
         }
+        #endregion
 
+        #region ClearFiles
         /// <summary>
         /// Удаляет созданные во время работы программы временные папки с изображениями туров
         /// </summary>
@@ -572,9 +651,9 @@ namespace DreamTrip.Functions
             //    else
             //    {
             //        resourcesPath = GetCurrentExePath() + "/DreamTrip";
-                    
+
             //        Directory.Delete(resourcesPath,true);
-                    
+
             //    }
             //}
             //catch (Exception ex)
@@ -663,14 +742,17 @@ namespace DreamTrip.Functions
                 MainFunctions.AddLogRecord($"Clear Services photos error: {ex.Message}");
             }
         }
-
+        #endregion
     }
+
+
 
     /// <summary>
     /// Основные функции, часто используемые приложением
     /// </summary>
     public static class CommonFunctions
     {
+        #region GetCheckedItems
         /// <summary>
         /// Возвращает список id сфер деятельности, отмеченных галочкой 
         /// </summary>
@@ -822,17 +904,9 @@ namespace DreamTrip.Functions
 
             return checkedHotelStars;
         }
-        
-        /// <summary>
-        /// Изменяет выбранный пункт в выпадающем списке
-        /// </summary>
-        /// <param name="sender">выпадающий список</param>
-        /// <param name="index">индекс выбранного пункта</param>
-        public static void ComboBoxSelectionChanged(object sender, int index)
-        {
-            (sender as ComboBox).SelectedIndex = index;
-        }
+        #endregion
 
+        #region Date
         /// <summary>
         /// Не дает изменить дату при неправильном форматировании 
         /// </summary>
@@ -881,8 +955,19 @@ namespace DreamTrip.Functions
 
             return tempCurrentDate;
         }
+        #endregion
 
-
+        #region Changed
+        /// <summary>
+        /// Изменяет выбранный пункт в выпадающем списке
+        /// </summary>
+        /// <param name="sender">выпадающий список</param>
+        /// <param name="index">индекс выбранного пункта</param>
+        public static void ComboBoxSelectionChanged(object sender, int index)
+        {
+            (sender as ComboBox).SelectedIndex = index;
+        }
+        #endregion
     }
 
     /// <summary>
@@ -890,11 +975,51 @@ namespace DreamTrip.Functions
     /// </summary>
     public static class Analytics
     {
-       /// <summary>
-       /// Получить количество поездок в данный момент времени и процент, показывающий динамика изменения этого показателя
-       /// Формат: {[количество],[процент]}
-       /// </summary>
-       /// <returns></returns>
+        #region Tour
+        /// <summary>
+        /// Получить текущий топ 3 туров
+        /// Формат: {"[Название тура1],[Количество поездок1]", "[Название тура2],[Количество поездок2]"....}
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> GetTopTours()
+        {
+            List<string> topTours = new List<string>();
+
+            DataTable toursData = Requests.SelectTop3Tours();
+
+            for (int i = 0; i < toursData.Rows.Count; i++)
+            {
+                topTours.Add(toursData.Rows[i][0].ToString() + "," + toursData.Rows[i][1].ToString());
+            }
+
+
+            return topTours;
+        }
+
+        /// <summary>
+        /// Получить выручку, полученную по данному туру monthAgo месяцев назад (0 - текущий месяц)
+        /// </summary>
+        /// <param name="tourId"></param>
+        /// <param name="mongthAgo"></param>
+        /// <returns></returns>
+        public static int GetTourIncome(int tourId, int monthAgo)
+        {
+            int tourIncome = 0;
+
+            tourIncome = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip " +
+                $"WHERE id_tour = {tourId} AND " +
+                $"start_date BETWEEN DATEADD(month, {-1 - monthAgo}, eomonth(getdate())) AND  DATEADD(month, {-monthAgo}, eomonth(getdate()))").Rows[0][0].ToString());
+
+            return tourIncome;
+        }
+        #endregion
+
+        #region Trip
+        /// <summary>
+        /// Получить количество поездок в данный момент времени и процент, показывающий динамика изменения этого показателя
+        /// Формат: {[количество],[процент]}
+        /// </summary>
+        /// <returns></returns>
         public static List<int> GetCurrentTrips_CountPercent()
         {
             List<int> countPercent = new List<int>();
@@ -907,7 +1032,7 @@ namespace DreamTrip.Functions
 
             if (prevCount == 0)
             {
-                if (currentCount==0) countPercent.Add(0);
+                if (currentCount == 0) countPercent.Add(0);
                 else countPercent.Add(100);
             }
             else
@@ -971,25 +1096,24 @@ namespace DreamTrip.Functions
         }
 
         /// <summary>
-        /// Получить текущий топ 3 туров
-        /// Формат: {"[Название тура1],[Количество поездок1]", "[Название тура2],[Количество поездок2]"....}
+        /// Получить количество поездок, совершенных по данному туру monthAgo месяцев назад (0 - текущий месяц)
         /// </summary>
+        /// <param name="tourId"></param>
+        /// <param name="mongthAgo"></param>
         /// <returns></returns>
-        public static List<string> GetTopTours()
+        public static int GetTourTripsCount(int tourId, int monthAgo)
         {
-            List<string> topTours = new List<string>();
+            int tripsCount = 0;
 
-            DataTable toursData = Requests.SelectTop3Tours();
+            tripsCount = Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Trip " +
+                $"WHERE id_tour = {tourId} AND " +
+                $"start_date BETWEEN DATEADD(month, {-1 - monthAgo}, eomonth(getdate())) AND  DATEADD(month, {-monthAgo}, eomonth(getdate()))").Rows[0][0].ToString());
 
-            for (int i = 0; i < toursData.Rows.Count; i++)
-            {
-                topTours.Add(toursData.Rows[i][0].ToString() + "," + toursData.Rows[i][1].ToString());
-            }
-
-
-            return topTours;
+            return tripsCount;
         }
+        #endregion
 
+        #region Client
         /// <summary>
         /// Получить количество новых клиентов за этот месяц и процент, показывающий динамику изменения этого показателя
         /// Формат: "{[количество],[процент]}"
@@ -1035,52 +1159,6 @@ namespace DreamTrip.Functions
         }
 
         /// <summary>
-        /// Получить количество поездок, совершенных по данному туру monthAgo месяцев назад (0 - текущий месяц)
-        /// </summary>
-        /// <param name="tourId"></param>
-        /// <param name="mongthAgo"></param>
-        /// <returns></returns>
-        public static int GetTourTripsCount(int tourId, int monthAgo)
-        {
-            int tripsCount = 0;
-
-            tripsCount = Convert.ToInt32(MainFunctions.NewQuery($"SELECT COUNT(*) FROM Trip " +
-                $"WHERE id_tour = {tourId} AND " +
-                $"start_date BETWEEN DATEADD(month, {-1-monthAgo}, eomonth(getdate())) AND  DATEADD(month, {-monthAgo}, eomonth(getdate()))").Rows[0][0].ToString());
-
-            return tripsCount;
-        }
-
-        /// <summary>
-        /// Получить выручку, полученную по данному туру monthAgo месяцев назад (0 - текущий месяц)
-        /// </summary>
-        /// <param name="tourId"></param>
-        /// <param name="mongthAgo"></param>
-        /// <returns></returns>
-        public static int GetTourIncome(int tourId, int monthAgo)
-        {
-            int tourIncome = 0;
-
-            tourIncome = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip " +
-                $"WHERE id_tour = {tourId} AND " +
-                $"start_date BETWEEN DATEADD(month, {-1 - monthAgo}, eomonth(getdate())) AND  DATEADD(month, {-monthAgo}, eomonth(getdate()))").Rows[0][0].ToString());
-
-            return tourIncome;
-        }
-
-        /// <summary>
-        /// Получить название месяца, который был monthAgo месяцев назад (0 - текущий месяц)
-        /// </summary>
-        /// <param name="monthAgo"></param>
-        /// <returns></returns>
-        public static string GetMonthName(int monthAgo)
-        {
-            string month = DateTime.Today.AddMonths(-monthAgo).ToString("MMMM", new CultureInfo("ru-RU")) + " " +
-                DateTime.Today.AddMonths(-monthAgo).ToString("yy");
-            return month;
-        }
-    
-        /// <summary>
         /// Сформировать список клиентов с категориями по результатам АВС-анализа
         /// </summary>
         /// <returns></returns>
@@ -1096,13 +1174,13 @@ namespace DreamTrip.Functions
                 previousPercent += Convert.ToDouble(clientsData.Rows[i][3].ToString());
                 string category = "";
                 if (previousPercent < 80) category = "A";
-                if (previousPercent >=80 && previousPercent < 95) category = "B";
+                if (previousPercent >= 80 && previousPercent < 95) category = "B";
                 if (previousPercent >= 95) category = "C";
 
                 int clientId = Convert.ToInt32(clientsData.Rows[i][0].ToString());
                 DataTable lastTripData = Requests.SelectLastClientTrip(clientId);
                 string tempLastTripDates = "";
-                string tempLastTripPrice = "";  
+                string tempLastTripPrice = "";
 
                 if (lastTripData.Rows[0][1].ToString() == "")
                 {
@@ -1114,8 +1192,8 @@ namespace DreamTrip.Functions
                     tempLastTripPrice = Convert.ToInt32(lastTripData.Rows[0][3]).ToString("### ### ###") + "₽";
                     string tempDate1 = Convert.ToDateTime(lastTripData.Rows[0][1].ToString()).ToShortDateString();
                     string tempDate2 = Convert.ToDateTime(lastTripData.Rows[0][2].ToString()).ToShortDateString();
-                    tempDate1 = tempDate1.Substring(0, tempDate1.LastIndexOf(".") + 1) + tempDate1.Substring(tempDate1.Length-2,2);
-                    tempDate2 = tempDate2.Substring(0, tempDate2.LastIndexOf(".") + 1) + tempDate2.Substring(tempDate2.Length-2,2);
+                    tempDate1 = tempDate1.Substring(0, tempDate1.LastIndexOf(".") + 1) + tempDate1.Substring(tempDate1.Length - 2, 2);
+                    tempDate2 = tempDate2.Substring(0, tempDate2.LastIndexOf(".") + 1) + tempDate2.Substring(tempDate2.Length - 2, 2);
                     tempLastTripDates = $"{tempDate1} - {tempDate2}";
                 }
 
@@ -1134,13 +1212,34 @@ namespace DreamTrip.Functions
 
             return clients;
         }
+        #endregion
 
+        #region OtherHelpFunctions
+        /// <summary>
+        /// Получить название месяца, который был monthAgo месяцев назад (0 - текущий месяц)
+        /// </summary>
+        /// <param name="monthAgo"></param>
+        /// <returns></returns>
+        public static string GetMonthName(int monthAgo)
+        {
+            string month = DateTime.Today.AddMonths(-monthAgo).ToString("MMMM", new CultureInfo("ru-RU")) + " " +
+                DateTime.Today.AddMonths(-monthAgo).ToString("yy");
+            return month;
+        }
+        #endregion
 
     }
 
-
+    /// <summary>
+    /// Класс для запросов к БД
+    /// </summary>
     public static class Requests
     {
+        #region MonthIndicators
+        /// <summary>
+        /// Прибыль за текущий месяц
+        /// </summary>
+        /// <returns></returns>
         public static int SelectThisMonthIncome()
         {
             int currentIncome = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip WHERE booking_datetime BETWEEN " +
@@ -1150,6 +1249,10 @@ namespace DreamTrip.Functions
             return currentIncome;
         }
         
+        /// <summary>
+        /// Прибыль за предыдущий месяц
+        /// </summary>
+        /// <returns></returns>
         public static int SelectPreviousMonthIncome()
         {
             int prevIncome = Convert.ToInt32(MainFunctions.NewQuery($"SELECT ISNULL(SUM(total_price),0) FROM Trip WHERE booking_datetime BETWEEN " +
@@ -1159,6 +1262,13 @@ namespace DreamTrip.Functions
             return prevIncome;
         }
 
+        #endregion
+
+        #region Tours
+        /// <summary>
+        /// Топ 3 популярных тура на текущий момент
+        /// </summary>
+        /// <returns></returns>
         public static DataTable SelectTop3Tours()
         {
             DataTable top3ToursData = MainFunctions.NewQuery($"SELECT TOP 3 " +
@@ -1173,6 +1283,13 @@ namespace DreamTrip.Functions
             return top3ToursData;
         }
 
+        #endregion
+
+        #region Clients
+        /// <summary>
+        /// Данные для АВС-анализа клиентов
+        /// </summary>
+        /// <returns></returns>
         public static DataTable SelectClientAbcData()
         {
             DataTable clientsData = MainFunctions.NewQuery($"SELECT c.id_client, CONCAT(c.surname, ' ', c.name, ' ', c.patronymic), " +
@@ -1183,6 +1300,11 @@ namespace DreamTrip.Functions
             return clientsData;
         }
 
+        /// <summary>
+        /// Данные последней поездки клиента
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         public static DataTable SelectLastClientTrip(int clientId)
         {
             DataTable lastTrip = MainFunctions.NewQuery($"SELECT TOP 1 c.id_client, t.start_date, t.end_date, t.total_price " +
@@ -1191,6 +1313,58 @@ namespace DreamTrip.Functions
             return lastTrip;
         }
 
+        #endregion
+
+    }
+
+    /// <summary>
+    /// Класс для чтения/записи INI-файлов
+    /// </summary>
+    public class INIManager
+    {
+        //Конструктор, принимающий путь к INI-файлу
+        public INIManager(string aPath)
+        {
+            path = aPath;
+        }
+
+        //Конструктор без аргументов (путь к INI-файлу нужно будет задать отдельно)
+        public INIManager() : this("") { }
+
+        //Возвращает значение из INI-файла (по указанным секции и ключу) 
+        public string GetPrivateString(string aSection, string aKey)
+        {
+            //Для получения значения
+            StringBuilder buffer = new StringBuilder(SIZE);
+
+            //Получить значение в buffer
+            GetPrivateString(aSection, aKey, null, buffer, SIZE, path);
+
+            //Вернуть полученное значение
+            return buffer.ToString();
+        }
+
+        //Пишет значение в INI-файл (по указанным секции и ключу) 
+        public void WritePrivateString(string aSection, string aKey, string aValue)
+        {
+            //Записать значение в INI-файл
+            WritePrivateString(aSection, aKey, aValue, path);
+        }
+
+        //Возвращает или устанавливает путь к INI файлу
+        public string Path { get { return path; } set { path = value; } }
+
+        //Поля класса
+        private const int SIZE = 1024; //Максимальный размер (для чтения значения из файла)
+        private string path = null; //Для хранения пути к INI-файлу
+
+        //Импорт функции GetPrivateProfileString (для чтения значений) из библиотеки kernel32.dll
+        [DllImport("kernel32.dll", EntryPoint = "GetPrivateProfileString")]
+        private static extern int GetPrivateString(string section, string key, string def, StringBuilder buffer, int size, string path);
+
+        //Импорт функции WritePrivateProfileString (для записи значений) из библиотеки kernel32.dll
+        [DllImport("kernel32.dll", EntryPoint = "WritePrivateProfileString")]
+        private static extern int WritePrivateString(string section, string key, string str, string path);
     }
 
 }

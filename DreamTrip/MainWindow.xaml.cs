@@ -33,11 +33,14 @@ namespace DreamTrip
         {
             InitializeComponent();
             EnableLoginButton();
+            MainFunctions.LoadConnectionString();
         }
         #endregion
 
-        
+
         #region Functions
+        
+
         /// <summary>
         /// Активирует кнопку Войти
         /// </summary>
